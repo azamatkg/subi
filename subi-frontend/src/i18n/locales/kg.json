@@ -1,0 +1,163 @@
+{
+  "common": {
+    "loading": "Жүктөлүп жатат...",
+    "error": "Ката",
+    "success": "Ийгиликтүү",
+    "warning": "Эскертүү",
+    "info": "Маалымат",
+    "save": "Сактоо",
+    "cancel": "Жокко чыгаруу",
+    "delete": "Өчүрүү",
+    "edit": "Оңдоо",
+    "create": "Түзүү",
+    "update": "Жаңылоо",
+    "search": "Издөө",
+    "filter": "Чыпкалоо",
+    "clear": "Тазалоо",
+    "submit": "Жөнөтүү",
+    "close": "Жабуу",
+    "back": "Артка",
+    "next": "Кийинки",
+    "previous": "Мурунку",
+    "yes": "Ооба",
+    "no": "Жок",
+    "confirm": "Ырастоо",
+    "export": "Экспорт",
+    "import": "Импорт",
+    "download": "Жүктөп алуу",
+    "upload": "Жүктөө",
+    "print": "Басып чыгаруу"
+  },
+  "navigation": {
+    "dashboard": "Башкаруу панели",
+    "applications": "Арыздар",
+    "creditPrograms": "Кредит программалары",
+    "documents": "Документтер",
+    "commissions": "Комиссиялар",
+    "admin": "Администрациялоо",
+    "profile": "Профиль",
+    "settings": "Жөндөөлөр",
+    "logout": "Чыгуу"
+  },
+  "auth": {
+    "login": "Кирүү",
+    "logout": "Чыгуу",
+    "username": "Колдонуучунун аты",
+    "password": "Сырсөз",
+    "forgotPassword": "Сырсөздү унуттуңузбу?",
+    "loginFailed": "Кирүү катасы",
+    "invalidCredentials": "Туура эмес колдонуучу аты же сырсөз",
+    "sessionExpired": "Сессия аяктады, кайрадан кириңиз",
+    "welcomeBack": "Кайра келиңиз"
+  },
+  "application": {
+    "title": "Арыз",
+    "applications": "Арыздар",
+    "newApplication": "Жаңы арыз",
+    "myApplications": "Менин арыздарым",
+    "applicationDetails": "Арыздын деталдары",
+    "status": {
+      "submitted": "Тапшырылды",
+      "under_completion": "Иштелип жатат",
+      "needs_rework": "Кайра иштөөнү талап кылат",
+      "approved": "Макулдашылды",
+      "rejected": "Четке кагылды",
+      "loan_registration_completed": "Заем каттоосу аяктады",
+      "collateral_collection_in_progress": "Кепилдик чогултуу жараянда",
+      "collateral_review_positive": "Кепилдиктин оң сыны",
+      "collateral_registration_pending": "Кепилдик каттоо күтүлүүдө",
+      "collateral_registered": "Кепилдик катталды",
+      "contract_signed": "Келишим кол коюлду",
+      "credit_issued": "Кредит берилди"
+    },
+    "fields": {
+      "tin": "ИИН",
+      "firstName": "Аты",
+      "lastName": "Фамилиясы",
+      "phone": "Телефон",
+      "email": "Электрондук почта",
+      "amount": "Талап кылынган сумма",
+      "term": "Мөөнөтү (айлар)",
+      "purpose": "Кредиттин максаты"
+    }
+  },
+  "creditProgram": {
+    "title": "Кредит программасы",
+    "programs": "Кредит программалары",
+    "newProgram": "Жаңы программа",
+    "programDetails": "Программанын деталдары",
+    "activePrograms": "Активдүү программалар",
+    "status": {
+      "draft": "Долбоор",
+      "pending_approval": "Макулдашууну күтүүдө",
+      "approved": "Макулдашылды",
+      "active": "Активдүү",
+      "suspended": "Токтотулду",
+      "closed": "Жабылды",
+      "cancelled": "Жокко чыгарылды",
+      "rejected": "Четке кагылды"
+    },
+    "fields": {
+      "name": "Программанын аталышы",
+      "description": "Сүрөттөмөсү",
+      "minAmount": "Минималдуу сумма",
+      "maxAmount": "Максималдуу сумма",
+      "minTerm": "Минималдуу мөөнөт",
+      "maxTerm": "Максималдуу мөөнөт",
+      "interestRate": "Пайыздык ставка"
+    }
+  },
+  "commission": {
+    "title": "Комиссия",
+    "commissions": "Комиссиялар",
+    "myReviews": "Менин баалоолорум",
+    "pendingReviews": "Күтүүдөгү баалоолор",
+    "reviewDetails": "Баалоонун деталдары",
+    "submitReview": "Баалоону жөнөтүү",
+    "finalResult": "Акыркы натыйжа"
+  },
+  "document": {
+    "title": "Документ",
+    "documents": "Документтер",
+    "templates": "Шаблондор",
+    "upload": "Документти жүктөө",
+    "download": "Жүктөп алуу",
+    "generate": "Документ түзүү"
+  },
+  "user": {
+    "profile": "Колдонуучунун профили",
+    "users": "Колдонуучулар",
+    "roles": "Ролдор",
+    "permissions": "Уруксаттар",
+    "userManagement": "Колдонуучуларды башкаруу"
+  },
+  "validation": {
+    "required": "Бул талаа милдеттүү",
+    "invalidEmail": "Туура эмес электрондук дарек",
+    "invalidPhone": "Туура эмес телефон форматы",
+    "invalidTin": "Туура эмес ИИН форматы (14 сан керек)",
+    "minLength": "Минималдуу узундугу {{min}} символ",
+    "maxLength": "Максималдуу узундугу {{max}} символ",
+    "minAmount": "Минималдуу сумма {{min}}",
+    "maxAmount": "Максималдуу сумма {{max}}"
+  },
+  "time": {
+    "years": "жыл",
+    "months": "ай",
+    "weeks": "апта",
+    "days": "күн",
+    "hours": "саат",
+    "minutes": "мүнөт",
+    "seconds": "секунд",
+    "ago": "{{count}} {{unit}} мурун",
+    "justNow": "азыр эле"
+  },
+  "errors": {
+    "notFound": "Бет табылбады",
+    "unauthorized": "Авторизацияланбаган жетки",
+    "forbidden": "Жетки тыйылган",
+    "serverError": "Сервердик ката пайда болду",
+    "networkError": "Тармак байланыш катасы",
+    "unknownError": "Белгисиз ката пайда болду"
+  }
+}

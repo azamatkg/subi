@@ -1,0 +1,163 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "warning": "Предупреждение",
+    "info": "Информация",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "create": "Создать",
+    "update": "Обновить",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "clear": "Очистить",
+    "submit": "Отправить",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "previous": "Предыдущий",
+    "yes": "Да",
+    "no": "Нет",
+    "confirm": "Подтвердить",
+    "export": "Экспорт",
+    "import": "Импорт",
+    "download": "Скачать",
+    "upload": "Загрузить",
+    "print": "Печать"
+  },
+  "navigation": {
+    "dashboard": "Панель управления",
+    "applications": "Заявки",
+    "creditPrograms": "Кредитные программы",
+    "documents": "Документы",
+    "commissions": "Комиссии",
+    "admin": "Администрирование",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "logout": "Выход"
+  },
+  "auth": {
+    "login": "Вход",
+    "logout": "Выход",
+    "username": "Имя пользователя",
+    "password": "Пароль",
+    "forgotPassword": "Забыли пароль?",
+    "loginFailed": "Ошибка входа",
+    "invalidCredentials": "Неверное имя пользователя или пароль",
+    "sessionExpired": "Сессия истекла, пожалуйста, войдите снова",
+    "welcomeBack": "Добро пожаловать"
+  },
+  "application": {
+    "title": "Заявка",
+    "applications": "Заявки",
+    "newApplication": "Новая заявка",
+    "myApplications": "Мои заявки",
+    "applicationDetails": "Детали заявки",
+    "status": {
+      "submitted": "Подана",
+      "under_completion": "На доработке",
+      "needs_rework": "Требует доработки",
+      "approved": "Одобрена",
+      "rejected": "Отклонена",
+      "loan_registration_completed": "Регистрация займа завершена",
+      "collateral_collection_in_progress": "Сбор обеспечения в процессе",
+      "collateral_review_positive": "Положительный обзор обеспечения",
+      "collateral_registration_pending": "Ожидается регистрация обеспечения",
+      "collateral_registered": "Обеспечение зарегистрировано",
+      "contract_signed": "Договор подписан",
+      "credit_issued": "Кредит выдан"
+    },
+    "fields": {
+      "tin": "ИНН",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "phone": "Телефон",
+      "email": "Электронная почта",
+      "amount": "Запрашиваемая сумма",
+      "term": "Срок (месяцы)",
+      "purpose": "Цель кредита"
+    }
+  },
+  "creditProgram": {
+    "title": "Кредитная программа",
+    "programs": "Кредитные программы",
+    "newProgram": "Новая программа",
+    "programDetails": "Детали программы",
+    "activePrograms": "Активные программы",
+    "status": {
+      "draft": "Черновик",
+      "pending_approval": "Ожидает одобрения",
+      "approved": "Одобрена",
+      "active": "Активна",
+      "suspended": "Приостановлена",
+      "closed": "Закрыта",
+      "cancelled": "Отменена",
+      "rejected": "Отклонена"
+    },
+    "fields": {
+      "name": "Название программы",
+      "description": "Описание",
+      "minAmount": "Минимальная сумма",
+      "maxAmount": "Максимальная сумма",
+      "minTerm": "Минимальный срок",
+      "maxTerm": "Максимальный срок",
+      "interestRate": "Процентная ставка"
+    }
+  },
+  "commission": {
+    "title": "Комиссия",
+    "commissions": "Комиссии",
+    "myReviews": "Мои отзывы",
+    "pendingReviews": "Ожидающие рассмотрения",
+    "reviewDetails": "Детали отзыва",
+    "submitReview": "Отправить отзыв",
+    "finalResult": "Итоговый результат"
+  },
+  "document": {
+    "title": "Документ",
+    "documents": "Документы",
+    "templates": "Шаблоны",
+    "upload": "Загрузить документ",
+    "download": "Скачать",
+    "generate": "Создать документ"
+  },
+  "user": {
+    "profile": "Профиль пользователя",
+    "users": "Пользователи",
+    "roles": "Роли",
+    "permissions": "Разрешения",
+    "userManagement": "Управление пользователями"
+  },
+  "validation": {
+    "required": "Это поле обязательно",
+    "invalidEmail": "Неверный адрес электронной почты",
+    "invalidPhone": "Неверный формат телефона",
+    "invalidTin": "Неверный формат ИНН (требуется 14 цифр)",
+    "minLength": "Минимальная длина {{min}} символов",
+    "maxLength": "Максимальная длина {{max}} символов",
+    "minAmount": "Минимальная сумма {{min}}",
+    "maxAmount": "Максимальная сумма {{max}}"
+  },
+  "time": {
+    "years": "год(а)",
+    "months": "месяц(а)",
+    "weeks": "неделя(и)",
+    "days": "день(дней)",
+    "hours": "час(ов)",
+    "minutes": "минут(ы)",
+    "seconds": "секунд(ы)",
+    "ago": "{{count}} {{unit}} назад",
+    "justNow": "только что"
+  },
+  "errors": {
+    "notFound": "Страница не найдена",
+    "unauthorized": "Неавторизованный доступ",
+    "forbidden": "Доступ запрещен",
+    "serverError": "Произошла ошибка сервера",
+    "networkError": "Ошибка сетевого соединения",
+    "unknownError": "Произошла неизвестная ошибка"
+  }
+}
