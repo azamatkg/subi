@@ -507,28 +507,7 @@ export const DecisionListPage: React.FC = () => {
 
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="min-w-0">
-          <AccessibleHeading
-            level={1}
-            className="text-2xl sm:text-3xl font-bold tracking-tight"
-          >
-            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              {t('decision.decisionManagement')}
-            </span>
-          </AccessibleHeading>
-          <p className="text-muted-foreground text-sm sm:text-lg mt-1">
-            {t('decision.searchDecisions')} {t('common.and')}{' '}
-            {t('decision.filterDecisions').toLowerCase()}
-          </p>
-        </div>
-        <Button
-          onClick={handleCreate}
-          className="shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto"
-          size={isMobile ? 'default' : 'default'}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          {t('decision.newDecision')}
-        </Button>
+
       </div>
 
       {/* Search and Filter Controls */}
@@ -716,6 +695,22 @@ export const DecisionListPage: React.FC = () => {
                   <X className="h-4 w-4" />
                 </Button>
               )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                  onClick={handleCreate}
+                  className="add-new-decision-button shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto relative group"
+                  size={isMobile ? 'default' : 'default'}
+              >
+                <Plus className="h-4 w-4" />
+                <span
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-background border border-border rounded-md px-2 py-1 text-xs text-foreground shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"
+                  role="tooltip"
+                  aria-hidden="true"
+                >
+                  {t('decision.newDecision')}
+                </span>
+              </Button>
             </div>
           </div>
         </CardContent>
