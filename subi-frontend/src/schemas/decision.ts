@@ -44,9 +44,11 @@ export const createDecisionSchema = z.object({
   }),
   documentPackageId: z
     .string()
-    .uuid('Document package ID must be a valid UUID')
+    .transform(val => val === '' ? undefined : val)
     .optional()
-    .or(z.literal('')),
+    .refine(val => val === undefined || z.string().uuid().safeParse(val).success, {
+      message: 'Document package ID must be a valid UUID',
+    }),
 });
 
 export const updateDecisionSchema = z.object({
@@ -87,8 +89,11 @@ export const updateDecisionSchema = z.object({
     .optional(),
   documentPackageId: z
     .string()
-    .uuid('Document package ID must be a valid UUID')
-    .optional(),
+    .transform(val => val === '' ? undefined : val)
+    .optional()
+    .refine(val => val === undefined || z.string().uuid().safeParse(val).success, {
+      message: 'Document package ID must be a valid UUID',
+    }),
 });
 
 // Decision Type validation schemas

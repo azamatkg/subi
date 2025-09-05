@@ -255,7 +255,7 @@ export const DecisionListPage: React.FC = () => {
     decision,
   }) => (
     <Card
-      className="group hover:shadow-md transition-all duration-200 border-0 bg-gradient-to-br from-card to-card/50"
+      className="group hover:shadow-md hover:bg-muted/20 transition-all duration-200 border-0 bg-card"
       role="article"
       aria-labelledby={`decision-title-${decision.id}`}
     >
@@ -301,7 +301,7 @@ export const DecisionListPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleEdit(decision.id)}
-                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-blue-500/10 hover:text-blue-600 hover:scale-110"
+                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-muted/60 hover:text-foreground hover:scale-110"
                   aria-label={t('common.edit')}
                 >
                   <Edit className="h-4 w-4" />
@@ -317,17 +317,17 @@ export const DecisionListPage: React.FC = () => {
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="shadow-lg border-primary/20">
+                  <DropdownMenuContent align="end" className="shadow-lg border-border/20">
                     <DropdownMenuItem 
                       onClick={() => handleView(decision.id)}
-                      className="hover:bg-primary/10"
+                      className="hover:bg-muted/50"
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       {t('common.view')}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => handleEdit(decision.id)}
-                      className="hover:bg-blue-500/10"
+                      className="hover:bg-muted/50"
                     >
                       <Edit className="mr-2 h-4 w-4" />
                       {t('common.edit')}
@@ -375,7 +375,7 @@ export const DecisionListPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => handleEdit(decision.id)}
-              className="flex-1 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-600 transition-all duration-200"
+              className="flex-1 hover:bg-muted/60 hover:border-muted hover:text-foreground transition-all duration-200"
             >
               <Edit className="h-4 w-4 mr-2" />
               {t('common.edit')}
@@ -394,25 +394,25 @@ export const DecisionListPage: React.FC = () => {
   }> = ({ field, children, className }) => (
     <TableHead
       className={cn(
-        'cursor-pointer hover:bg-slate-500/50 dark:hover:bg-slate-600/50 transition-all duration-200 select-none border-b-2 border-b-slate-400/50 dark:border-b-slate-500/50',
+        'cursor-pointer hover:bg-muted/80 transition-all duration-200 select-none border-b-2 border-b-border/20',
         className
       )}
     >
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 w-full text-left font-semibold text-white hover:text-blue-200 transition-colors duration-200 py-2"
+        className="flex items-center gap-2 w-full text-left font-semibold text-foreground hover:text-primary transition-colors duration-200 py-2"
         aria-label={t('common.sortBy', { field: children })}
       >
         {children}
         {sortField === field ? (
           sortDirection === 'asc' ? (
-            <SortAsc className="h-4 w-4 text-blue-300 animate-in slide-in-from-bottom-1 duration-200" />
+            <SortAsc className="h-4 w-4 text-primary animate-in slide-in-from-bottom-1 duration-200" />
           ) : (
-            <SortDesc className="h-4 w-4 text-blue-300 animate-in slide-in-from-top-1 duration-200" />
+            <SortDesc className="h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200" />
           )
         ) : (
           <div className="h-4 w-4 opacity-50 group-hover:opacity-80 transition-opacity">
-            <SortAsc className="h-4 w-4 text-white" />
+            <SortAsc className="h-4 w-4 text-foreground" />
           </div>
         )}
       </button>
@@ -427,7 +427,7 @@ export const DecisionListPage: React.FC = () => {
     const currentPage = decisionsData.number;
 
     return (
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between">
         <div className="flex-1 text-sm text-muted-foreground">
           {t('common.showing')} {decisionsData.numberOfElements}{' '}
           {t('common.of')} {decisionsData.totalElements}{' '}
@@ -831,8 +831,8 @@ export const DecisionListPage: React.FC = () => {
               {viewMode === 'table' && !isMobile && (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader className="bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800">
-                      <TableRow className="group border-b-0 hover:from-slate-500 hover:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-700 transition-all duration-200">
+                    <TableHeader className="bg-gradient-to-r from-muted to-muted/80">
+                      <TableRow className="group border-b-0 hover:bg-muted/60 transition-all duration-200">
                         <SortableTableHead field="number">
                           {t('decision.fields.number')}
                         </SortableTableHead>
@@ -845,12 +845,12 @@ export const DecisionListPage: React.FC = () => {
                         <SortableTableHead field="status">
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[100px] text-center text-white font-semibold">{t('common.actions')}</TableHead>
+                        <TableHead className="w-[100px] text-center text-foreground font-semibold border-b-2 border-b-border/20">{t('common.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {decisionsData.content.map((decision, index) => (
-                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-slate-50/50 dark:bg-slate-800/50' : 'bg-white dark:bg-slate-900/50'} hover:bg-slate-100/80 dark:hover:bg-slate-700/50 transition-colors duration-200`}>
+                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-muted/50 transition-colors duration-200`}>
                           <TableCell className="font-medium">
                             {decision.number}
                           </TableCell>
@@ -887,7 +887,7 @@ export const DecisionListPage: React.FC = () => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleEdit(decision.id)}
-                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-blue-500/10 hover:text-blue-600"
+                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-muted/60 hover:text-foreground"
                                 aria-label={t('common.edit')}
                               >
                                 <Edit className="h-4 w-4" />
@@ -905,17 +905,17 @@ export const DecisionListPage: React.FC = () => {
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="shadow-lg border-primary/20">
+                                <DropdownMenuContent align="end" className="shadow-lg border-border/20">
                                   <DropdownMenuItem
                                     onClick={() => handleView(decision.id)}
-                                    className="hover:bg-primary/10"
+                                    className="hover:bg-muted/50"
                                   >
                                     <Eye className="mr-2 h-4 w-4" />
                                     {t('common.view')}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleEdit(decision.id)}
-                                    className="hover:bg-blue-500/10"
+                                    className="hover:bg-muted/50"
                                   >
                                     <Edit className="mr-2 h-4 w-4" />
                                     {t('common.edit')}
@@ -943,7 +943,9 @@ export const DecisionListPage: React.FC = () => {
               {decisionsData.content.length > 0 && (
                 <>
                   <Separator />
-                  <PaginationControls />
+                  <div className="bg-gradient-to-r from-muted to-muted/80 px-6 py-4 rounded-b-lg border-t">
+                    <PaginationControls />
+                  </div>
                 </>
               )}
             </div>
