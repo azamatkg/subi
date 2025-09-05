@@ -287,77 +287,76 @@ export const DecisionListPage: React.FC = () => {
                 status={decision.status}
                 className="shrink-0"
               />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-opacity"
-                    aria-label={t('common.actions', { item: decision.nameEn })}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleView(decision.id)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    {t('common.view')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleEdit(decision.id)}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    {t('common.edit')}
-                  </DropdownMenuItem>
-                  <Separator />
-                  <DropdownMenuItem
-                    onClick={() => handleDeleteClick(decision)}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash className="mr-2 h-4 w-4" />
-                    {t('common.delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleView(decision.id)}
+                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-primary/10 hover:text-primary hover:scale-110"
+                  aria-label={t('common.view')}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(decision.id)}
+                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-blue-500/10 hover:text-blue-600 hover:scale-110"
+                  aria-label={t('common.edit')}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-muted/80 hover:shadow-md hover:scale-110"
+                      aria-label={t('common.actions', { item: decision.nameEn })}
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="shadow-lg border-primary/20">
+                    <DropdownMenuItem 
+                      onClick={() => handleView(decision.id)}
+                      className="hover:bg-primary/10"
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      {t('common.view')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleEdit(decision.id)}
+                      className="hover:bg-blue-500/10"
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      {t('common.edit')}
+                    </DropdownMenuItem>
+                    <Separator />
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteClick(decision)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash className="mr-2 h-4 w-4" />
+                      {t('common.delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
 
           {/* Details grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-              <div>
-                <span className="text-muted-foreground">
-                  {t('decision.fields.date')}:
-                </span>
-                <AccessibleDate
-                  date={decision.date}
-                  className="ml-1 font-medium"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-              <div className="min-w-0">
-                <span className="text-muted-foreground">
-                  {t('decision.fields.decisionType')}:
-                </span>
-                <span className="ml-1 font-medium truncate block">
-                  {decision.decisionTypeNameEn}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Decision making body */}
           <div className="flex items-center gap-2 text-sm">
-            <Scale className="h-4 w-4 text-muted-foreground shrink-0" />
-            <div className="min-w-0 flex-1">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div>
               <span className="text-muted-foreground">
-                {t('decision.fields.decisionMakingBody')}:
+                {t('decision.fields.date')}:
               </span>
-              <span className="ml-1 font-medium block truncate">
-                {decision.decisionMakingBodyNameEn}
-              </span>
+              <AccessibleDate
+                date={decision.date}
+                className="ml-1 font-medium"
+              />
             </div>
           </div>
 
@@ -367,7 +366,7 @@ export const DecisionListPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => handleView(decision.id)}
-              className="flex-1"
+              className="flex-1 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all duration-200"
             >
               <Eye className="h-4 w-4 mr-2" />
               {t('common.view')}
@@ -376,7 +375,7 @@ export const DecisionListPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => handleEdit(decision.id)}
-              className="flex-1"
+              className="flex-1 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-600 transition-all duration-200"
             >
               <Edit className="h-4 w-4 mr-2" />
               {t('common.edit')}
@@ -395,22 +394,27 @@ export const DecisionListPage: React.FC = () => {
   }> = ({ field, children, className }) => (
     <TableHead
       className={cn(
-        'cursor-pointer hover:bg-muted/50 transition-colors select-none',
+        'cursor-pointer hover:bg-slate-500/50 dark:hover:bg-slate-600/50 transition-all duration-200 select-none border-b-2 border-b-slate-400/50 dark:border-b-slate-500/50',
         className
       )}
     >
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 w-full text-left font-medium"
+        className="flex items-center gap-2 w-full text-left font-semibold text-white hover:text-blue-200 transition-colors duration-200 py-2"
         aria-label={t('common.sortBy', { field: children })}
       >
         {children}
-        {sortField === field &&
-          (sortDirection === 'asc' ? (
-            <SortAsc className="h-4 w-4" />
+        {sortField === field ? (
+          sortDirection === 'asc' ? (
+            <SortAsc className="h-4 w-4 text-blue-300 animate-in slide-in-from-bottom-1 duration-200" />
           ) : (
-            <SortDesc className="h-4 w-4" />
-          ))}
+            <SortDesc className="h-4 w-4 text-blue-300 animate-in slide-in-from-top-1 duration-200" />
+          )
+        ) : (
+          <div className="h-4 w-4 opacity-50 group-hover:opacity-80 transition-opacity">
+            <SortAsc className="h-4 w-4 text-white" />
+          </div>
+        )}
       </button>
     </TableHead>
   );
@@ -724,11 +728,6 @@ export const DecisionListPage: React.FC = () => {
                 <Scale className="h-4 w-4 text-emerald-600" />
               </div>
               {t('decision.decisions')}
-              {decisionsData && (
-                <Badge variant="outline">
-                  {decisionsData.totalElements} {t('common.total')}
-                </Badge>
-              )}
             </CardTitle>
 
             {/* View Toggle and Sort Controls */}
@@ -754,36 +753,38 @@ export const DecisionListPage: React.FC = () => {
                 </>
               )}
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    {sortDirection === 'asc' ? (
-                      <SortAsc className="h-4 w-4 mr-2" />
-                    ) : (
-                      <SortDesc className="h-4 w-4 mr-2" />
-                    )}
-                    {t(`decision.fields.${sortField}`)}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleSort('date')}>
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {t('decision.fields.date')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleSort('number')}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    {t('decision.fields.number')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleSort('nameEn')}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    {t('decision.fields.nameEn')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleSort('status')}>
-                    <Scale className="mr-2 h-4 w-4" />
-                    {t('decision.fields.status')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {(viewMode === 'card' || isMobile) && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      {sortDirection === 'asc' ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      {t(`decision.fields.${sortField}`)}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleSort('date')}>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {t('decision.fields.date')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSort('number')}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      {t('decision.fields.number')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSort('nameEn')}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      {t('decision.fields.nameEn')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSort('status')}>
+                      <Scale className="mr-2 h-4 w-4" />
+                      {t('decision.fields.status')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -830,8 +831,8 @@ export const DecisionListPage: React.FC = () => {
               {viewMode === 'table' && !isMobile && (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader>
-                      <TableRow>
+                    <TableHeader className="bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800">
+                      <TableRow className="group border-b-0 hover:from-slate-500 hover:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-700 transition-all duration-200">
                         <SortableTableHead field="number">
                           {t('decision.fields.number')}
                         </SortableTableHead>
@@ -841,21 +842,15 @@ export const DecisionListPage: React.FC = () => {
                         <SortableTableHead field="date">
                           {t('decision.fields.date')}
                         </SortableTableHead>
-                        <TableHead>
-                          {t('decision.fields.decisionType')}
-                        </TableHead>
-                        <TableHead>
-                          {t('decision.fields.decisionMakingBody')}
-                        </TableHead>
                         <SortableTableHead field="status">
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[70px]"></TableHead>
+                        <TableHead className="w-[100px] text-center text-white font-semibold">{t('common.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {decisionsData.content.map(decision => (
-                        <TableRow key={decision.id} className="group">
+                      {decisionsData.content.map((decision, index) => (
+                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-slate-50/50 dark:bg-slate-800/50' : 'bg-white dark:bg-slate-900/50'} hover:bg-slate-100/80 dark:hover:bg-slate-700/50 transition-colors duration-200`}>
                           <TableCell className="font-medium">
                             {decision.number}
                           </TableCell>
@@ -875,54 +870,67 @@ export const DecisionListPage: React.FC = () => {
                             <AccessibleDate date={decision.date} />
                           </TableCell>
                           <TableCell>
-                            <span className="font-medium">
-                              {decision.decisionTypeNameEn}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium">
-                              {decision.decisionMakingBodyNameEn}
-                            </span>
-                          </TableCell>
-                          <TableCell>
                             <AccessibleStatusBadge status={decision.status} />
                           </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  aria-label={t('common.actions', {
-                                    item: decision.nameEn,
-                                  })}
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => handleView(decision.id)}
-                                >
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  {t('common.view')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleEdit(decision.id)}
-                                >
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  {t('common.edit')}
-                                </DropdownMenuItem>
-                                <Separator />
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteClick(decision)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  {t('common.delete')}
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                          <TableCell className="w-[100px]">
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleView(decision.id)}
+                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                aria-label={t('common.view')}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEdit(decision.id)}
+                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-blue-500/10 hover:text-blue-600"
+                                aria-label={t('common.edit')}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-muted/80 hover:shadow-md"
+                                    aria-label={t('common.actions', {
+                                      item: decision.nameEn,
+                                    })}
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="shadow-lg border-primary/20">
+                                  <DropdownMenuItem
+                                    onClick={() => handleView(decision.id)}
+                                    className="hover:bg-primary/10"
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    {t('common.view')}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleEdit(decision.id)}
+                                    className="hover:bg-blue-500/10"
+                                  >
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    {t('common.edit')}
+                                  </DropdownMenuItem>
+                                  <Separator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleDeleteClick(decision)}
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  >
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    {t('common.delete')}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
