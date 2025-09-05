@@ -127,7 +127,7 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Left side - Branding */}
-            <div className="w-full lg:w-2/5 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 lg:p-12 flex flex-col justify-between">
+            <div className="w-full lg:w-2/5 bg-gradient-to-br from-gray-800 to-gray-900 text-white p-8 lg:p-12 flex flex-col justify-between">
               <div>
                 <div className="mb-12">
                   <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center shadow-lg mb-6">
@@ -144,7 +144,7 @@ export const LoginPage: React.FC = () => {
                     АСУБК
                   </AccessibleHeading>
                   <p className="text-blue-100 text-lg">
-                    Автоматизированная система управления банковскими кредитами
+                    Автоматизированная система управления бюджетными кредитами
                   </p>
                 </div>
                 
@@ -172,7 +172,7 @@ export const LoginPage: React.FC = () => {
               
               <div className="pt-8 border-t border-blue-500/30">
                 <p className="text-blue-200 text-sm">
-                  &copy; 2024 ASUBK Financial Management System. Все права защищены.
+                  &copy; 2025 ASUBK Financial Management System. Все права защищены.
                 </p>
               </div>
             </div>
@@ -382,10 +382,10 @@ export const LoginPage: React.FC = () => {
                       type="submit"
                       className={cn(
                         'w-full h-12 font-medium transition-all duration-200 text-white rounded-lg',
-                        'bg-blue-600 hover:bg-blue-700 active:bg-blue-800',
+                        'bg-gray-800 hover:bg-gray-700 active:bg-gray-600',
                         'shadow-sm hover:shadow-md',
                         'disabled:opacity-50 disabled:cursor-not-allowed',
-                        'focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2'
+                        'focus:ring-2 focus:ring-gray-500/20 focus:ring-offset-2'
                       )}
                       disabled={isFormLoading || !isDirty}
                       aria-describedby="submit-help"
