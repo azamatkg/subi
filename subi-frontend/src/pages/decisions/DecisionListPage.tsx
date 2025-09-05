@@ -101,7 +101,7 @@ type ViewMode = 'table' | 'card';
 export const DecisionListPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  useSetPageTitle('Решения');
+  useSetPageTitle('Управление решениями');
 
   // State management
   const [filters, setFilters] = useState<FilterState>({
