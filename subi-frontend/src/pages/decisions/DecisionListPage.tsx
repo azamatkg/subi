@@ -55,11 +55,6 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import {
   AccessibleStatusBadge,
@@ -536,158 +531,31 @@ export const DecisionListPage: React.FC = () => {
             </div>
 
             <div className="flex gap-2">
-              <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="relative"
-                    aria-expanded={isFilterOpen}
+              <Button
+                variant="outline"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className={cn(
+                  'relative gap-2 transition-all duration-200',
+                  isFilterOpen && 'bg-primary text-primary-foreground'
+                )}
+                aria-expanded={isFilterOpen}
+              >
+                <Filter className="h-4 w-4" />
+                {t('decision.advancedSearch')}
+                {filtersApplied > 0 && (
+                  <Badge
+                    variant={isFilterOpen ? 'secondary' : 'destructive'}
+                    className="ml-2 px-1.5 py-0.5 text-xs -mr-1"
                   >
-                    <Filter className="mr-2 h-4 w-4" />
-                    {t('decision.advancedSearch')}
-                    {filtersApplied > 0 && (
-                      <Badge
-                        variant="destructive"
-                        className="ml-2 px-1.5 py-0.5 text-xs -mr-1"
-                      >
-                        {filtersApplied}
-                      </Badge>
-                    )}
-                    {isFilterOpen ? (
-                      <ChevronUp className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-
-                <CollapsibleContent>
-                  <div className="mt-4 space-y-4 border-t pt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Decision Type Filter */}
-                      <div className="space-y-2">
-                        <Label htmlFor="decision-type-filter">
-                          {t('decision.fields.decisionType')}
-                        </Label>
-                        <Select
-                          value={filters.decisionTypeId?.toString() || ''}
-                          onValueChange={value =>
-                            handleFilterChange(
-                              'decisionTypeId',
-                              value ? Number(value) : null
-                            )
-                          }
-                        >
-                          <SelectTrigger id="decision-type-filter">
-                            <SelectValue
-                              placeholder={t(
-                                'decision.placeholders.selectDecisionType'
-                              )}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">{t('common.all')}</SelectItem>
-                            {decisionTypesData?.content.map(type => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
-                                {type.nameEn}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Decision Making Body Filter */}
-                      <div className="space-y-2">
-                        <Label htmlFor="decision-body-filter">
-                          {t('decision.fields.decisionMakingBody')}
-                        </Label>
-                        <Select
-                          value={filters.decisionMakingBodyId?.toString() || ''}
-                          onValueChange={value =>
-                            handleFilterChange(
-                              'decisionMakingBodyId',
-                              value ? Number(value) : null
-                            )
-                          }
-                        >
-                          <SelectTrigger id="decision-body-filter">
-                            <SelectValue
-                              placeholder={t(
-                                'decision.placeholders.selectDecisionMakingBody'
-                              )}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">{t('common.all')}</SelectItem>
-                            {decisionMakingBodiesData?.content.map(body => (
-                              <SelectItem
-                                key={body.id}
-                                value={body.id.toString()}
-                              >
-                                {body.nameEn}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Status Filter */}
-                      <div className="space-y-2">
-                        <Label htmlFor="status-filter">
-                          {t('decision.fields.status')}
-                        </Label>
-                        <Select
-                          value={filters.status || ''}
-                          onValueChange={value =>
-                            handleFilterChange('status', value || null)
-                          }
-                        >
-                          <SelectTrigger id="status-filter">
-                            <SelectValue
-                              placeholder={t(
-                                'decision.placeholders.selectStatus'
-                              )}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">{t('common.all')}</SelectItem>
-                            {Object.values(DecisionStatusEnum).map(status => (
-                              <SelectItem key={status} value={status}>
-                                {t(`decision.status.${status.toLowerCase()}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {/* Filter Actions */}
-                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        disabled={filtersApplied === 0}
-                        className="w-full sm:w-auto"
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        {t('common.clear')}
-                        {filtersApplied > 0 && `(${filtersApplied})`}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => window.location.reload()}
-                        className="w-full sm:w-auto"
-                      >
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        {t('common.refresh')}
-                      </Button>
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                    {filtersApplied}
+                  </Badge>
+                )}
+                {isFilterOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
 
               {filtersApplied > 0 && (
                 <Button
@@ -718,6 +586,132 @@ export const DecisionListPage: React.FC = () => {
               </Button>
             </div>
           </div>
+
+          {/* Collapsible Advanced Filters */}
+          {isFilterOpen && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-xl transition-all duration-300 ease-out">
+              {/* Decision Type Filter */}
+              <div className="space-y-2">
+                <Label htmlFor="decision-type-filter">
+                  {t('decision.fields.decisionType')}
+                </Label>
+                <Select
+                  value={filters.decisionTypeId?.toString() || 'all'}
+                  onValueChange={value =>
+                    handleFilterChange(
+                      'decisionTypeId',
+                      value === 'all' ? null : Number(value)
+                    )
+                  }
+                >
+                  <SelectTrigger id="decision-type-filter">
+                    <SelectValue
+                      placeholder={t(
+                        'decision.placeholders.selectDecisionType'
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    {decisionTypesData?.content.map(type => (
+                      <SelectItem
+                        key={type.id}
+                        value={type.id.toString()}
+                      >
+                        {type.nameEn}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Decision Making Body Filter */}
+              <div className="space-y-2">
+                <Label htmlFor="decision-body-filter">
+                  {t('decision.fields.decisionMakingBody')}
+                </Label>
+                <Select
+                  value={filters.decisionMakingBodyId?.toString() || 'all'}
+                  onValueChange={value =>
+                    handleFilterChange(
+                      'decisionMakingBodyId',
+                      value === 'all' ? null : Number(value)
+                    )
+                  }
+                >
+                  <SelectTrigger id="decision-body-filter">
+                    <SelectValue
+                      placeholder={t(
+                        'decision.placeholders.selectDecisionMakingBody'
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    {decisionMakingBodiesData?.content.map(body => (
+                      <SelectItem
+                        key={body.id}
+                        value={body.id.toString()}
+                      >
+                        {body.nameEn}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <Label htmlFor="status-filter">
+                  {t('decision.fields.status')}
+                </Label>
+                <Select
+                  value={filters.status || 'all'}
+                  onValueChange={value =>
+                    handleFilterChange('status', value === 'all' ? null : value)
+                  }
+                >
+                  <SelectTrigger id="status-filter">
+                    <SelectValue
+                      placeholder={t(
+                        'decision.placeholders.selectStatus'
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    {Object.values(DecisionStatusEnum).map(status => (
+                      <SelectItem key={status} value={status}>
+                        {t(`decision.status.${status.toLowerCase()}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Filter Actions */}
+              <div className="flex flex-col sm:flex-row gap-2 pt-2 col-span-full">
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  disabled={filtersApplied === 0}
+                  className="w-full sm:w-auto"
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  {t('common.clear')}
+                  {filtersApplied > 0 && ` (${filtersApplied})`}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.reload()}
+                  className="w-full sm:w-auto"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  {t('common.refresh')}
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
