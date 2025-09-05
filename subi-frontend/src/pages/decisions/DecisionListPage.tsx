@@ -502,16 +502,11 @@ export const DecisionListPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-3 sm:space-y-4">
       <LiveRegion />
 
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-      </div>
-
       {/* Search and Filter Controls */}
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm bg-muted">
         <CardContent className="p-4 sm:p-6">
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">

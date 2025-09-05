@@ -256,7 +256,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
       </div>
 
       {/* Search and Filter */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-muted">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="flex-1">
