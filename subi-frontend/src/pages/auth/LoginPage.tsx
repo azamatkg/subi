@@ -178,7 +178,7 @@ export const LoginPage: React.FC = () => {
             </div>
             
             {/* Right side - Login Form */}
-            <div className="w-full lg:w-3/5 p-8 lg:p-12">
+            <div className="w-full lg:w-3/5 p-8 lg:p-12 bg-muted">
               <div className="max-w-md ml-0 lg:mx-auto">
                 <FocusTrap active>
                   <div className="mb-10">
