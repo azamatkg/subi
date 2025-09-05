@@ -1,21 +1,20 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants';
-import { UserRole } from '@/types';
 
 // Layout components
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 
 // Route protection components
-import { 
-  ProtectedRoute, 
+import {
+  ProtectedRoute,
   GuestRoute,
   AdminRoute,
   CreditManagerRoute,
   CreditAnalystRoute,
   DecisionMakerRoute,
-  CommissionMemberRoute
+  CommissionMemberRoute,
 } from '@/components/common/ProtectedRoute';
 
 // Page components (will be created later)
@@ -46,9 +45,18 @@ import { UserManagementPage } from '@/pages/admin/UserManagementPage';
 import { ReferenceDataPage } from '@/pages/admin/ReferenceDataPage';
 import { SystemConfigPage } from '@/pages/admin/SystemConfigPage';
 
+// Decision pages
+import { DecisionListPage } from '@/pages/decisions/DecisionListPage';
+import { DecisionCreatePage } from '@/pages/decisions/DecisionCreatePage';
+import { DecisionDetailPage } from '@/pages/decisions/DecisionDetailPage';
+import { DecisionEditPage } from '@/pages/decisions/DecisionEditPage';
+import { DecisionTypesPage } from '@/pages/decisions/DecisionTypesPage';
+import { DecisionMakingBodiesPage } from '@/pages/decisions/DecisionMakingBodiesPage';
+
 // Error pages
 import { NotFoundPage } from '@/pages/errors/NotFoundPage';
 import { UnauthorizedPage } from '@/pages/errors/UnauthorizedPage';
+import { TestPage } from '@/pages/TestPage';
 
 export const router = createBrowserRouter([
   // Public routes (guest only)
@@ -66,7 +74,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  
+
   // Protected routes
   {
     path: '/',
@@ -84,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <DashboardPage />,
+      },
+      {
+        path: 'test',
+        element: <TestPage />,
       },
 
       // Applications
@@ -178,10 +190,53 @@ export const router = createBrowserRouter([
         ],
       },
 
+      // Decisions
+      {
+        path: 'decisions',
+        children: [
+          {
+            index: true,
+            element: (
+              <DecisionMakerRoute>
+                <DecisionListPage />
+              </DecisionMakerRoute>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <DecisionMakerRoute>
+                <DecisionCreatePage />
+              </DecisionMakerRoute>
+            ),
+          },
+          {
+            path: ':id',
+            element: (
+              <DecisionMakerRoute>
+                <DecisionDetailPage />
+              </DecisionMakerRoute>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <DecisionMakerRoute>
+                <DecisionEditPage />
+              </DecisionMakerRoute>
+            ),
+          },
+        ],
+      },
+
       // Admin routes
       {
         path: 'admin',
-        element: <AdminRoute><div /></AdminRoute>,
+        element: (
+          <AdminRoute>
+            <div />
+          </AdminRoute>
+        ),
         children: [
           {
             path: 'users',
@@ -194,6 +249,14 @@ export const router = createBrowserRouter([
           {
             path: 'system-config',
             element: <SystemConfigPage />,
+          },
+          {
+            path: 'decision-types',
+            element: <DecisionTypesPage />,
+          },
+          {
+            path: 'decision-making-bodies',
+            element: <DecisionMakingBodiesPage />,
           },
         ],
       },

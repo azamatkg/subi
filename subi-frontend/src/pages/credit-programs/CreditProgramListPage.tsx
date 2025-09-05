@@ -1,10 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { CreditCard } from 'lucide-react';
 
 export const CreditProgramListPage: React.FC = () => {
   const { t } = useTranslation();
+  useSetPageTitle('Кредитные программы');
 
   return (
     <div className="space-y-6">

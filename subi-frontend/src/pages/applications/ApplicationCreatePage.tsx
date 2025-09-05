@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export const ApplicationCreatePage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  useSetPageTitle('Новая заявка');
 
   return (
     <div className="space-y-6">

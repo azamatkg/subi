@@ -1,4 +1,5 @@
 import { TokenPayload, AuthUser } from '@/types/auth';
+import { UserRole } from '@/types';
 import { STORAGE_KEYS } from '@/constants';
 
 // JWT Token utilities
@@ -22,7 +23,7 @@ export const decodeToken = (token: string): TokenPayload | null => {
 export const isTokenExpired = (token: string): boolean => {
   const decoded = decodeToken(token);
   if (!decoded) return true;
-  
+
   const currentTime = Date.now() / 1000;
   return decoded.exp < currentTime;
 };
@@ -30,32 +31,47 @@ export const isTokenExpired = (token: string): boolean => {
 export const getTokenExpirationDate = (token: string): Date | null => {
   const decoded = decodeToken(token);
   if (!decoded) return null;
-  
+
   return new Date(decoded.exp * 1000);
 };
 
 // Storage utilities
 export const getStoredToken = (): string | null => {
-  return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+  const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+  if (!token || token === 'undefined' || token === 'null') {
+    return null;
+  }
+  return token;
 };
 
 export const getStoredRefreshToken = (): string | null => {
-  return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+  const token = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+  if (!token || token === 'undefined' || token === 'null') {
+    return null;
+  }
+  return token;
 };
 
 export const getStoredUser = (): AuthUser | null => {
   const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-  if (!userData) return null;
-  
+  if (!userData || userData === 'undefined' || userData === 'null') {
+    return null;
+  }
+
   try {
     return JSON.parse(userData);
   } catch (error) {
     console.error('Failed to parse stored user data:', error);
+    // Clear corrupted data
+    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
     return null;
   }
 };
 
-export const setStoredTokens = (accessToken: string, refreshToken: string): void => {
+export const setStoredTokens = (
+  accessToken: string,
+  refreshToken: string
+): void => {
   localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
   localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
 };
@@ -73,7 +89,7 @@ export const clearStoredAuth = (): void => {
 // Permission utilities
 export const hasRole = (user: AuthUser | null, role: string): boolean => {
   if (!user) return false;
-  return user.roles.includes(role as any);
+  return user.roles.includes(role as UserRole);
 };
 
 export const hasAnyRole = (user: AuthUser | null, roles: string[]): boolean => {
@@ -104,14 +120,14 @@ export const isCommissionMember = (user: AuthUser | null): boolean => {
 // Format user display name
 export const getUserDisplayName = (user: AuthUser | null): string => {
   if (!user) return '';
-  
+
   if (user.firstName && user.lastName) {
     return `${user.firstName} ${user.lastName}`;
   }
-  
+
   if (user.firstName) {
     return user.firstName;
   }
-  
+
   return user.username;
 };

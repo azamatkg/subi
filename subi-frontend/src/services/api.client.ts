@@ -1,16 +1,16 @@
-import axios, { 
-  AxiosInstance, 
-  AxiosRequestConfig, 
-  AxiosResponse, 
-  InternalAxiosRequestConfig 
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
 } from 'axios';
-import { API_BASE_URL, STORAGE_KEYS } from '@/constants';
-import { 
-  getStoredToken, 
-  getStoredRefreshToken, 
+import { API_BASE_URL } from '@/constants';
+import {
+  getStoredToken,
+  getStoredRefreshToken,
   setStoredTokens,
   clearStoredAuth,
-  isTokenExpired
+  isTokenExpired,
 } from '@/utils/auth';
 import { authService } from './auth.service';
 
@@ -41,7 +41,7 @@ class ApiClient {
         }
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
       }
     );
@@ -49,7 +49,7 @@ class ApiClient {
     // Response interceptor
     this.client.interceptors.response.use(
       (response: AxiosResponse) => response,
-      async (error) => {
+      async error => {
         const originalRequest = error.config;
 
         // Handle 401 unauthorized errors
@@ -104,46 +104,57 @@ class ApiClient {
     try {
       const response = await authService.refreshToken(refreshToken);
       setStoredTokens(response.accessToken, response.refreshToken);
-      
+
       // Dispatch event to update Redux store
-      window.dispatchEvent(new CustomEvent('token-refreshed', {
-        detail: response
-      }));
+      window.dispatchEvent(
+        new CustomEvent('token-refreshed', {
+          detail: response,
+        })
+      );
 
       return response.accessToken;
-    } catch (error) {
+    } catch {
       throw new Error('Token refresh failed');
     }
   }
 
   private handleAuthError() {
     clearStoredAuth();
-    
-    // Dispatch event to update Redux store and redirect to login
+
+    // Dispatch event to update Redux store
     window.dispatchEvent(new CustomEvent('auth-error'));
-    
-    // Redirect to login page
-    if (window.location.pathname !== '/login') {
-      window.location.href = '/login';
-    }
+
+    // Instead of forcing a full page reload, let the React Router handle navigation
+    // The ProtectedRoute component will handle redirecting to login
   }
 
-  private handleError(error: any) {
+  private handleError(error: unknown) {
+    // Type guard to safely access axios error properties
+    const axiosError = error as {
+      config?: { url?: string; method?: string };
+      response?: {
+        status?: number;
+        data?: { message?: string; code?: string; details?: unknown };
+      };
+      message?: string;
+    };
+
     // Log error for debugging
     console.error('API Error:', {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      message: error.response?.data?.message || error.message,
-      data: error.response?.data,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      status: axiosError.response?.status,
+      message: axiosError.response?.data?.message || axiosError.message,
+      data: axiosError.response?.data,
     });
 
     // Create standardized error object
     const apiError = {
-      message: error.response?.data?.message || 'An unexpected error occurred',
-      status: error.response?.status,
-      code: error.response?.data?.code,
-      details: error.response?.data?.details,
+      message:
+        axiosError.response?.data?.message || 'An unexpected error occurred',
+      status: axiosError.response?.status,
+      code: axiosError.response?.data?.code,
+      details: axiosError.response?.data?.details,
       originalError: error,
     };
 
@@ -151,31 +162,49 @@ class ApiClient {
   }
 
   // Public methods
-  public get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public get<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.get(url, config);
   }
 
-  public post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.post(url, data, config);
   }
 
-  public put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.put(url, data, config);
   }
 
-  public patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.patch(url, data, config);
   }
 
-  public delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public delete<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.delete(url, config);
   }
 
   // Upload files
-  public uploadFile<T = any>(
-    url: string, 
-    file: File, 
-    onUploadProgress?: (progressEvent: any) => void
+  public uploadFile<T = unknown>(
+    url: string,
+    file: File,
+    onUploadProgress?: (progressEvent: unknown) => void
   ): Promise<AxiosResponse<T>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -189,10 +218,10 @@ class ApiClient {
   }
 
   // Upload multiple files
-  public uploadFiles<T = any>(
-    url: string, 
-    files: File[], 
-    onUploadProgress?: (progressEvent: any) => void
+  public uploadFiles<T = unknown>(
+    url: string,
+    files: File[],
+    onUploadProgress?: (progressEvent: unknown) => void
   ): Promise<AxiosResponse<T>> {
     const formData = new FormData();
     files.forEach((file, index) => {
@@ -209,7 +238,7 @@ class ApiClient {
 
   // Download file
   public downloadFile(url: string, filename?: string): Promise<void> {
-    return this.client.get(url, { responseType: 'blob' }).then((response) => {
+    return this.client.get(url, { responseType: 'blob' }).then(response => {
       const blob = new Blob([response.data]);
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);

@@ -10,12 +10,12 @@ export const store = configureStore({
   reducer: {
     // API
     [baseApi.reducerPath]: baseApi.reducer,
-    
+
     // Slices
     auth: authReducer,
     ui: uiReducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],

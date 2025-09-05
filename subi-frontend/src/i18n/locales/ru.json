@@ -35,6 +35,9 @@
     "documents": "Документы",
     "commissions": "Комиссии",
     "admin": "Администрирование",
+    "decisions": "Решения",
+    "decisionTypes": "Типы решений",
+    "decisionMakingBodies": "Органы принятия решений",
     "profile": "Профиль",
     "settings": "Настройки",
     "logout": "Выход"
@@ -130,6 +133,88 @@
     "roles": "Роли",
     "permissions": "Разрешения",
     "userManagement": "Управление пользователями"
+  },
+  "decision": {
+    "title": "Решение",
+    "decisions": "Решения",
+    "newDecision": "Новое решение",
+    "decisionDetails": "Детали решения",
+    "editDecision": "Редактировать решение",
+    "decisionManagement": "Управление решениями",
+    "searchDecisions": "Поиск решений",
+    "filterDecisions": "Фильтр решений",
+    "advancedSearch": "Расширенный поиск",
+    "decisionType": "Тип решения",
+    "decisionTypes": "Типы решений",
+    "decisionMakingBody": "Орган принятия решений",
+    "decisionMakingBodies": "Органы принятия решений",
+    "status": {
+      "draft": "Черновик",
+      "pending_confirmation": "Ожидает подтверждения",
+      "approved": "Одобрено",
+      "rejected": "Отклонено",
+      "active": "Активно",
+      "inactive": "Неактивно"
+    },
+    "referenceStatus": {
+      "active": "Активно",
+      "inactive": "Неактивно"
+    },
+    "fields": {
+      "nameEn": "Название на английском",
+      "nameRu": "Название на русском",
+      "nameKg": "Название на кыргызском",
+      "date": "Дата решения",
+      "number": "Номер решения",
+      "decisionType": "Тип решения",
+      "decisionMakingBody": "Орган принятия решений",
+      "note": "Примечание",
+      "status": "Статус",
+      "documentPackage": "Пакет документов",
+      "description": "Описание",
+      "createdAt": "Дата создания",
+      "updatedAt": "Дата обновления"
+    },
+    "placeholders": {
+      "searchTerm": "Поиск по названию или номеру...",
+      "selectDecisionType": "Выберите тип решения",
+      "selectDecisionMakingBody": "Выберите орган принятия решений",
+      "selectStatus": "Выберите статус",
+      "enterNote": "Введите примечание (необязательно)",
+      "enterDescription": "Введите описание (необязательно)"
+    },
+    "messages": {
+      "decisionCreated": "Решение успешно создано",
+      "decisionUpdated": "Решение успешно обновлено",
+      "decisionDeleted": "Решение успешно удалено",
+      "decisionTypeCreated": "Тип решения успешно создан",
+      "decisionTypeUpdated": "Тип решения успешно обновлен",
+      "decisionTypeDeleted": "Тип решения успешно удален",
+      "decisionMakingBodyCreated": "Орган принятия решений успешно создан",
+      "decisionMakingBodyUpdated": "Орган принятия решений успешно обновлен",
+      "decisionMakingBodyDeleted": "Орган принятия решений успешно удален",
+      "confirmDelete": "Вы уверены, что хотите удалить этот {{item}}?",
+      "noResults": "Результаты не найдены",
+      "loadingDecisions": "Загрузка решений...",
+      "loadingDecisionTypes": "Загрузка типов решений...",
+      "loadingDecisionMakingBodies": "Загрузка органов принятия решений..."
+    },
+    "validation": {
+      "nameEnRequired": "Название на английском обязательно",
+      "nameRuRequired": "Название на русском обязательно",
+      "nameKgRequired": "Название на кыргызском обязательно",
+      "dateRequired": "Дата решения обязательна",
+      "numberRequired": "Номер решения обязателен",
+      "decisionTypeRequired": "Тип решения обязателен",
+      "decisionMakingBodyRequired": "Орган принятия решений обязателен",
+      "statusRequired": "Статус обязателен",
+      "nameMaxLength": "Название не может превышать 100 символов",
+      "numberMaxLength": "Номер не может превышать 50 символов",
+      "noteMaxLength": "Примечание не может превышать 1000 символов",
+      "descriptionMaxLength": "Описание не может превышать 500 символов",
+      "invalidDateFormat": "Дата должна быть в формате ГГГГ-ММ-ДД",
+      "invalidUuid": "ID пакета документов должен быть валидным UUID"
+    }
   },
   "validation": {
     "required": "Это поле обязательно",

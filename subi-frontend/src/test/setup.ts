@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom'
-import { beforeEach, vi } from 'vitest'
+import '@testing-library/jest-dom';
+import { beforeEach, vi } from 'vitest';
 
 // Mock environment variables
 Object.defineProperty(window, 'matchMedia', {
@@ -14,17 +14,17 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Setup global test environment
 beforeEach(() => {
   // Clear all mocks before each test
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});

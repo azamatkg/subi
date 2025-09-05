@@ -13,14 +13,21 @@ export const useTranslation = () => {
   const currentLanguage = i18n.language as Language;
 
   // Helper function to format currency based on language
-  const formatCurrency = (amount: number, currency: 'KGS' | 'USD' | 'EUR' = 'KGS') => {
-    const locale = currentLanguage === Language.KG ? 'ky-KG' : 
-                   currentLanguage === Language.RU ? 'ru-RU' : 'en-US';
-    
+  const formatCurrency = (
+    amount: number,
+    currency: 'KGS' | 'USD' | 'EUR' = 'KGS'
+  ) => {
+    const locale =
+      currentLanguage === Language.KG
+        ? 'ky-KG'
+        : currentLanguage === Language.RU
+          ? 'ru-RU'
+          : 'en-US';
+
     const currencyMap = {
       KGS: 'KGS',
       USD: 'USD',
-      EUR: 'EUR'
+      EUR: 'EUR',
     };
 
     const formatter = new Intl.NumberFormat(locale, {
@@ -35,26 +42,40 @@ export const useTranslation = () => {
 
   // Helper function to format numbers based on language
   const formatNumber = (num: number, options?: Intl.NumberFormatOptions) => {
-    const locale = currentLanguage === Language.KG ? 'ky-KG' : 
-                   currentLanguage === Language.RU ? 'ru-RU' : 'en-US';
-    
+    const locale =
+      currentLanguage === Language.KG
+        ? 'ky-KG'
+        : currentLanguage === Language.RU
+          ? 'ru-RU'
+          : 'en-US';
+
     const formatter = new Intl.NumberFormat(locale, options);
     return formatter.format(num);
   };
 
   // Helper function to format dates based on language
-  const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOptions) => {
+  const formatDate = (
+    date: Date | string,
+    options?: Intl.DateTimeFormatOptions
+  ) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const locale = currentLanguage === Language.KG ? 'ky-KG' : 
-                   currentLanguage === Language.RU ? 'ru-RU' : 'en-US';
-    
+    const locale =
+      currentLanguage === Language.KG
+        ? 'ky-KG'
+        : currentLanguage === Language.RU
+          ? 'ru-RU'
+          : 'en-US';
+
     const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     };
 
-    const formatter = new Intl.DateTimeFormat(locale, options || defaultOptions);
+    const formatter = new Intl.DateTimeFormat(
+      locale,
+      options || defaultOptions
+    );
     return formatter.format(dateObj);
   };
 
@@ -73,7 +94,9 @@ export const useTranslation = () => {
   const formatRelativeTime = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
+    const diffInSeconds = Math.floor(
+      (now.getTime() - dateObj.getTime()) / 1000
+    );
 
     const intervals = [
       { label: t('time.years'), seconds: 31536000 },

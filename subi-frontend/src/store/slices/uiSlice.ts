@@ -38,7 +38,7 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    toggleSidebar: (state) => {
+    toggleSidebar: state => {
       state.sidebarOpen = !state.sidebarOpen;
     },
     setSidebarOpen: (state, action: PayloadAction<boolean>) => {
@@ -47,7 +47,7 @@ const uiSlice = createSlice({
     setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
       state.theme = action.payload;
       localStorage.setItem('theme', action.payload);
-      
+
       // Update document class for theme switching
       if (action.payload === 'dark') {
         document.documentElement.classList.add('dark');
@@ -55,11 +55,11 @@ const uiSlice = createSlice({
         document.documentElement.classList.remove('dark');
       }
     },
-    toggleTheme: (state) => {
+    toggleTheme: state => {
       const newTheme = state.theme === 'light' ? 'dark' : 'light';
       state.theme = newTheme;
       localStorage.setItem('theme', newTheme);
-      
+
       // Update document class for theme switching
       if (newTheme === 'dark') {
         document.documentElement.classList.add('dark');
@@ -67,13 +67,19 @@ const uiSlice = createSlice({
         document.documentElement.classList.remove('dark');
       }
     },
-    setLoading: (state, action: PayloadAction<{ key: string; loading: boolean }>) => {
+    setLoading: (
+      state,
+      action: PayloadAction<{ key: string; loading: boolean }>
+    ) => {
       state.loading[action.payload.key] = action.payload.loading;
     },
     setGlobalLoading: (state, action: PayloadAction<boolean>) => {
       state.loading.global = action.payload;
     },
-    addNotification: (state, action: PayloadAction<Omit<UIState['notifications'][0], 'id'>>) => {
+    addNotification: (
+      state,
+      action: PayloadAction<Omit<UIState['notifications'][0], 'id'>>
+    ) => {
       const notification = {
         ...action.payload,
         id: Date.now().toString(),
@@ -82,10 +88,10 @@ const uiSlice = createSlice({
     },
     removeNotification: (state, action: PayloadAction<string>) => {
       state.notifications = state.notifications.filter(
-        (notification) => notification.id !== action.payload
+        notification => notification.id !== action.payload
       );
     },
-    clearNotifications: (state) => {
+    clearNotifications: state => {
       state.notifications = [];
     },
     openModal: (state, action: PayloadAction<string>) => {
@@ -94,19 +100,22 @@ const uiSlice = createSlice({
     closeModal: (state, action: PayloadAction<string>) => {
       state.modals[action.payload] = false;
     },
-    closeAllModals: (state) => {
+    closeAllModals: state => {
       state.modals = {};
     },
     setBreadcrumbs: (state, action: PayloadAction<UIState['breadcrumbs']>) => {
       state.breadcrumbs = action.payload;
     },
-    addBreadcrumb: (state, action: PayloadAction<{ label: string; href?: string }>) => {
+    addBreadcrumb: (
+      state,
+      action: PayloadAction<{ label: string; href?: string }>
+    ) => {
       state.breadcrumbs.push(action.payload);
     },
     removeBreadcrumb: (state, action: PayloadAction<number>) => {
       state.breadcrumbs.splice(action.payload, 1);
     },
-    clearBreadcrumbs: (state) => {
+    clearBreadcrumbs: state => {
       state.breadcrumbs = [];
     },
   },

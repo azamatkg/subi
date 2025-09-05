@@ -21,7 +21,7 @@ i18n
     resources,
     fallbackLng: 'ru', // Russian as fallback since it's widely used in the region
     lng: localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'ru',
-    
+
     detection: {
       // Detection options
       order: ['localStorage', 'navigator', 'htmlTag'],

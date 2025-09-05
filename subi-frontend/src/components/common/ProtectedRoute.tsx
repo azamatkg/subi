@@ -34,11 +34,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Check authentication requirement
   if (requireAuth && !isAuthenticated) {
     return (
-      <Navigate 
-        to={redirectTo} 
-        state={{ from: location.pathname }} 
-        replace 
-      />
+      <Navigate to={redirectTo} state={{ from: location.pathname }} replace />
     );
   }
 
@@ -48,73 +44,59 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (fallback) {
       return <>{fallback}</>;
     }
-    
+
     // Redirect to dashboard or show unauthorized message
-    return (
-      <Navigate 
-        to={ROUTES.DASHBOARD} 
-        replace 
-      />
-    );
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
   return <>{children}</>;
 };
 
-// Higher-order component version
-export const withAuth = <P extends object>(
-  Component: React.ComponentType<P>,
-  requiredRoles?: UserRole[]
-) => {
-  return (props: P) => (
-    <ProtectedRoute requiredRoles={requiredRoles}>
-      <Component {...props} />
-    </ProtectedRoute>
-  );
-};
-
 // Specific role-based route components
-export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
-    {children}
-  </ProtectedRoute>
+export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>{children}</ProtectedRoute>
 );
 
-export const CreditManagerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const CreditManagerRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.CREDIT_MANAGER]}>
     {children}
   </ProtectedRoute>
 );
 
-export const CreditAnalystRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute 
+export const CreditAnalystRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <ProtectedRoute
     requiredRoles={[
-      UserRole.ADMIN, 
-      UserRole.CREDIT_MANAGER, 
-      UserRole.CREDIT_ANALYST
+      UserRole.ADMIN,
+      UserRole.CREDIT_MANAGER,
+      UserRole.CREDIT_ANALYST,
     ]}
   >
     {children}
   </ProtectedRoute>
 );
 
-export const DecisionMakerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute 
-    requiredRoles={[
-      UserRole.ADMIN, 
-      UserRole.DECISION_MAKER
-    ]}
-  >
+export const DecisionMakerRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.DECISION_MAKER]}>
     {children}
   </ProtectedRoute>
 );
 
-export const CommissionMemberRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute 
+export const CommissionMemberRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <ProtectedRoute
     requiredRoles={[
-      UserRole.ADMIN, 
-      UserRole.COMMISSION_MEMBER, 
-      UserRole.CREDIT_ANALYST
+      UserRole.ADMIN,
+      UserRole.COMMISSION_MEMBER,
+      UserRole.CREDIT_ANALYST,
     ]}
   >
     {children}
@@ -122,16 +104,14 @@ export const CommissionMemberRoute: React.FC<{ children: React.ReactNode }> = ({
 );
 
 // Public route (no authentication required)
-export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute requireAuth={false}>
-    {children}
-  </ProtectedRoute>
-);
+export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>;
 
 // Redirect authenticated users away from public routes (like login)
-export const GuestRoute: React.FC<{ 
-  children: React.ReactNode; 
-  redirectTo?: string; 
+export const GuestRoute: React.FC<{
+  children: React.ReactNode;
+  redirectTo?: string;
 }> = ({ children, redirectTo = ROUTES.DASHBOARD }) => {
   const { isAuthenticated } = useAuth();
 

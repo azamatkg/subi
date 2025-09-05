@@ -20,18 +20,20 @@ interface LanguageSwitcherProps {
   variant?: 'default' | 'ghost' | 'outline';
   size?: 'default' | 'sm' | 'lg';
   showText?: boolean;
+  className?: string;
 }
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   variant = 'ghost',
   size = 'default',
   showText = false,
+  className,
 }) => {
   const { currentLanguage, changeLanguage } = useTranslation();
 
-  const currentLangOption = languageOptions.find(
-    (option) => option.code === currentLanguage
-  ) || languageOptions[1]; // Default to Russian
+  const currentLangOption =
+    languageOptions.find(option => option.code === currentLanguage) ||
+    languageOptions[1]; // Default to Russian
 
   const handleLanguageChange = (language: Language) => {
     changeLanguage(language);
@@ -40,7 +42,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size}>
+        <Button variant={variant} size={size} className={className}>
           <Languages className="h-4 w-4" />
           {showText && (
             <span className="ml-2">
@@ -49,14 +51,14 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {languageOptions.map((option) => (
+      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+        {languageOptions.map(option => (
           <DropdownMenuItem
             key={option.code}
             onClick={() => handleLanguageChange(option.code)}
-            className={`cursor-pointer ${
-              currentLanguage === option.code 
-                ? 'bg-accent text-accent-foreground' 
+            className={`cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white ${
+              currentLanguage === option.code
+                ? 'bg-gray-700 text-white'
                 : ''
             }`}
           >

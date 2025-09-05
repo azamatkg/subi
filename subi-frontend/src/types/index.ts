@@ -14,7 +14,7 @@ export const UserRole = {
   CREDIT_ANALYST: 'CREDIT_ANALYST',
   DECISION_MAKER: 'DECISION_MAKER',
   COMMISSION_MEMBER: 'COMMISSION_MEMBER',
-  USER: 'USER'
+  USER: 'USER',
 } as const;
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
@@ -31,15 +31,16 @@ export const ApplicationStatus = {
   COLLATERAL_REGISTRATION_PENDING: 'COLLATERAL_REGISTRATION_PENDING',
   COLLATERAL_REGISTERED: 'COLLATERAL_REGISTERED',
   CONTRACT_SIGNED: 'CONTRACT_SIGNED',
-  CREDIT_ISSUED: 'CREDIT_ISSUED'
+  CREDIT_ISSUED: 'CREDIT_ISSUED',
 } as const;
 
-export type ApplicationStatus = (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
+export type ApplicationStatus =
+  (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
 
 export const Language = {
   KG: 'kg',
   RU: 'ru',
-  EN: 'en'
+  EN: 'en',
 } as const;
 
 export type Language = (typeof Language)[keyof typeof Language];

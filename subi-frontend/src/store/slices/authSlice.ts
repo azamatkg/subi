@@ -1,19 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { 
-  AuthState, 
-  LoginCredentials, 
-  AuthResponse, 
-  AuthUser 
-} from '@/types/auth';
+import { AuthState, LoginCredentials, AuthUser } from '@/types/auth';
 import { authService } from '@/services/auth.service';
-import { 
-  setStoredTokens, 
-  setStoredUser, 
+import {
+  setStoredTokens,
+  setStoredUser,
   clearStoredAuth,
   getStoredToken,
   getStoredUser,
   getStoredRefreshToken,
-  isTokenExpired
+  isTokenExpired,
 } from '@/utils/auth';
 
 const initialState: AuthState = {
@@ -27,8 +22,8 @@ const initialState: AuthState = {
 
 // Check if user is authenticated on app load
 initialState.isAuthenticated = !!(
-  initialState.accessToken && 
-  initialState.user && 
+  initialState.accessToken &&
+  initialState.user &&
   !isTokenExpired(initialState.accessToken)
 );
 
@@ -39,25 +34,31 @@ export const loginAsync = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
       return response;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Login failed'
-      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message || 'Login failed';
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
 export const logoutAsync = createAsyncThunk(
   'auth/logout',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { getState }) => {
     try {
       const state = getState() as { auth: AuthState };
       if (state.auth.refreshToken) {
         await authService.logout(state.auth.refreshToken);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Continue with logout even if server request fails
-      console.warn('Logout request failed:', error);
+      console.warn(
+        'Logout request failed:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
     return;
   }
@@ -71,13 +72,16 @@ export const refreshTokenAsync = createAsyncThunk(
       if (!state.auth.refreshToken) {
         throw new Error('No refresh token available');
       }
-      
+
       const response = await authService.refreshToken(state.auth.refreshToken);
       return response;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Token refresh failed'
-      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message || 'Token refresh failed';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -86,7 +90,7 @@ export const validateAuthAsync = createAsyncThunk(
   'auth/validate',
   async (_, { getState, dispatch, rejectWithValue }) => {
     const state = getState() as { auth: AuthState };
-    
+
     if (!state.auth.accessToken) {
       return rejectWithValue('No access token');
     }
@@ -96,7 +100,7 @@ export const validateAuthAsync = createAsyncThunk(
         try {
           await dispatch(refreshTokenAsync()).unwrap();
           return { valid: true };
-        } catch (error) {
+        } catch {
           return rejectWithValue('Token refresh failed');
         }
       } else {
@@ -110,7 +114,7 @@ export const validateAuthAsync = createAsyncThunk(
         return rejectWithValue('Token validation failed');
       }
       return { valid: true };
-    } catch (error) {
+    } catch {
       return rejectWithValue('Token validation failed');
     }
   }
@@ -120,7 +124,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
     updateUser: (state, action: PayloadAction<Partial<AuthUser>>) => {
@@ -131,12 +135,12 @@ const authSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Login
-      .addCase(loginAsync.pending, (state) => {
+      .addCase(loginAsync.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -147,9 +151,12 @@ const authSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
         state.isAuthenticated = true;
         state.error = null;
-        
+
         // Store tokens and user data
-        setStoredTokens(action.payload.accessToken, action.payload.refreshToken);
+        setStoredTokens(
+          action.payload.accessToken,
+          action.payload.refreshToken
+        );
         setStoredUser(action.payload.user);
       })
       .addCase(loginAsync.rejected, (state, action) => {
@@ -157,60 +164,63 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
-      
+
       // Logout
-      .addCase(logoutAsync.pending, (state) => {
+      .addCase(logoutAsync.pending, state => {
         state.isLoading = true;
       })
-      .addCase(logoutAsync.fulfilled, (state) => {
+      .addCase(logoutAsync.fulfilled, state => {
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = null;
-        
+
         // Clear stored data
         clearStoredAuth();
       })
-      .addCase(logoutAsync.rejected, (state) => {
+      .addCase(logoutAsync.rejected, state => {
         // Force logout even if server request fails
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
         state.isLoading = false;
-        
+
         clearStoredAuth();
       })
-      
+
       // Refresh token
       .addCase(refreshTokenAsync.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.isAuthenticated = true;
         state.error = null;
-        
+
         // Update stored tokens
-        setStoredTokens(action.payload.accessToken, action.payload.refreshToken);
+        setStoredTokens(
+          action.payload.accessToken,
+          action.payload.refreshToken
+        );
       })
-      .addCase(refreshTokenAsync.rejected, (state) => {
+      .addCase(refreshTokenAsync.rejected, state => {
         // Force logout if refresh fails
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
-        
+
         clearStoredAuth();
       })
-      
+
       // Validate auth
-      .addCase(validateAuthAsync.rejected, (state) => {
+      .addCase(validateAuthAsync.rejected, state => {
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
-        
+
         clearStoredAuth();
       });
   },

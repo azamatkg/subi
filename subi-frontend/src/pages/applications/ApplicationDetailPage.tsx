@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +10,7 @@ export const ApplicationDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  useSetPageTitle('Детали заявки');
 
   return (
     <div className="space-y-6">
@@ -21,9 +23,7 @@ export const ApplicationDetailPage: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">
             {t('application.applicationDetails')} #{id}
           </h1>
-          <p className="text-muted-foreground">
-            Детали заявки на кредит
-          </p>
+          <p className="text-muted-foreground">Детали заявки на кредит</p>
         </div>
       </div>
 

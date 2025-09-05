@@ -1,65 +1,265 @@
 
 @import "tailwindcss";
 
+/* Enhanced Color System with WCAG 2.1 AA Compliance */
 @theme {
+  /* Light theme base colors */
   --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(240 10% 3.9%);
+  --color-foreground: hsl(220 15% 15%);
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(240 10% 3.9%);
+  --color-card-foreground: hsl(220 15% 15%);
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(240 10% 3.9%);
-  --color-primary: hsl(240 9% 95%);
-  --color-primary-foreground: hsl(240 9% 15%);
-  --color-secondary: hsl(240 4.8% 95.9%);
-  --color-secondary-foreground: hsl(240 5.9% 10%);
-  --color-muted: hsl(240 4.8% 95.9%);
-  --color-muted-foreground: hsl(240 3.8% 46.1%);
-  --color-accent: hsl(240 4.8% 95.9%);
-  --color-accent-foreground: hsl(240 5.9% 10%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(240 5.9% 90%);
-  --color-input: hsl(240 5.9% 90%);
-  --color-ring: hsl(240 5.9% 10%);
+  --color-popover-foreground: hsl(220 15% 15%);
+  
+  /* Enhanced primary colors with modern blue theme */
+  --color-primary: hsl(217 91% 60%); /* Professional blue */
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-50: hsl(217 100% 97%);
+  --color-primary-100: hsl(217 100% 92%);
+  --color-primary-500: hsl(217 91% 60%);
+  --color-primary-600: hsl(217 91% 50%);
+  --color-primary-900: hsl(217 91% 30%);
+  
+  /* Enhanced secondary and accent colors */
+  --color-secondary: hsl(215 20% 95%);
+  --color-secondary-foreground: hsl(220 15% 15%);
+  --color-muted: hsl(215 20% 95%);
+  --color-muted-foreground: hsl(215 10% 45%);
+  --color-accent: hsl(215 20% 95%);
+  --color-accent-foreground: hsl(220 15% 15%);
+  
+  /* Enhanced status colors */
+  --color-destructive: hsl(350 80% 55%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-success: hsl(150 70% 45%);
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(30 90% 55%);
+  --color-warning-foreground: hsl(0 0% 100%);
+  --color-info: hsl(210 90% 60%);
+  --color-info-foreground: hsl(0 0% 100%);
+  
+  /* Enhanced border and input styles */
+  --color-border: hsl(215 20% 90%);
+  --color-input: hsl(215 20% 90%);
+  --color-ring: hsl(217 91% 60%);
+  
+  /* Spacing and border radius system */
   --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  /* Financial status colors */
+  --color-status-approved: hsl(150 70% 45%);
+  --color-status-pending: hsl(30 90% 55%);
+  --color-status-rejected: hsl(350 80% 55%);
+  --color-status-draft: hsl(215 10% 45%);
 }
 
+/* Dark theme - user preference based */
+.dark, [data-theme="dark"] {
+  /* Dark theme base colors */
+  --color-background: hsl(220 15% 10%);
+  --color-foreground: hsl(210 20% 95%);
+  --color-card: hsl(220 15% 12%);
+  --color-card-foreground: hsl(210 20% 95%);
+  --color-popover: hsl(220 15% 12%);
+  --color-popover-foreground: hsl(210 20% 95%);
+  
+  /* Enhanced primary colors for dark theme with blue */
+  --color-primary: hsl(217 91% 65%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-50: hsl(217 91% 15%);
+  --color-primary-100: hsl(217 91% 25%);
+  --color-primary-500: hsl(217 91% 65%);
+  --color-primary-600: hsl(217 91% 75%);
+  --color-primary-900: hsl(217 91% 85%);
+  
+  /* Enhanced secondary and accent colors for dark theme */
+  --color-secondary: hsl(220 15% 15%);
+  --color-secondary-foreground: hsl(210 20% 95%);
+  --color-muted: hsl(220 15% 15%);
+  --color-muted-foreground: hsl(215 10% 60%);
+  --color-accent: hsl(220 15% 15%);
+  --color-accent-foreground: hsl(210 20% 95%);
+  
+  /* Enhanced status colors for dark theme */
+  --color-destructive: hsl(350 80% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-success: hsl(150 70% 50%);
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(30 90% 60%);
+  --color-warning-foreground: hsl(0 0% 100%);
+  --color-info: hsl(210 90% 65%);
+  --color-info-foreground: hsl(0 0% 100%);
+  
+  /* Enhanced borders for dark theme */
+  --color-border: hsl(220 15% 20%);
+  --color-input: hsl(220 15% 20%);
+  --color-ring: hsl(217 91% 65%);
+  
+  /* Financial status colors for dark theme */
+  --color-status-approved: hsl(150 70% 50%);
+  --color-status-pending: hsl(30 90% 60%);
+  --color-status-rejected: hsl(350 80% 60%);
+  --color-status-draft: hsl(215 10% 60%);
+}
+
+/* Auto dark mode based on system preference */
 @media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: hsl(240 10% 3.9%);
-    --color-foreground: hsl(0 0% 98%);
-    --color-card: hsl(240 10% 3.9%);
-    --color-card-foreground: hsl(0 0% 98%);
-    --color-popover: hsl(240 10% 3.9%);
-    --color-popover-foreground: hsl(0 0% 98%);
-    --color-primary: hsl(0 0% 98%);
-    --color-primary-foreground: hsl(240 5.9% 10%);
-    --color-secondary: hsl(240 3.7% 15.9%);
-    --color-secondary-foreground: hsl(0 0% 98%);
-    --color-muted: hsl(240 3.7% 15.9%);
-    --color-muted-foreground: hsl(240 5% 64.9%);
-    --color-accent: hsl(240 3.7% 15.9%);
-    --color-accent-foreground: hsl(0 0% 98%);
-    --color-destructive: hsl(0 62.8% 30.6%);
-    --color-destructive-foreground: hsl(0 0% 98%);
-    --color-border: hsl(240 3.7% 15.9%);
-    --color-input: hsl(240 3.7% 15.9%);
-    --color-ring: hsl(240 4.9% 83.9%);
+  :root:not([data-theme="light"]) {
+    /* Dark theme base colors */
+    --color-background: hsl(220 15% 10%);
+    --color-foreground: hsl(210 20% 95%);
+    --color-card: hsl(220 15% 12%);
+    --color-card-foreground: hsl(210 20% 95%);
+    --color-popover: hsl(220 15% 12%);
+    --color-popover-foreground: hsl(210 20% 95%);
+    
+    /* Enhanced primary colors for dark theme with blue */
+    --color-primary: hsl(217 91% 65%);
+    --color-primary-foreground: hsl(0 0% 100%);
+    --color-primary-50: hsl(217 91% 15%);
+    --color-primary-100: hsl(217 91% 25%);
+    --color-primary-500: hsl(217 91% 65%);
+    --color-primary-600: hsl(217 91% 75%);
+    --color-primary-900: hsl(217 91% 85%);
+    
+    /* Enhanced secondary and accent colors for dark theme */
+    --color-secondary: hsl(220 15% 15%);
+    --color-secondary-foreground: hsl(210 20% 95%);
+    --color-muted: hsl(220 15% 15%);
+    --color-muted-foreground: hsl(215 10% 60%);
+    --color-accent: hsl(220 15% 15%);
+    --color-accent-foreground: hsl(210 20% 95%);
+    
+    /* Enhanced status colors for dark theme */
+    --color-destructive: hsl(350 80% 60%);
+    --color-destructive-foreground: hsl(0 0% 100%);
+    --color-success: hsl(150 70% 50%);
+    --color-success-foreground: hsl(0 0% 100%);
+    --color-warning: hsl(30 90% 60%);
+    --color-warning-foreground: hsl(0 0% 100%);
+    --color-info: hsl(210 90% 65%);
+    --color-info-foreground: hsl(0 0% 100%);
+    
+    /* Enhanced borders for dark theme */
+    --color-border: hsl(220 15% 20%);
+    --color-input: hsl(220 15% 20%);
+    --color-ring: hsl(217 91% 65%);
+    
+    /* Financial status colors for dark theme */
+    --color-status-approved: hsl(150 70% 50%);
+    --color-status-pending: hsl(30 90% 60%);
+    --color-status-rejected: hsl(350 80% 60%);
+    --color-status-draft: hsl(215 10% 60%);
   }
 }
 
+/* Enhanced body with smooth theme transitions */
 body {
-  background-color: theme(colors.background);
-  color: theme(colors.foreground);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-feature-settings: 'rlig' 1, 'calt' 1;
 }
 
+/* Enhanced sidebar theme variables for light mode */
 @theme {
-  --color-sidebar: hsl(0 0% 98%);
-  --color-sidebar-foreground: hsl(240 5.3% 26.1%);
-  --color-sidebar-primary: hsl(240 5.9% 10%);
-  --color-sidebar-primary-foreground: hsl(0 0% 98%);
-  --color-sidebar-accent: hsl(240 4.8% 95.9%);
-  --color-sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --color-sidebar-border: hsl(220 13% 91%);
-  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --color-sidebar: hsl(215 20% 98%);
+  --color-sidebar-foreground: hsl(220 15% 20%);
+  --color-sidebar-primary: hsl(217 91% 60%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(215 20% 95%);
+  --color-sidebar-accent-foreground: hsl(220 15% 20%);
+  --color-sidebar-border: hsl(215 20% 90%);
+  --color-sidebar-ring: hsl(217 91% 60%);
 }
+
+/* Enhanced sidebar theme variables for dark mode */
+.dark, [data-theme="dark"] {
+  --color-sidebar: hsl(220 15% 12%);
+  --color-sidebar-foreground: hsl(210 20% 90%);
+  --color-sidebar-primary: hsl(217 91% 65%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(220 15% 18%);
+  --color-sidebar-accent-foreground: hsl(210 20% 90%);
+  --color-sidebar-border: hsl(220 15% 20%);
+  --color-sidebar-ring: hsl(217 91% 65%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-sidebar: hsl(220 15% 12%);
+    --color-sidebar-foreground: hsl(210 20% 90%);
+    --color-sidebar-primary: hsl(217 91% 65%);
+    --color-sidebar-primary-foreground: hsl(0 0% 100%);
+    --color-sidebar-accent: hsl(220 15% 18%);
+    --color-sidebar-accent-foreground: hsl(210 20% 90%);
+    --color-sidebar-border: hsl(220 15% 20%);
+    --color-sidebar-ring: hsl(217 91% 65%);
+  }
+}
+
+/* Accessibility enhancements */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: hsl(0 0% 0%);
+    --color-ring: hsl(0 0% 0%);
+  }
+  
+  .dark, [data-theme="dark"] {
+    --color-border: hsl(0 0% 100%);
+    --color-ring: hsl(0 0% 100%);
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+button, input, select, textarea, [role="button"], [role="tab"], [role="menuitem"] {
+  transition: all 0.2s ease;
+}
+
+/* Enhanced scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(210 40% 96%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(215.4 16.3% 46.9% / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(215.4 16.3% 46.9% / 0.5);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track, [data-theme="dark"] ::-webkit-scrollbar-track {
+  background: hsl(217.2 32.6% 17.5%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) ::-webkit-scrollbar-track {
+    background: hsl(217.2 32.6% 17.5%);
+  }
+}
+

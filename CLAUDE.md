@@ -21,10 +21,20 @@ This is the ASUBK Financial Management System - a comprehensive enterprise React
 - `cd subi-frontend && npm run type-check` - Run TypeScript type checking
 
 **Testing:**
-- `cd subi-frontend && npm run test` - Run tests in watch mode
-- `cd subi-frontend && npm run test:run` - Run tests once
-- `cd subi-frontend && npm run test:ui` - Run tests with UI
-- `cd subi-frontend && npm run test:coverage` - Run tests with coverage
+- `cd subi-frontend && npm run test` - Run unit tests in watch mode
+- `cd subi-frontend && npm run test:run` - Run unit tests once
+- `cd subi-frontend && npm run test:ui` - Run unit tests with UI
+- `cd subi-frontend && npm run test:coverage` - Run unit tests with coverage
+
+**E2E Testing:**
+- `npm run test:e2e` - Run all Playwright E2E tests
+- `npm run test:e2e:ui` - Run E2E tests with Playwright UI mode
+- `npm run test:e2e:debug` - Debug E2E tests step by step
+- `npm run test:e2e:headed` - Run E2E tests with visible browser
+- `npm run test:e2e:chromium` - Run E2E tests only in Chromium
+- `npm run test:e2e:firefox` - Run E2E tests only in Firefox
+- `npm run test:e2e:webkit` - Run E2E tests only in WebKit
+- `npm run test:e2e:mobile` - Run E2E tests on mobile viewports
 
 ## Architecture Overview
 
@@ -36,7 +46,8 @@ This is the ASUBK Financial Management System - a comprehensive enterprise React
 - **Routing:** React Router v6 with role-based protection
 - **Internationalization:** react-i18next (KG/RU/EN)
 - **Charts:** Recharts for analytics dashboards
-- **Testing:** Vitest + React Testing Library + jsdom
+- **Unit Testing:** Vitest + React Testing Library + jsdom
+- **E2E Testing:** Playwright with multi-browser support
 
 ### Project Structure
 ```
@@ -52,6 +63,11 @@ subi-frontend/
 │   ├── utils/          # Utility functions
 │   ├── i18n/           # Internationalization files
 │   └── test/           # Test setup and utilities
+├── tests/
+│   └── e2e/            # End-to-end tests with Playwright
+│       ├── pages/      # Page Object Model classes
+│       ├── fixtures/   # Test fixtures and authentication
+│       └── utils/      # Test utilities and data generators
 ```
 
 ### Key Configuration Files
@@ -59,6 +75,7 @@ subi-frontend/
 - `tailwind.config.js` - Tailwind CSS v4 configuration
 - `components.json` - shadcn/ui component configuration
 - `tsconfig.json` - TypeScript project references configuration
+- `playwright.config.ts` - Playwright E2E testing configuration
 
 ## Business Domain Context
 
@@ -113,10 +130,23 @@ subi-frontend/
 - Language switching affects entire application state
 
 ## Testing Strategy
+
+### Unit & Integration Testing
 - Unit tests for utilities, hooks, and business logic
 - Component tests with React Testing Library
 - Integration tests for complex workflows
 - Test setup configured in `src/test/setup.ts`
+
+### End-to-End Testing
+- Playwright E2E tests covering critical user journeys
+- Multi-browser testing (Chromium, Firefox, WebKit)
+- Mobile device testing support
+- Role-based authentication testing for all 6 user roles
+- Application lifecycle workflow testing (12-status transitions)
+- Multilingual testing (KG/RU/EN language switching)
+- Page Object Model pattern for maintainable test code
+- Test fixtures for consistent authentication and data setup
+- Screenshot and video capture on test failures
 
 ## Important Notes
 - This is a financial system - always validate user permissions before showing sensitive data
@@ -124,3 +154,14 @@ subi-frontend/
 - Status workflows are critical - ensure proper state transitions
 - Document handling requires careful permission checking
 - Multilingual enum support is essential for status displays
+- http://localhost:8080/swagger-ui/index.html this is swagger url
+
+## Code Quality & Formatting
+- **Prettier Config:** Single quotes, 2-space indentation, 80-character print width
+- **ESLint Config:** TypeScript ESLint with React hooks and React refresh plugins
+- **Import Aliases:** Use `@/` prefix for all internal imports (configured in vite.config.ts)
+
+## Additional Development Notes
+- **Test Environment:** Vitest with jsdom environment and custom setup in `src/test/setup.ts`
+- **TypeScript Config:** Project references setup with separate app and node configurations
+- **shadcn/ui:** Component library configured with slate base color and CSS variables

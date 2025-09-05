@@ -35,6 +35,9 @@
     "documents": "Документтер",
     "commissions": "Комиссиялар",
     "admin": "Администрациялоо",
+    "decisions": "Чечимдер",
+    "decisionTypes": "Чечим түрлөрү",
+    "decisionMakingBodies": "Чечим кабыл алуучу органдар",
     "profile": "Профиль",
     "settings": "Жөндөөлөр",
     "logout": "Чыгуу"
@@ -130,6 +133,88 @@
     "roles": "Ролдор",
     "permissions": "Уруксаттар",
     "userManagement": "Колдонуучуларды башкаруу"
+  },
+  "decision": {
+    "title": "Чечим",
+    "decisions": "Чечимдер",
+    "newDecision": "Жаңы чечим",
+    "decisionDetails": "Чечимдин деталдары",
+    "editDecision": "Чечимди оңдоо",
+    "decisionManagement": "Чечимдерди башкаруу",
+    "searchDecisions": "Чечимдерди издөө",
+    "filterDecisions": "Чечимдерди чыпкалоо",
+    "advancedSearch": "Кеңейтилген издөө",
+    "decisionType": "Чечимдин түрү",
+    "decisionTypes": "Чечим түрлөрү",
+    "decisionMakingBody": "Чечим кабыл алуучу орган",
+    "decisionMakingBodies": "Чечим кабыл алуучу органдар",
+    "status": {
+      "draft": "Долбоор",
+      "pending_confirmation": "Ырастоону күтүүдө",
+      "approved": "Макулдашылды",
+      "rejected": "Четке кагылды",
+      "active": "Активдүү",
+      "inactive": "Активдүү эмес"
+    },
+    "referenceStatus": {
+      "active": "Активдүү",
+      "inactive": "Активдүү эмес"
+    },
+    "fields": {
+      "nameEn": "Англисче аталышы",
+      "nameRu": "Орусча аталышы",
+      "nameKg": "Кыргызча аталышы",
+      "date": "Чечим датасы",
+      "number": "Чечим номери",
+      "decisionType": "Чечимдин түрү",
+      "decisionMakingBody": "Чечим кабыл алуучу орган",
+      "note": "Эскертүү",
+      "status": "Абалы",
+      "documentPackage": "Документтер пакети",
+      "description": "Сүрөттөмөсү",
+      "createdAt": "Түзүлгөн датасы",
+      "updatedAt": "Жаңыланган датасы"
+    },
+    "placeholders": {
+      "searchTerm": "Аталыш же номер боюнча издөө...",
+      "selectDecisionType": "Чечимдин түрүн тандаңыз",
+      "selectDecisionMakingBody": "Чечим кабыл алуучу органды тандаңыз",
+      "selectStatus": "Абалын тандаңыз",
+      "enterNote": "Эскертүү киргизиңиз (милдеттүү эмес)",
+      "enterDescription": "Сүрөттөмө киргизиңиз (милдеттүү эмес)"
+    },
+    "messages": {
+      "decisionCreated": "Чечим ийгиликтүү түзүлдү",
+      "decisionUpdated": "Чечим ийгиликтүү жаңыланды",
+      "decisionDeleted": "Чечим ийгиликтүү өчүрүлдү",
+      "decisionTypeCreated": "Чечимдин түрү ийгиликтүү түзүлдү",
+      "decisionTypeUpdated": "Чечимдин түрү ийгиликтүү жаңыланды",
+      "decisionTypeDeleted": "Чечимдин түрү ийгиликтүү өчүрүлдү",
+      "decisionMakingBodyCreated": "Чечим кабыл алуучу орган ийгиликтүү түзүлдү",
+      "decisionMakingBodyUpdated": "Чечим кабыл алуучу орган ийгиликтүү жаңыланды",
+      "decisionMakingBodyDeleted": "Чечим кабыл алуучу орган ийгиликтүү өчүрүлдү",
+      "confirmDelete": "Бул {{item}} өчүрүүнү каалайсызбы?",
+      "noResults": "Натыйжалар табылган жок",
+      "loadingDecisions": "Чечимдер жүктөлүүдө...",
+      "loadingDecisionTypes": "Чечим түрлөрү жүктөлүүдө...",
+      "loadingDecisionMakingBodies": "Чечим кабыл алуучу органдар жүктөлүүдө..."
+    },
+    "validation": {
+      "nameEnRequired": "Англисче аталышы милдеттүү",
+      "nameRuRequired": "Орусча аталышы милдеттүү",
+      "nameKgRequired": "Кыргызча аталышы милдеттүү",
+      "dateRequired": "Чечим датасы милдеттүү",
+      "numberRequired": "Чечим номери милдеттүү",
+      "decisionTypeRequired": "Чечимдин түрү милдеттүү",
+      "decisionMakingBodyRequired": "Чечим кабыл алуучу орган милдеттүү",
+      "statusRequired": "Абалы милдеттүү",
+      "nameMaxLength": "Аталышы 100 символдон ашпашы керек",
+      "numberMaxLength": "Номери 50 символдон ашпашы керек",
+      "noteMaxLength": "Эскертүү 1000 символдон ашпашы керек",
+      "descriptionMaxLength": "Сүрөттөмөсү 500 символдон ашпашы керек",
+      "invalidDateFormat": "Дата ЖЖЖЖ-АА-КК форматында болушу керек",
+      "invalidUuid": "Документтер пакетинин ID жарактуу UUID болушу керек"
+    }
   },
   "validation": {
     "required": "Бул талаа милдеттүү",
