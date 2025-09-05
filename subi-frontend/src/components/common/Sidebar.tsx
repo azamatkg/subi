@@ -238,9 +238,6 @@ export const Sidebar: React.FC = () => {
           {/* Enhanced Header */}
           <div className="flex items-center justify-between p-4 h-16 border-b border-gray-800 bg-gray-900 relative">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-blue-900/50 flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-blue-400" />
-              </div>
             </div>
             
             {(sidebarOpen || isMobile) && (
