@@ -58,14 +58,14 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    title: 'Процессы и решения',
+    title: 'Оформление документации',
     items: [
       {
         title: 'navigation.decisions',
         href: '/decisions',
         icon: Scale,
         roles: ['ADMIN', 'DECISION_MAKER'],
-        description: 'Принятие решений',
+        description: 'Основания на выдачу кредита',
       },
     ],
   },
