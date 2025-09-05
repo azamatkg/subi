@@ -123,79 +123,73 @@ export const LoginPage: React.FC = () => {
         {isFormLoading && 'Выполняется вход в систему'}
       </LiveRegion>
 
-      <div className="container mx-auto px-4 h-screen flex items-center">
-        <div className="w-full max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div className="container mx-auto px-4 min-h-screen flex items-center py-4">
+        <div className="w-full max-w-4xl mx-auto">
+          <div className="flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden min-h-[600px] lg:min-h-[700px]">
             {/* Left side - Branding */}
-            <div className="w-full lg:w-2/5 bg-gradient-to-br from-gray-800 to-gray-900 text-white p-8 lg:p-12 flex flex-col justify-between">
+            <div className="w-full lg:w-1/2 bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 sm:p-6 lg:p-12 flex flex-col justify-between min-h-[200px] lg:min-h-auto">
               <div>
-                <div className="mb-12">
-                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center shadow-lg mb-6">
+                <div className="mb-6 lg:mb-12">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/20 rounded-xl flex items-center justify-center shadow-lg mb-4 lg:mb-6">
                     <Shield
-                      className="w-8 h-8 text-white"
+                      className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white"
                       aria-hidden="true"
                     />
                   </div>
                   <AccessibleHeading
                     level={1}
                     id="login-title"
-                    className="text-3xl font-bold mb-2"
+                    className="text-2xl sm:text-2xl lg:text-3xl font-bold mb-2"
                   >
                     АСУБК
                   </AccessibleHeading>
-                  <p className="text-blue-100 text-lg">
+                  <p className="text-blue-100 text-base lg:text-lg leading-snug">
                     Автоматизированная система управления бюджетными кредитами
                   </p>
                 </div>
                 
-                <div className="space-y-6">
+                <div className="space-y-3 lg:space-y-6 hidden sm:block">
                   <div className="flex items-start space-x-3">
                     <div className="mt-1 w-2 h-2 bg-blue-300 rounded-full flex-shrink-0"></div>
-                    <p className="text-blue-100">
+                    <p className="text-blue-100 text-sm lg:text-base">
                       Управление кредитными заявками и документами
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="mt-1 w-2 h-2 bg-blue-300 rounded-full flex-shrink-0"></div>
-                    <p className="text-blue-100">
+                    <p className="text-blue-100 text-sm lg:text-base">
                       Анализ кредитных программ и комиссий
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="mt-1 w-2 h-2 bg-blue-300 rounded-full flex-shrink-0"></div>
-                    <p className="text-blue-100">
+                    <p className="text-blue-100 text-sm lg:text-base">
                       Принятие решений по кредитам
                     </p>
                   </div>
                 </div>
               </div>
-              
-              <div className="pt-8 border-t border-blue-500/30">
-                <p className="text-blue-200 text-sm">
-                  &copy; 2025 ASUBK Financial Management System. Все права защищены.
-                </p>
-              </div>
             </div>
             
             {/* Right side - Login Form */}
-            <div className="w-full lg:w-3/5 p-8 lg:p-12 bg-muted">
-              <div className="max-w-md ml-0 lg:mx-auto">
+            <div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-12 bg-muted">
+              <div className="max-w-md mx-auto">
                 <FocusTrap active>
-                  <div className="mb-10">
+                  <div className="mb-6 lg:mb-10">
                     <AccessibleHeading
                       level={2}
-                      className="text-2xl font-bold text-gray-900 mb-2"
+                      className="text-xl sm:text-2xl font-bold text-gray-900 mb-2"
                     >
                       Вход в систему
                     </AccessibleHeading>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm lg:text-base">
                       Введите ваши учетные данные для доступа
                     </p>
                   </div>
 
                   <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className="space-y-4 lg:space-y-6"
                     noValidate
                     aria-describedby={error ? errorId : undefined}
                   >
@@ -241,7 +235,7 @@ export const LoginPage: React.FC = () => {
                           },
                         })}
                         className={cn(
-                          'h-12 transition-all duration-200 border border-gray-300 bg-white rounded-lg',
+                          'h-11 lg:h-12 text-sm lg:text-base transition-all duration-200 border border-gray-300 bg-white rounded-lg',
                           'focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-0',
                           'placeholder:text-gray-400',
                           errors.username &&
@@ -292,7 +286,7 @@ export const LoginPage: React.FC = () => {
                             },
                           })}
                           className={cn(
-                            'h-12 pr-12 transition-all duration-200 border border-gray-300 bg-white rounded-lg',
+                            'h-11 lg:h-12 pr-12 text-sm lg:text-base transition-all duration-200 border border-gray-300 bg-white rounded-lg',
                             'focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-0',
                             'placeholder:text-gray-400',
                             errors.password &&
@@ -311,7 +305,7 @@ export const LoginPage: React.FC = () => {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-12 px-3 hover:bg-gray-100 text-gray-500 hover:text-gray-700 rounded-none rounded-r-lg"
+                          className="absolute right-0 top-0 h-11 lg:h-12 px-3 hover:bg-gray-100 text-gray-500 hover:text-gray-700 rounded-none rounded-r-lg"
                           onClick={togglePasswordVisibility}
                           disabled={isFormLoading}
                           aria-label={
@@ -356,7 +350,7 @@ export const LoginPage: React.FC = () => {
                         />
                         <Label
                           htmlFor="rememberMe"
-                          className="text-sm text-gray-700 cursor-pointer"
+                          className="text-xs lg:text-sm text-gray-700 cursor-pointer"
                         >
                           Запомнить меня
                         </Label>
@@ -364,7 +358,7 @@ export const LoginPage: React.FC = () => {
                       <Button
                         type="button"
                         variant="link"
-                        className="px-0 text-sm text-blue-600 hover:text-blue-700 h-auto"
+                        className="px-0 text-xs lg:text-sm text-blue-600 hover:text-blue-700 h-auto"
                         onClick={() => {
                           announce(
                             'Функция восстановления пароля будет доступна в ближайшее время',
@@ -381,7 +375,7 @@ export const LoginPage: React.FC = () => {
                     <Button
                       type="submit"
                       className={cn(
-                        'w-full h-12 font-medium transition-all duration-200 text-white rounded-lg',
+                        'w-full h-11 lg:h-12 text-sm lg:text-base font-medium transition-all duration-200 text-white rounded-lg',
                         'bg-gray-800 hover:bg-gray-700 active:bg-gray-600',
                         'shadow-sm hover:shadow-md',
                         'disabled:opacity-50 disabled:cursor-not-allowed',

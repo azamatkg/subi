@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,10 +21,7 @@ import {
   Home,
   Settings,
   ChevronLeft,
-  Building2,
   Scale,
-  Menu,
-  X,
   LogOut,
   User,
   Bell,
@@ -89,23 +86,37 @@ export const Sidebar: React.FC = () => {
   const sidebarOpen = useAppSelector(state => state.ui.sidebarOpen);
   const dispatch = useAppDispatch();
   const [isMobile, setIsMobile] = useState(false);
+  const previousMobileRef = useRef(false);
 
-  // Check mobile screen size
+  // Initial mobile setup - runs only once
+  useEffect(() => {
+    const isMobileView = window.innerWidth < 1024;
+    setIsMobile(isMobileView);
+    previousMobileRef.current = isMobileView;
+    
+    // Auto-close on initial load if mobile
+    if (isMobileView) {
+      dispatch(setSidebarOpen(false));
+    }
+  }, [dispatch]); // Only depends on dispatch - runs once
+
+  // Handle window resize
   useEffect(() => {
     const checkMobile = () => {
+      const wasMobile = previousMobileRef.current;
       const isMobileView = window.innerWidth < 1024;
       setIsMobile(isMobileView);
+      previousMobileRef.current = isMobileView;
 
-      // Auto-close sidebar on mobile when screen becomes smaller
-      if (isMobileView && sidebarOpen) {
+      // Auto-close sidebar only when transitioning from desktop to mobile
+      if (!wasMobile && isMobileView && sidebarOpen) {
         dispatch(setSidebarOpen(false));
       }
     };
 
-    checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, [dispatch, sidebarOpen]);
+  }, [dispatch, sidebarOpen]); // This can depend on sidebarOpen since it only runs on resize
 
   const toggleSidebar = () => {
     dispatch(setSidebarOpen(!sidebarOpen));
@@ -203,25 +214,6 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className={cn(
-          'fixed top-4 left-4 z-50 lg:hidden',
-          'h-10 w-10 p-0 bg-gray-900/80 backdrop-blur-sm border border-gray-800 shadow-md',
-          sidebarOpen && 'bg-gray-800 border-gray-700'
-        )}
-        onClick={toggleSidebar}
-        aria-label={sidebarOpen ? 'Закрыть меню' : 'Открыть меню'}
-      >
-        {sidebarOpen ? (
-          <X className="h-5 w-5 text-gray-200" />
-        ) : (
-          <Menu className="h-5 w-5 text-gray-200" />
-        )}
-      </Button>
-
       {/* Enhanced Sidebar */}
       <aside
         className={cn(

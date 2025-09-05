@@ -12,16 +12,18 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { useAppDispatch } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { toggleSidebar } from '@/store/slices/uiSlice';
-import { Menu, LogOut, User, Settings, Bell } from 'lucide-react';
+import { ChevronLeft, LogOut, User, Settings, Bell } from 'lucide-react';
 import { usePageTitle } from '@/hooks/useSetPageTitle';
+import { cn } from '@/lib/utils';
 
 export const Header: React.FC = () => {
   const { user, userDisplayName, logout } = useAuth();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { title } = usePageTitle();
+  const sidebarOpen = useAppSelector(state => state.ui.sidebarOpen);
 
   const handleLogout = async () => {
     await logout();
@@ -45,10 +47,15 @@ export const Header: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden text-gray-200 hover:bg-gray-800 hover:text-white"
+            className="lg:hidden text-gray-200 hover:bg-gray-800 hover:text-white h-8 w-8 p-0 rounded-full border border-gray-700 shadow-sm"
             onClick={() => dispatch(toggleSidebar())}
           >
-            <Menu className="h-5 w-5" />
+            <ChevronLeft
+              className={cn(
+                'h-4 w-4 transition-transform text-gray-200',
+                !sidebarOpen && 'rotate-180'
+              )}
+            />
           </Button>
         </div>
 

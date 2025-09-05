@@ -65,7 +65,7 @@ import {
   AccessibleStatusBadge,
   AccessibleDate,
 } from '@/components/ui/accessible-status-badge';
-import { AccessibleHeading, LiveRegion } from '@/components/ui/focus-trap';
+import { LiveRegion } from '@/components/ui/focus-trap';
 import { ErrorFallback } from '@/components/ui/error-fallback';
 import { cn } from '@/lib/utils';
 
@@ -84,6 +84,7 @@ import type {
 } from '@/types/decision';
 import { DecisionStatus as DecisionStatusEnum } from '@/types/decision';
 import { ROUTES, PAGINATION } from '@/constants';
+import { getStoredViewMode, setStoredViewMode } from '@/utils/auth';
 
 interface FilterState {
   searchTerm: string;
@@ -101,7 +102,7 @@ type ViewMode = 'table' | 'card';
 export const DecisionListPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  useSetPageTitle('Управление решениями');
+  useSetPageTitle(t('decision.decisionManagement'));
 
   // State management
   const [filters, setFilters] = useState<FilterState>({
@@ -120,18 +121,27 @@ export const DecisionListPage: React.FC = () => {
     useState<DecisionResponseDto | null>(null);
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    // Initialize with stored preference, fallback to 'card'
+    return getStoredViewMode() || 'card';
+  });
   const [isMobile, setIsMobile] = useState(false);
   const [filtersApplied, setFiltersApplied] = useState(0);
+
+  // Custom view mode setter that persists to localStorage
+  const handleSetViewMode = (mode: ViewMode) => {
+    setViewMode(mode);
+    setStoredViewMode(mode);
+  };
 
   // Mobile detection
   useEffect(() => {
     const checkMobile = () => {
       const isMobileView = window.innerWidth < 768;
       setIsMobile(isMobileView);
-      // On mobile, default to card view
+      // On mobile, force card view regardless of stored preference
       if (isMobileView && viewMode === 'table') {
-        setViewMode('card');
+        setViewMode('card'); // Only update state, don't persist mobile override
       }
     };
 
@@ -734,7 +744,7 @@ export const DecisionListPage: React.FC = () => {
                   <Button
                     variant={viewMode === 'card' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setViewMode('card')}
+                    onClick={() => handleSetViewMode('card')}
                     aria-label={t('common.cardView')}
                   >
                     <Grid className="h-4 w-4" />
@@ -742,7 +752,7 @@ export const DecisionListPage: React.FC = () => {
                   <Button
                     variant={viewMode === 'table' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setViewMode('table')}
+                    onClick={() => handleSetViewMode('table')}
                     aria-label={t('common.tableView')}
                   >
                     <List className="h-4 w-4" />

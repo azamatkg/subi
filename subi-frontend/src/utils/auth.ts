@@ -86,6 +86,27 @@ export const clearStoredAuth = (): void => {
   localStorage.removeItem(STORAGE_KEYS.USER_DATA);
 };
 
+// View mode persistence utilities
+export const getStoredViewMode = (): 'table' | 'card' | null => {
+  try {
+    const viewMode = localStorage.getItem(STORAGE_KEYS.DECISIONS_VIEW_MODE);
+    if (viewMode && (viewMode === 'table' || viewMode === 'card')) {
+      return viewMode as 'table' | 'card';
+    }
+  } catch (error) {
+    console.warn('Failed to retrieve stored view mode:', error);
+  }
+  return null;
+};
+
+export const setStoredViewMode = (viewMode: 'table' | 'card'): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.DECISIONS_VIEW_MODE, viewMode);
+  } catch (error) {
+    console.warn('Failed to store view mode:', error);
+  }
+};
+
 // Permission utilities
 export const hasRole = (user: AuthUser | null, role: string): boolean => {
   if (!user) return false;

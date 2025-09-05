@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
   USER_DATA: 'user_data',
   LANGUAGE: 'language',
   THEME: 'theme',
+  DECISIONS_VIEW_MODE: 'decisions_view_mode',
 } as const;
 
 // Route paths

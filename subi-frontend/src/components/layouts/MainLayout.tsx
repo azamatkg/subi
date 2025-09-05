@@ -66,15 +66,6 @@ export const MainLayout: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => {
-            // This will be implemented when we create the sidebar component
-          }}
-        />
-      )}
     </div>
   );
 };
