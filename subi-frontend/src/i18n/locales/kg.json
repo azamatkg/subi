@@ -167,6 +167,7 @@
     "decisionManagement": "Чечимдерди башкаруу",
     "searchDecisions": "Чечимдерди издөө",
     "filterDecisions": "Чечимдерди чыпкалоо",
+    "information": "Маалымат",
     "advancedSearch": "Кеңейтилген издөө",
     "decisionType": "Чечимдин түрү",
     "decisionTypes": "Чечим түрлөрү",
@@ -185,6 +186,9 @@
       "inactive": "Активдүү эмес"
     },
     "fields": {
+      "names": "Аталыштар",
+      "dateAndNumber": "Дата жана номери",
+      "typeAndBody": "Түрү жана чечим кабыл алуучу орган",
       "nameEn": "Англисче аталышы",
       "nameRu": "Орусча аталышы",
       "nameKg": "Кыргызча аталышы",

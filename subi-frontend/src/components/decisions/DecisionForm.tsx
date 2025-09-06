@@ -204,260 +204,212 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        {/* Basic Information */}
+        {/* Card 1: Multilingual Names */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t('decision.fields.nameEn')} & {t('common.info')}
-            </CardTitle>
+            <CardTitle>{t('decision.fields.names')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Multilingual Names */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <FormField
-                control={form.control}
-                name="nameEn"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('decision.fields.nameEn')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="nameRu"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('decision.fields.nameRu')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="nameRu"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('decision.fields.nameRu')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="nameKg"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('decision.fields.nameKg')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="nameKg"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('decision.fields.nameKg')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Date and Number */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('decision.fields.date')}</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('decision.fields.number')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="nameEn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('decision.fields.nameEn')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
-        {/* Classification */}
+        {/* Card 2: Date and Number */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t('decision.decisionType')} & {t('decision.decisionMakingBody')}
-            </CardTitle>
+            <CardTitle>{t('decision.fields.dateAndNumber')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="decisionTypeId"
-                render={({ field }) => {
-                  console.log(
-                    'DecisionType Select render - field.value:',
-                    field.value,
-                    'converted:',
-                    field.value ? field.value.toString() : ''
-                  );
-                  return (
-                    <FormItem>
-                      <FormLabel>{t('decision.fields.decisionType')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value ? field.value.toString() : ''}
-                          onValueChange={value => {
-                            console.log(
-                              'DecisionType Select onChange - raw value:',
-                              value,
-                              'converted:',
-                              value ? Number(value) : undefined
-                            );
-                            field.onChange(value ? Number(value) : undefined);
-                          }}
-                          disabled={typesLoading}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                typesLoading
-                                  ? t('common.loading')
-                                  : t(
-                                      'decision.placeholders.selectDecisionType'
-                                    )
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {decisionTypesData?.content.map(type => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
-                                <div className="space-y-1">
-                                  <p className="font-medium">{type.nameEn}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {type.nameRu}
-                                  </p>
-                                </div>
-                              </SelectItem>
-                            ))}
-                            \n{' '}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('decision.fields.date')}</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="decisionMakingBodyId"
-                render={({ field }) => {
-                  console.log(
-                    'DecisionMakingBody Select render - field.value:',
-                    field.value,
-                    'converted:',
-                    field.value ? field.value.toString() : ''
-                  );
-                  return (
-                    <FormItem>
-                      <FormLabel>
-                        {t('decision.fields.decisionMakingBody')}
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value ? field.value.toString() : ''}
-                          onValueChange={value => {
-                            console.log(
-                              'DecisionMakingBody Select onChange - raw value:',
-                              value,
-                              'converted:',
-                              value ? Number(value) : undefined
-                            );
-                            field.onChange(value ? Number(value) : undefined);
-                          }}
-                          disabled={bodiesLoading}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                bodiesLoading
-                                  ? t('common.loading')
-                                  : t(
-                                      'decision.placeholders.selectDecisionMakingBody'
-                                    )
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {decisionMakingBodiesData?.content.map(body => (
-                              <SelectItem
-                                key={body.id}
-                                value={body.id.toString()}
-                              >
-                                <div className="space-y-1">
-                                  <p className="font-medium">{body.nameEn}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {body.nameRu}
-                                  </p>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('decision.fields.number')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
-        {/* Additional Information */}
+        {/* Card 3: Type and Decision Making Body */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t('decision.fields.status')} & {t('decision.fields.note')}
-            </CardTitle>
+            <CardTitle>{t('decision.fields.typeAndBody')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="decisionTypeId"
+              render={({ field }) => {
+                console.log(
+                  'DecisionType Select render - field.value:',
+                  field.value,
+                  'converted:',
+                  field.value ? field.value.toString() : ''
+                );
+                return (
                   <FormItem>
-                    <FormLabel>{t('decision.fields.status')}</FormLabel>
+                    <FormLabel>{t('decision.fields.decisionType')}</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value || ''}
-                        onValueChange={field.onChange}
+                        value={field.value ? field.value.toString() : ''}
+                        onValueChange={value => {
+                          console.log(
+                            'DecisionType Select onChange - raw value:',
+                            value,
+                            'converted:',
+                            value ? Number(value) : undefined
+                          );
+                          field.onChange(value ? Number(value) : undefined);
+                        }}
+                        disabled={typesLoading}
                       >
                         <SelectTrigger>
                           <SelectValue
-                            placeholder={t(
-                              'decision.placeholders.selectStatus'
-                            )}
+                            placeholder={
+                              typesLoading
+                                ? t('common.loading')
+                                : t(
+                                    'decision.placeholders.selectDecisionType'
+                                  )
+                            }
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.values(DecisionStatus).map(status => (
-                            <SelectItem key={status} value={status}>
-                              {t(`decision.status.${status.toLowerCase()}`)}
+                          {decisionTypesData?.content.map(type => (
+                            <SelectItem
+                              key={type.id}
+                              value={type.id.toString()}
+                            >
+                              <div className="space-y-1">
+                                <p className="font-medium">{type.nameEn}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {type.nameRu}
+                                </p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                          \n{' '}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="decisionMakingBodyId"
+              render={({ field }) => {
+                console.log(
+                  'DecisionMakingBody Select render - field.value:',
+                  field.value,
+                  'converted:',
+                  field.value ? field.value.toString() : ''
+                );
+                return (
+                  <FormItem>
+                    <FormLabel>
+                      {t('decision.fields.decisionMakingBody')}
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value ? field.value.toString() : ''}
+                        onValueChange={value => {
+                          console.log(
+                            'DecisionMakingBody Select onChange - raw value:',
+                            value,
+                            'converted:',
+                            value ? Number(value) : undefined
+                          );
+                          field.onChange(value ? Number(value) : undefined);
+                        }}
+                        disabled={bodiesLoading}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={
+                              bodiesLoading
+                                ? t('common.loading')
+                                : t(
+                                    'decision.placeholders.selectDecisionMakingBody'
+                                  )
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {decisionMakingBodiesData?.content.map(body => (
+                            <SelectItem
+                              key={body.id}
+                              value={body.id.toString()}
+                            >
+                              <div className="space-y-1">
+                                <p className="font-medium">{body.nameEn}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {body.nameRu}
+                                </p>
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -465,27 +417,18 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
+                );
+              }}
+            />
+          </CardContent>
+        </Card>
 
-              <FormField
-                control={form.control}
-                name="documentPackageId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('decision.fields.documentPackage')}{' '}
-                      {t('common.optional')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="UUID format (optional)" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
+        {/* Card 4: Description */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('decision.fields.description')}</CardTitle>
+          </CardHeader>
+          <CardContent>
             <FormField
               control={form.control}
               name="note"

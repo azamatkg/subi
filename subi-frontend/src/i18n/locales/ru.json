@@ -167,6 +167,7 @@
     "decisionManagement": "Управление решениями",
     "searchDecisions": "Поиск решений",
     "filterDecisions": "Фильтр решений",
+    "information": "Информация",
     "advancedSearch": "Расширенный поиск",
     "decisionType": "Тип решения",
     "decisionTypes": "Типы решений",
@@ -185,6 +186,9 @@
       "inactive": "Неактивно"
     },
     "fields": {
+      "names": "Названия",
+      "dateAndNumber": "Дата и номер",
+      "typeAndBody": "Тип и орган принятия решений",
       "nameEn": "Название на английском",
       "nameRu": "Название на русском",
       "nameKg": "Название на кыргызском",

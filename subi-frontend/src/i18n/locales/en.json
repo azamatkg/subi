@@ -167,6 +167,7 @@
     "decisionManagement": "Decision Management",
     "searchDecisions": "Search Decisions",
     "filterDecisions": "Filter Decisions",
+    "information": "Information",
     "advancedSearch": "Advanced Search",
     "decisionType": "Decision Type",
     "decisionTypes": "Decision Types",
@@ -185,6 +186,9 @@
       "inactive": "Inactive"
     },
     "fields": {
+      "names": "Names",
+      "dateAndNumber": "Date and Number",
+      "typeAndBody": "Type and Decision Making Body",
       "nameEn": "English Name",
       "nameRu": "Russian Name",
       "nameKg": "Kyrgyz Name",

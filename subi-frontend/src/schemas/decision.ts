@@ -82,18 +82,6 @@ export const updateDecisionSchema = z.object({
     .optional(),
   decisionTypeId: z.number().min(1, 'Decision type is required').optional(),
   note: z.string().max(1000, 'Note cannot exceed 1000 characters').optional(),
-  status: z
-    .nativeEnum(DecisionStatus, {
-      message: 'Please select a valid status',
-    })
-    .optional(),
-  documentPackageId: z
-    .string()
-    .transform(val => val === '' ? undefined : val)
-    .optional()
-    .refine(val => val === undefined || z.string().uuid().safeParse(val).success, {
-      message: 'Document package ID must be a valid UUID',
-    }),
 });
 
 // Decision Type validation schemas
