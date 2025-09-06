@@ -49,7 +49,8 @@
     "tableView": "Таблица көрүнүшү",
     "clearFilters": "Чыпкаларды тазалоо",
     "refresh": "Жаңылоо",
-    "tryAdjustingFilters": "Чыпкаларды өзгөртүп көрүңүз"
+    "tryAdjustingFilters": "Чыпкаларды өзгөртүп көрүңүз",
+    "actions": "Аракеттер"
   },
   "navigation": {
     "dashboard": "Башкаруу панели",

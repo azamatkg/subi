@@ -270,12 +270,17 @@ export const DecisionListPage: React.FC = () => {
                   #{decision.number}
                 </span>
               </div>
-              <h3
-                id={`decision-title-${decision.id}`}
-                className="text-lg font-semibold leading-tight text-card-foreground group-hover:text-primary transition-colors"
+              <button
+                onClick={() => handleView(decision.id)}
+                className="text-left w-full"
               >
-                {decision.nameEn}
-              </h3>
+                <h3
+                  id={`decision-title-${decision.id}`}
+                  className="text-lg font-semibold leading-tight text-card-foreground hover:text-primary transition-colors cursor-pointer"
+                >
+                  {decision.nameEn}
+                </h3>
+              </button>
               {decision.note && (
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                   {decision.note}
@@ -287,26 +292,7 @@ export const DecisionListPage: React.FC = () => {
                 status={decision.status}
                 className="shrink-0"
               />
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleView(decision.id)}
-                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-primary/10 hover:text-primary hover:scale-110"
-                  aria-label={t('common.view')}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleEdit(decision.id)}
-                  className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-muted/60 hover:text-foreground hover:scale-110"
-                  aria-label={t('common.edit')}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <DropdownMenu>
+              <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
@@ -344,7 +330,6 @@ export const DecisionListPage: React.FC = () => {
                 </DropdownMenu>
               </div>
             </div>
-          </div>
 
           {/* Details grid */}
           <div className="flex items-center gap-2 text-sm">
@@ -358,28 +343,6 @@ export const DecisionListPage: React.FC = () => {
                 className="ml-1 font-medium"
               />
             </div>
-          </div>
-
-          {/* Action buttons on mobile */}
-          <div className="flex gap-2 pt-2 sm:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleView(decision.id)}
-              className="flex-1 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all duration-200"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              {t('common.view')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleEdit(decision.id)}
-              className="flex-1 hover:bg-muted/60 hover:border-muted hover:text-foreground transition-all duration-200"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              {t('common.edit')}
-            </Button>
           </div>
         </div>
       </CardContent>
@@ -856,9 +819,14 @@ export const DecisionListPage: React.FC = () => {
                           </TableCell>
                           <TableCell>
                             <div className="space-y-1 max-w-[300px]">
-                              <p className="font-medium leading-tight">
-                                {decision.nameEn}
-                              </p>
+                              <button
+                                onClick={() => handleView(decision.id)}
+                                className="text-left w-full"
+                              >
+                                <p className="font-medium leading-tight hover:text-primary transition-colors cursor-pointer">
+                                  {decision.nameEn}
+                                </p>
+                              </button>
                               {decision.note && (
                                 <p className="text-sm text-muted-foreground line-clamp-2">
                                   {decision.note}
@@ -873,25 +841,7 @@ export const DecisionListPage: React.FC = () => {
                             <AccessibleStatusBadge status={decision.status} />
                           </TableCell>
                           <TableCell className="w-[100px]">
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleView(decision.id)}
-                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                aria-label={t('common.view')}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit(decision.id)}
-                                className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-muted/60 hover:text-foreground"
-                                aria-label={t('common.edit')}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
+                            <div className="flex items-center justify-center">
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button

@@ -49,7 +49,8 @@
     "tableView": "В виде таблицы",
     "clearFilters": "Очистить фильтры",
     "refresh": "Обновить",
-    "tryAdjustingFilters": "Попробуйте изменить фильтры"
+    "tryAdjustingFilters": "Попробуйте изменить фильтры",
+    "actions": "Действия"
   },
   "navigation": {
     "dashboard": "Панель управления",
