@@ -25,21 +25,9 @@ export function AccessibleStatusBadge({
   showIcon = true,
   size = 'default',
 }: AccessibleStatusBadgeProps) {
-  const getStatusVariant = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'APPROVED':
-        return 'default' as const; // Will be styled as success
-      case 'REJECTED':
-        return 'destructive' as const;
-      case 'SUBMITTED':
-      case 'UNDER_REVIEW':
-      case 'UNDER_COMPLETION':
-        return 'secondary' as const;
-      case 'DRAFT':
-        return 'outline' as const;
-      default:
-        return 'secondary' as const;
-    }
+  const getStatusVariant = () => {
+    // Return 'default' for all statuses - we'll handle custom colors via className
+    return 'default' as const;
   };
 
   const getStatusIcon = (status: string) => {
@@ -96,21 +84,57 @@ export function AccessibleStatusBadge({
   };
 
   const statusLabel = AriaHelpers.getStatusLabel(status, locale);
-  const variant = getStatusVariant(status);
+  const variant = getStatusVariant();
+
+  // Enhanced status-specific color schemes
+  const getStatusColors = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'APPROVED':
+      case 'ACTIVE':
+        return [
+          'bg-emerald-50 text-emerald-700 border-emerald-200',
+          'dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800',
+          'hover:bg-emerald-100 dark:hover:bg-emerald-900/30',
+        ];
+      case 'REJECTED':
+      case 'INACTIVE':
+        return [
+          'bg-red-50 text-red-700 border-red-200',
+          'dark:bg-red-900/20 dark:text-red-300 dark:border-red-800',
+          'hover:bg-red-100 dark:hover:bg-red-900/30',
+        ];
+      case 'PENDING_CONFIRMATION':
+      case 'UNDER_REVIEW':
+      case 'UNDER_COMPLETION':
+        return [
+          'bg-amber-50 text-amber-700 border-amber-200',
+          'dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800',
+          'hover:bg-amber-100 dark:hover:bg-amber-900/30',
+        ];
+      case 'DRAFT':
+        return [
+          'bg-slate-50 text-slate-600 border-slate-200',
+          'dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800',
+          'hover:bg-slate-100 dark:hover:bg-slate-900/30',
+        ];
+      default:
+        return [
+          'bg-blue-50 text-blue-700 border-blue-200',
+          'dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+          'hover:bg-blue-100 dark:hover:bg-blue-900/30',
+        ];
+    }
+  };
 
   return (
     <Badge
       variant={variant}
       className={cn(
-        'inline-flex items-center gap-1.5 font-medium transition-colors',
-        size === 'sm' && 'px-2 py-0.5 text-xs',
-        size === 'lg' && 'px-3 py-1 text-base',
-        // Enhanced styling for approved status
-        status.toUpperCase() === 'APPROVED' && [
-          'bg-emerald-100 text-emerald-800 border-emerald-200',
-          'dark:bg-emerald-900/20 dark:text-emerald-200 dark:border-emerald-800',
-          'hover:bg-emerald-200 dark:hover:bg-emerald-900/30',
-        ],
+        'inline-flex items-center gap-2 font-semibold transition-all duration-200 border',
+        size === 'sm' && 'px-2.5 py-1 text-xs',
+        size === 'default' && 'px-3 py-1.5 text-sm',
+        size === 'lg' && 'px-4 py-2 text-base',
+        ...getStatusColors(status),
         className
       )}
       // ARIA attributes for accessibility

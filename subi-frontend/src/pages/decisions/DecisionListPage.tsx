@@ -255,18 +255,20 @@ export const DecisionListPage: React.FC = () => {
     decision,
   }) => (
     <Card
-      className="group hover:shadow-md hover:bg-muted/20 transition-all duration-200 border-0 bg-card"
+      className="group hover:shadow-lg hover:bg-muted/20 hover:scale-[1.02] transition-all duration-200 border border-border/20 bg-card shadow-sm"
       role="article"
       aria-labelledby={`decision-title-${decision.id}`}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-7">
         <div className="space-y-4">
           {/* Header with status and actions */}
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Scale className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-sm font-medium text-primary">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 border border-primary/20">
+                  <Scale className="h-4 w-4 text-primary shrink-0" />
+                </div>
+                <span className="text-sm font-mono font-semibold text-primary tabular-nums">
                   #{decision.number}
                 </span>
               </div>
@@ -276,13 +278,13 @@ export const DecisionListPage: React.FC = () => {
               >
                 <h3
                   id={`decision-title-${decision.id}`}
-                  className="text-lg font-semibold leading-tight text-card-foreground hover:text-primary transition-colors cursor-pointer"
+                  className="text-xl font-semibold leading-tight text-card-foreground hover:text-primary transition-colors cursor-pointer tracking-wide"
                 >
                   {decision.nameEn}
                 </h3>
               </button>
               {decision.note && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-sm text-muted-foreground mt-2 line-clamp-2 font-medium">
                   {decision.note}
                 </p>
               )}
@@ -297,7 +299,7 @@ export const DecisionListPage: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-200 hover:bg-muted/80 hover:shadow-md hover:scale-110"
+                      className="h-8 w-8 p-0 opacity-70 group-hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg hover:scale-110 focus:ring-2 focus:ring-primary/20"
                       aria-label={t('common.actions', { item: decision.nameEn })}
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -306,14 +308,14 @@ export const DecisionListPage: React.FC = () => {
                   <DropdownMenuContent align="end" className="shadow-lg border-border/20">
                     <DropdownMenuItem 
                       onClick={() => handleView(decision.id)}
-                      className="hover:bg-muted/50"
+                      className="hover:bg-accent focus:bg-accent"
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       {t('common.view')}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => handleEdit(decision.id)}
-                      className="hover:bg-muted/50"
+                      className="hover:bg-accent focus:bg-accent"
                     >
                       <Edit className="mr-2 h-4 w-4" />
                       {t('common.edit')}
@@ -332,15 +334,15 @@ export const DecisionListPage: React.FC = () => {
             </div>
 
           {/* Details grid */}
-          <div className="flex items-center gap-2 text-sm">
-            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div className="flex items-center gap-3 text-sm">
+            <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
             <div>
-              <span className="text-muted-foreground">
+              <span className="font-medium">
                 {t('decision.fields.date')}:
               </span>
               <AccessibleDate
                 date={decision.date}
-                className="ml-1 font-medium"
+                className="ml-2 font-semibold"
               />
             </div>
           </div>
@@ -478,7 +480,7 @@ export const DecisionListPage: React.FC = () => {
       <LiveRegion />
 
       {/* Search and Filter Controls */}
-      <Card className="border-0 shadow-sm bg-muted">
+      <Card className="border-0 shadow-sm bg-muted/30">
         <CardContent className="p-4 sm:p-6">
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -556,7 +558,7 @@ export const DecisionListPage: React.FC = () => {
 
           {/* Collapsible Advanced Filters */}
           {isFilterOpen && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-xl transition-all duration-300 ease-out">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-muted/50 rounded-xl transition-all duration-300 ease-out mt-6">
               {/* Decision Type Filter */}
               <div className="space-y-2">
                 <Label htmlFor="decision-type-filter">
@@ -686,9 +688,9 @@ export const DecisionListPage: React.FC = () => {
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle className="flex items-center gap-3 text-lg">
-              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Scale className="h-4 w-4 text-emerald-600" />
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold tracking-wide">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-200/30 flex items-center justify-center">
+                <Scale className="h-5 w-5 text-emerald-600" />
               </div>
               {t('decision.decisions')}
             </CardTitle>
@@ -794,8 +796,8 @@ export const DecisionListPage: React.FC = () => {
               {viewMode === 'table' && !isMobile && (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader className="bg-gradient-to-r from-muted to-muted/80">
-                      <TableRow className="group border-b-0 hover:bg-muted/60 transition-all duration-200">
+                    <TableHeader className="bg-gradient-to-r from-muted/30 to-muted/50">
+                      <TableRow className="group border-b-0 hover:bg-muted transition-all duration-200">
                         <SortableTableHead field="number">
                           {t('decision.fields.number')}
                         </SortableTableHead>
@@ -813,41 +815,41 @@ export const DecisionListPage: React.FC = () => {
                     </TableHeader>
                     <TableBody>
                       {decisionsData.content.map((decision, index) => (
-                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-muted/50 transition-colors duration-200`}>
-                          <TableCell className="font-medium">
+                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/20' : 'bg-background'} hover:bg-muted/40 transition-colors duration-200`}>
+                          <TableCell className="font-mono font-semibold tabular-nums py-4">
                             {decision.number}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-4">
                             <div className="space-y-1 max-w-[300px]">
                               <button
                                 onClick={() => handleView(decision.id)}
                                 className="text-left w-full"
                               >
-                                <p className="font-medium leading-tight hover:text-primary transition-colors cursor-pointer">
+                                <p className="font-semibold text-base leading-tight hover:text-primary transition-colors cursor-pointer tracking-wide">
                                   {decision.nameEn}
                                 </p>
                               </button>
                               {decision.note && (
-                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                <p className="text-sm text-muted-foreground line-clamp-2 font-medium">
                                   {decision.note}
                                 </p>
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-4">
                             <AccessibleDate date={decision.date} />
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-4">
                             <AccessibleStatusBadge status={decision.status} />
                           </TableCell>
-                          <TableCell className="w-[100px]">
+                          <TableCell className="w-[100px] py-4">
                             <div className="flex items-center justify-center">
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-muted/80 hover:shadow-md"
+                                    className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20"
                                     aria-label={t('common.actions', {
                                       item: decision.nameEn,
                                     })}
@@ -858,14 +860,14 @@ export const DecisionListPage: React.FC = () => {
                                 <DropdownMenuContent align="end" className="shadow-lg border-border/20">
                                   <DropdownMenuItem
                                     onClick={() => handleView(decision.id)}
-                                    className="hover:bg-muted/50"
+                                    className="hover:bg-accent focus:bg-accent"
                                   >
                                     <Eye className="mr-2 h-4 w-4" />
                                     {t('common.view')}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleEdit(decision.id)}
-                                    className="hover:bg-muted/50"
+                                    className="hover:bg-accent focus:bg-accent"
                                   >
                                     <Edit className="mr-2 h-4 w-4" />
                                     {t('common.edit')}
@@ -893,7 +895,7 @@ export const DecisionListPage: React.FC = () => {
               {decisionsData.content.length > 0 && (
                 <>
                   <Separator />
-                  <div className="bg-gradient-to-r from-muted to-muted/80 px-6 py-4 rounded-b-lg border-t">
+                  <div className="bg-gradient-to-r from-muted/30 to-muted/50 px-6 py-5 rounded-b-lg border-t border-border/20">
                     <PaginationControls />
                   </div>
                 </>
