@@ -52,7 +52,16 @@
     "tryAdjustingFilters": "Попробуйте изменить фильтры",
     "actions": "Действия",
     "main": "Основная",
-    "programs": "Программы"
+    "programs": "Программы",
+    "min": "Мин",
+    "max": "Макс",
+    "range": "Диапазон",
+    "months": "месяцы",
+    "from": "от",
+    "to": "до",
+    "up_to": "до",
+    "until": "до",
+    "notSpecified": "Не указано"
   },
   "navigation": {
     "dashboard": "Панель управления",
@@ -116,6 +125,8 @@
     "newProgram": "Новая программа",
     "programDetails": "Детали программы",
     "activePrograms": "Активные программы",
+    "advancedFilters": "Расширенные фильтры",
+    "searchPlaceholder": "Поиск программ по названию...",
     "status": {
       "draft": "Черновик",
       "pending_approval": "Ожидает одобрения",
@@ -127,13 +138,71 @@
       "rejected": "Отклонена"
     },
     "fields": {
-      "name": "Название программы",
+      "nameEn": "Название программы (RU)",
+      "nameRu": "Название программы (EN)",
+      "nameKg": "Название программы (KG)",
       "description": "Описание",
-      "minAmount": "Минимальная сумма",
-      "maxAmount": "Максимальная сумма",
-      "minTerm": "Минимальный срок",
-      "maxTerm": "Максимальный срок",
-      "interestRate": "Процентная ставка"
+      "status": "Статус",
+      "validFrom": "Действует с",
+      "validTo": "Действует до",
+      "currency": "Валюта",
+      "amountMin": "Минимальная сумма",
+      "amountMax": "Максимальная сумма",
+      "termMin": "Минимальный срок (месяцы)",
+      "termMax": "Максимальный срок (месяцы)",
+      "interestRate": "Процентная ставка",
+      "processingFeePercentage": "Комиссия за обработку (%)",
+      "collateralRequired": "Требуется залог",
+      "applications": "Заявки"
+    },
+    "filters": {
+      "status": "Статус",
+      "amountRange": "Диапазон суммы",
+      "termRange": "Диапазон срока (месяцы)",
+      "validityPeriod": "Период действия"
+    },
+    "table": {
+      "name": "Название программы",
+      "status": "Статус", 
+      "currency": "Валюта",
+      "amountRange": "Диапазон суммы",
+      "termRange": "Диапазон срока",
+      "validPeriod": "Период действия",
+      "actions": "Действия"
+    },
+    "form": {
+      "createTitle": "Создать кредитную программу",
+      "createDescription": "Создать новую кредитную программу для этого решения",
+      "requiredFields": "Обязательные поля",
+      "optionalFields": "Дополнительные поля"
+    },
+    "actions": {
+      "create": "Создать программу",
+      "activate": "Активировать",
+      "suspend": "Приостановить",
+      "close": "Закрыть"
+    },
+    "indicators": {
+      "active": "Активна",
+      "availableForApplications": "Доступна для заявок",
+      "expired": "Истекла"
+    },
+    "messages": {
+      "noPrograms": "Кредитные программы не найдены",
+      "noProgramsDescription": "Создайте первую кредитную программу для этого решения",
+      "programCreated": "Кредитная программа успешно создана",
+      "programDeleted": "Кредитная программа успешно удалена",
+      "programActivated": "Кредитная программа успешно активирована",
+      "programSuspended": "Кредитная программа успешно приостановлена",
+      "programClosed": "Кредитная программа успешно закрыта",
+      "confirmDelete": "Вы уверены, что хотите удалить {item}? Это действие нельзя отменить."
+    },
+    "placeholders": {
+      "nameEn": "Введите название программы на английском",
+      "nameRu": "Введите название программы на русском",
+      "nameKg": "Введите название программы на киргизском",
+      "description": "Введите описание программы",
+      "selectStatus": "Выберите статус"
     }
   },
   "commission": {

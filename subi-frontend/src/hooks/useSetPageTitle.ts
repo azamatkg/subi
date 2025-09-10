@@ -11,7 +11,7 @@ export const usePageTitle = () => {
 
 export const useSetPageTitle = (title: string) => {
   const { setTitle } = usePageTitle();
-  
+
   useEffect(() => {
     setTitle(title);
   }, [title, setTitle]);

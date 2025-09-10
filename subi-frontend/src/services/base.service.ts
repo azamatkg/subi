@@ -130,10 +130,10 @@ export abstract class BaseService<
     id: string | number,
     file: File
   ): Promise<{ message: string; fileId: string }> {
-    const response = await apiClient.uploadFile<{ message: string; fileId: string }>(
-      `${this.baseUrl}/${id}/files`,
-      file
-    );
+    const response = await apiClient.uploadFile<{
+      message: string;
+      fileId: string;
+    }>(`${this.baseUrl}/${id}/files`, file);
     return response.data;
   }
 
@@ -141,10 +141,10 @@ export abstract class BaseService<
     id: string | number,
     files: File[]
   ): Promise<{ message: string; fileIds: string[] }> {
-    const response = await apiClient.uploadFiles<{ message: string; fileIds: string[] }>(
-      `${this.baseUrl}/${id}/files`,
-      files
-    );
+    const response = await apiClient.uploadFiles<{
+      message: string;
+      fileIds: string[];
+    }>(`${this.baseUrl}/${id}/files`, files);
     return response.data;
   }
 

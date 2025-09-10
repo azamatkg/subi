@@ -69,7 +69,11 @@ export const Header: React.FC = () => {
 
         {/* Right section */}
         <div className="flex items-center">
-          <Button variant="ghost" size="sm" className="relative h-9 w-9 text-gray-200 hover:bg-gray-800 hover:text-white">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="relative h-9 w-9 text-gray-200 hover:bg-gray-800 hover:text-white"
+          >
             <Bell className="h-4 w-4" />
             <span className="absolute top-0 right-0 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
@@ -88,7 +92,11 @@ export const Header: React.FC = () => {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-gray-800 border-gray-700" align="end" forceMount>
+            <DropdownMenuContent
+              className="w-56 bg-gray-800 border-gray-700"
+              align="end"
+              forceMount
+            >
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none text-white">
@@ -109,7 +117,10 @@ export const Header: React.FC = () => {
                 <span>{t('navigation.settings')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-gray-700" />
-              <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white" onClick={handleLogout}>
+              <DropdownMenuItem
+                className="text-gray-200 focus:bg-gray-700 focus:text-white"
+                onClick={handleLogout}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>{t('auth.logout')}</span>
               </DropdownMenuItem>

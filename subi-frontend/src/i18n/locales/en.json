@@ -52,7 +52,16 @@
     "tryAdjustingFilters": "Try adjusting your filters",
     "actions": "Actions",
     "main": "Main",
-    "programs": "Programs"
+    "programs": "Programs",
+    "min": "Min",
+    "max": "Max",
+    "range": "Range",
+    "months": "months",
+    "from": "from",
+    "to": "to",
+    "up_to": "up to",
+    "until": "until",
+    "notSpecified": "Not specified"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -116,6 +125,8 @@
     "newProgram": "New Program",
     "programDetails": "Program Details",
     "activePrograms": "Active Programs",
+    "advancedFilters": "Advanced Filters",
+    "searchPlaceholder": "Search programs by name...",
     "status": {
       "draft": "Draft",
       "pending_approval": "Pending Approval",
@@ -127,13 +138,71 @@
       "rejected": "Rejected"
     },
     "fields": {
-      "name": "Program Name",
+      "nameEn": "Program Name (EN)",
+      "nameRu": "Program Name (RU)",
+      "nameKg": "Program Name (KG)",
       "description": "Description",
-      "minAmount": "Minimum Amount",
-      "maxAmount": "Maximum Amount",
-      "minTerm": "Minimum Term",
-      "maxTerm": "Maximum Term",
-      "interestRate": "Interest Rate"
+      "status": "Status",
+      "validFrom": "Valid From",
+      "validTo": "Valid To",
+      "currency": "Currency",
+      "amountMin": "Minimum Amount",
+      "amountMax": "Maximum Amount",
+      "termMin": "Minimum Term (months)",
+      "termMax": "Maximum Term (months)",
+      "interestRate": "Interest Rate",
+      "processingFeePercentage": "Processing Fee (%)",
+      "collateralRequired": "Collateral Required",
+      "applications": "Applications"
+    },
+    "filters": {
+      "status": "Status",
+      "amountRange": "Amount Range",
+      "termRange": "Term Range (months)",
+      "validityPeriod": "Validity Period"
+    },
+    "table": {
+      "name": "Program Name",
+      "status": "Status", 
+      "currency": "Currency",
+      "amountRange": "Amount Range",
+      "termRange": "Term Range",
+      "validPeriod": "Valid Period",
+      "actions": "Actions"
+    },
+    "form": {
+      "createTitle": "Create Credit Program",
+      "createDescription": "Create a new credit program for this decision",
+      "requiredFields": "Required Fields",
+      "optionalFields": "Optional Fields"
+    },
+    "actions": {
+      "create": "Create Program",
+      "activate": "Activate",
+      "suspend": "Suspend",
+      "close": "Close"
+    },
+    "indicators": {
+      "active": "Active",
+      "availableForApplications": "Available for Applications",
+      "expired": "Expired"
+    },
+    "messages": {
+      "noPrograms": "No credit programs found",
+      "noProgramsDescription": "Create the first credit program for this decision",
+      "programCreated": "Credit program created successfully",
+      "programDeleted": "Credit program deleted successfully",
+      "programActivated": "Credit program activated successfully",
+      "programSuspended": "Credit program suspended successfully",
+      "programClosed": "Credit program closed successfully",
+      "confirmDelete": "Are you sure you want to delete {item}? This action cannot be undone."
+    },
+    "placeholders": {
+      "nameEn": "Enter program name in English",
+      "nameRu": "Enter program name in Russian",
+      "nameKg": "Enter program name in Kyrgyz",
+      "description": "Enter program description",
+      "selectStatus": "Select status"
     }
   },
   "commission": {

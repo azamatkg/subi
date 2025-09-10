@@ -10,12 +10,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
-import {
-  Home,
-  Settings,
-  ChevronLeft,
-  Scale,
-} from 'lucide-react';
+import { Home, Settings, ChevronLeft, Scale } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -82,7 +77,7 @@ export const Sidebar: React.FC = () => {
     const isMobileView = window.innerWidth < 1024;
     setIsMobile(isMobileView);
     previousMobileRef.current = isMobileView;
-    
+
     // Auto-close on initial load if mobile
     if (isMobileView) {
       dispatch(setSidebarOpen(false));
@@ -116,7 +111,6 @@ export const Sidebar: React.FC = () => {
       dispatch(setSidebarOpen(false));
     }
   };
-
 
   // Filter navigation items based on user roles
   const filteredSections = navigationSections
@@ -209,9 +203,8 @@ export const Sidebar: React.FC = () => {
         <div className="flex h-full flex-col bg-gray-800">
           {/* Enhanced Header */}
           <div className="flex items-center justify-between p-4 h-16 border-b border-gray-800 bg-gray-900 relative">
-            <div className="flex items-center gap-3">
-            </div>
-            
+            <div className="flex items-center gap-3"></div>
+
             {(sidebarOpen || isMobile) && (
               <div className="absolute left-0 right-0 flex justify-center">
                 <h1 className="text-lg font-semibold text-white">АСУБК</h1>
@@ -274,29 +267,29 @@ export const Sidebar: React.FC = () => {
             <div className="p-3">
               {!sidebarOpen && !isMobile ? (
                 <div className="flex justify-center gap-1">
-                  <LanguageSwitcher 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800" 
+                  <LanguageSwitcher
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800"
                   />
-                  <ThemeToggle 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800" 
+                  <ThemeToggle
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800"
                   />
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">
-                  <LanguageSwitcher 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800" 
+                  <LanguageSwitcher
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800"
                     showText={false}
                   />
-                  <ThemeToggle 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800" 
+                  <ThemeToggle
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800"
                   />
                 </div>
               )}

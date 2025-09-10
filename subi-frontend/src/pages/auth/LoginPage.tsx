@@ -8,12 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  Loader2,
-  Eye,
-  EyeOff,
-  Shield,
-} from 'lucide-react';
+import { Loader2, Eye, EyeOff, Shield } from 'lucide-react';
 import { useState } from 'react';
 import {
   FocusTrap,
@@ -147,7 +142,7 @@ export const LoginPage: React.FC = () => {
                     Автоматизированная система управления бюджетными кредитами
                   </p>
                 </div>
-                
+
                 <div className="space-y-3 lg:space-y-6 hidden sm:block">
                   <div className="flex items-start space-x-3">
                     <div className="mt-1 w-2 h-2 bg-blue-300 rounded-full flex-shrink-0"></div>
@@ -170,7 +165,7 @@ export const LoginPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Right side - Login Form */}
             <div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-12 bg-muted">
               <div className="max-w-md mx-auto">
@@ -313,15 +308,9 @@ export const LoginPage: React.FC = () => {
                           }
                         >
                           {showPassword ? (
-                            <EyeOff
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                            />
+                            <EyeOff className="h-5 w-5" aria-hidden="true" />
                           ) : (
-                            <Eye
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                            />
+                            <Eye className="h-5 w-5" aria-hidden="true" />
                           )}
                         </Button>
                       </div>

@@ -7,7 +7,7 @@ import { useAppSelector } from '@/hooks/redux';
 // Auth listener for custom events from API client
 const AuthEventListener: React.FC = () => {
   const navigate = useNavigate();
-  
+
   React.useEffect(() => {
     const handleAuthError = () => {
       // Instead of forcing a full page reload, navigate using React Router
@@ -45,7 +45,7 @@ export const MainLayout: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Auth event listener */}
       <AuthEventListener />
-      
+
       {/* Sidebar */}
       <Sidebar />
 
@@ -65,7 +65,6 @@ export const MainLayout: React.FC = () => {
           </div>
         </main>
       </div>
-
     </div>
   );
 };

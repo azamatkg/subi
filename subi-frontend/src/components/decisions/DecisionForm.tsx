@@ -328,9 +328,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                             placeholder={
                               typesLoading
                                 ? t('common.loading')
-                                : t(
-                                    'decision.placeholders.selectDecisionType'
-                                  )
+                                : t('decision.placeholders.selectDecisionType')
                             }
                           />
                         </SelectTrigger>

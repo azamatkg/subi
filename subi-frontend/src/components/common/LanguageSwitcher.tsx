@@ -46,11 +46,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className}>
           <CurrentFlagComponent className="h-4 w-4 rounded-sm" />
-          {showText && (
-            <span className="ml-2">
-              {currentLangOption.name}
-            </span>
-          )}
+          {showText && <span className="ml-2">{currentLangOption.name}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
@@ -61,9 +57,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
               key={option.code}
               onClick={() => handleLanguageChange(option.code)}
               className={`cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white ${
-                currentLanguage === option.code
-                  ? 'bg-gray-700 text-white'
-                  : ''
+                currentLanguage === option.code ? 'bg-gray-700 text-white' : ''
               }`}
             >
               <FlagComponent className="h-4 w-4 rounded-sm mr-2" />

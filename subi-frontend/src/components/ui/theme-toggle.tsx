@@ -62,7 +62,10 @@ export function ThemeToggle({
           <span className="sr-only">Переключить тему</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[140px] bg-gray-800 border-gray-700">
+      <DropdownMenuContent
+        align="end"
+        className="min-w-[140px] bg-gray-800 border-gray-700"
+      >
         <DropdownMenuItem
           onClick={() => setTheme('light')}
           className="gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white"

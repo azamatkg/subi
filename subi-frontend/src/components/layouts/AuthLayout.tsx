@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 // Auth listener for custom events from API client
 const AuthEventListener: React.FC = () => {
   const navigate = useNavigate();
-  
+
   React.useEffect(() => {
     const handleAuthError = () => {
       // Already on auth page, but we still need to clear state
@@ -39,7 +39,7 @@ export const AuthLayout: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Auth event listener */}
       <AuthEventListener />
-      
+
       {/* Auth form outlet - takes full width for custom layouts */}
       <Outlet />
     </div>

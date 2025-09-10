@@ -122,15 +122,16 @@ export function useFocusTrap(isActive: boolean = true) {
   return containerRef;
 }
 
-import { useCallback } from 'react';
-
 /**
  * Hook for announcing changes to screen readers
  */
 export function useAnnouncement() {
-  return useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    announceToScreenReader(message, priority);
-  }, []);
+  return useCallback(
+    (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+      announceToScreenReader(message, priority);
+    },
+    []
+  );
 }
 
 /**

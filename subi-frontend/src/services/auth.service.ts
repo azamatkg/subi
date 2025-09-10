@@ -42,7 +42,7 @@ class AuthService {
         email: backendData.email,
         firstName: firstName || '',
         lastName: lastName || '',
-        roles: backendData.roles.filter((role): role is UserRole => 
+        roles: backendData.roles.filter((role): role is UserRole =>
           Object.values(UserRole).includes(role as UserRole)
         ),
         isActive: true, // Assume active since login was successful

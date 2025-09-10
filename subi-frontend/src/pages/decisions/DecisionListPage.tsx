@@ -294,51 +294,52 @@ export const DecisionListPage: React.FC = () => {
                 className="shrink-0 shadow-sm"
               />
               <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg"
-                      aria-label={t('common.actions', { item: decision.nameEn })}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="shadow-lg border-border/20">
-                    <DropdownMenuItem 
-                      onClick={() => handleView(decision.id)}
-                      className="hover:bg-accent focus:bg-accent"
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      {t('common.view')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => handleEdit(decision.id)}
-                      className="hover:bg-accent focus:bg-accent"
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      {t('common.edit')}
-                    </DropdownMenuItem>
-                    <Separator />
-                    <DropdownMenuItem
-                      onClick={() => handleDeleteClick(decision)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash className="mr-2 h-4 w-4" />
-                      {t('common.delete')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg"
+                    aria-label={t('common.actions', { item: decision.nameEn })}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="shadow-lg border-border/20"
+                >
+                  <DropdownMenuItem
+                    onClick={() => handleView(decision.id)}
+                    className="hover:bg-accent focus:bg-accent"
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    {t('common.view')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleEdit(decision.id)}
+                    className="hover:bg-accent focus:bg-accent"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    {t('common.edit')}
+                  </DropdownMenuItem>
+                  <Separator />
+                  <DropdownMenuItem
+                    onClick={() => handleDeleteClick(decision)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash className="mr-2 h-4 w-4" />
+                    {t('common.delete')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
+          </div>
 
           {/* Details grid */}
           <div className="flex items-center gap-3 text-sm">
             <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
             <div>
-              <span className="font-medium">
-                {t('decision.fields.date')}:
-              </span>
+              <span className="font-medium">{t('decision.fields.date')}:</span>
               <AccessibleDate
                 date={decision.date}
                 className="ml-2 font-semibold"
@@ -480,7 +481,7 @@ export const DecisionListPage: React.FC = () => {
 
       {/* Search and Filter Controls */}
       <div className="bg-muted/10 rounded-lg border border-border/20 shadow-sm">
-        <div className="p-5 sm:p-7">
+        <div className="p-3 sm:p-4">
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
@@ -539,9 +540,9 @@ export const DecisionListPage: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <Button
-                  onClick={handleCreate}
-                  className="add-new-decision-button shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto relative group"
-                  size={isMobile ? 'default' : 'default'}
+                onClick={handleCreate}
+                className="add-new-decision-button shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto relative group"
+                size={isMobile ? 'default' : 'default'}
               >
                 <Plus className="h-4 w-4" />
                 <span
@@ -582,10 +583,7 @@ export const DecisionListPage: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="all">{t('common.all')}</SelectItem>
                     {decisionTypesData?.content.map(type => (
-                      <SelectItem
-                        key={type.id}
-                        value={type.id.toString()}
-                      >
+                      <SelectItem key={type.id} value={type.id.toString()}>
                         {type.nameEn}
                       </SelectItem>
                     ))}
@@ -617,10 +615,7 @@ export const DecisionListPage: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="all">{t('common.all')}</SelectItem>
                     {decisionMakingBodiesData?.content.map(body => (
-                      <SelectItem
-                        key={body.id}
-                        value={body.id.toString()}
-                      >
+                      <SelectItem key={body.id} value={body.id.toString()}>
                         {body.nameEn}
                       </SelectItem>
                     ))}
@@ -641,9 +636,7 @@ export const DecisionListPage: React.FC = () => {
                 >
                   <SelectTrigger id="status-filter">
                     <SelectValue
-                      placeholder={t(
-                        'decision.placeholders.selectStatus'
-                      )}
+                      placeholder={t('decision.placeholders.selectStatus')}
                     />
                   </SelectTrigger>
                   <SelectContent>
@@ -684,8 +677,8 @@ export const DecisionListPage: React.FC = () => {
       </div>
 
       {/* Results Section */}
-      <div className="bg-background rounded-lg">
-        <div className="pb-5 border-b border-border/10">
+      <div className="bg-transparent rounded-lg">
+        <div className="pb-3 border-b border-border/10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="flex items-center gap-4 text-xl font-bold tracking-wide">
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg">
@@ -704,7 +697,7 @@ export const DecisionListPage: React.FC = () => {
                     onClick={() => handleSetViewMode('card')}
                     aria-label={t('common.cardView')}
                   >
-                    <Grid className="h-4 w-4" />
+                    <Grid className="h-5 w-5" />
                   </Button>
                   <Button
                     variant={viewMode === 'table' ? 'default' : 'outline'}
@@ -712,7 +705,7 @@ export const DecisionListPage: React.FC = () => {
                     onClick={() => handleSetViewMode('table')}
                     aria-label={t('common.tableView')}
                   >
-                    <List className="h-4 w-4" />
+                    <List className="h-5 w-5" />
                   </Button>
                 </>
               )}
@@ -809,12 +802,17 @@ export const DecisionListPage: React.FC = () => {
                         <SortableTableHead field="status">
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">{t('common.actions')}</TableHead>
+                        <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+                          {t('common.actions')}
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {decisionsData.content.map((decision, index) => (
-                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-primary-50/20 hover:shadow-sm transition-all duration-300 border-b border-border/5`}>
+                        <TableRow
+                          key={decision.id}
+                          className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-primary-50/20 hover:shadow-sm transition-all duration-300 border-b border-border/5`}
+                        >
                           <TableCell className="font-mono font-semibold tabular-nums py-4">
                             {decision.number}
                           </TableCell>
@@ -856,7 +854,10 @@ export const DecisionListPage: React.FC = () => {
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="shadow-lg border-border/20">
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="shadow-lg border-border/20"
+                                >
                                   <DropdownMenuItem
                                     onClick={() => handleView(decision.id)}
                                     className="hover:bg-accent focus:bg-accent"

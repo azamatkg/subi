@@ -212,10 +212,13 @@ export function VisuallyHidden({
       (children.props as { className?: string })?.className,
       className
     );
-    
-    return React.cloneElement(children as React.ReactElement<{ className?: string }>, {
-      className: mergedClassName,
-    });
+
+    return React.cloneElement(
+      children as React.ReactElement<{ className?: string }>,
+      {
+        className: mergedClassName,
+      }
+    );
   }
 
   return <span className={cn('sr-only', className)}>{children}</span>;
