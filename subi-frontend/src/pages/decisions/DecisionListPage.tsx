@@ -255,7 +255,7 @@ export const DecisionListPage: React.FC = () => {
     decision,
   }) => (
     <Card
-      className="group hover:shadow-lg hover:bg-muted/20 hover:scale-[1.02] transition-all duration-200 border border-border/20 bg-card shadow-sm"
+      className="group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm"
       role="article"
       aria-labelledby={`decision-title-${decision.id}`}
     >
@@ -265,10 +265,10 @@ export const DecisionListPage: React.FC = () => {
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 border border-primary/20">
-                  <Scale className="h-4 w-4 text-primary shrink-0" />
+                <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm">
+                  <Scale className="h-5 w-5 text-primary-700 shrink-0" />
                 </div>
-                <span className="text-sm font-mono font-semibold text-primary tabular-nums">
+                <span className="text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide">
                   #{decision.number}
                 </span>
               </div>
@@ -278,7 +278,7 @@ export const DecisionListPage: React.FC = () => {
               >
                 <h3
                   id={`decision-title-${decision.id}`}
-                  className="text-xl font-semibold leading-tight text-card-foreground hover:text-primary transition-colors cursor-pointer tracking-wide"
+                  className="text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide"
                 >
                   {decision.nameEn}
                 </h3>
@@ -292,14 +292,14 @@ export const DecisionListPage: React.FC = () => {
             <div className="flex items-center gap-2 shrink-0">
               <AccessibleStatusBadge
                 status={decision.status}
-                className="shrink-0"
+                className="shrink-0 shadow-sm"
               />
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 opacity-70 group-hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg hover:scale-110 focus:ring-2 focus:ring-primary/20"
+                      className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg"
                       aria-label={t('common.actions', { item: decision.nameEn })}
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -359,13 +359,13 @@ export const DecisionListPage: React.FC = () => {
   }> = ({ field, children, className }) => (
     <TableHead
       className={cn(
-        'cursor-pointer transition-all duration-200 select-none border-b-2 border-b-border/20',
+        'cursor-pointer transition-all duration-300 select-none border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70',
         className
       )}
     >
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 w-full text-left font-semibold text-table-header-foreground hover:text-primary transition-colors duration-200 py-2"
+        className="flex items-center gap-2 w-full text-left font-bold text-table-header-foreground hover:text-primary-600 transition-colors duration-300 py-3 px-1 rounded-lg hover:bg-primary-50/50"
         aria-label={t('common.sortBy', { field: children })}
       >
         {children}
@@ -376,7 +376,7 @@ export const DecisionListPage: React.FC = () => {
             <SortDesc className="h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200" />
           )
         ) : (
-          <div className="h-4 w-4 opacity-50 group-hover:opacity-80 transition-opacity">
+          <div className="h-4 w-4 opacity-40 group-hover:opacity-70 transition-opacity">
             <SortAsc className="h-4 w-4 text-table-header-foreground" />
           </div>
         )}
@@ -480,8 +480,8 @@ export const DecisionListPage: React.FC = () => {
       <LiveRegion />
 
       {/* Search and Filter Controls */}
-      <Card className="border-0 shadow-sm bg-muted/30">
-        <CardContent className="p-4 sm:p-6">
+      <Card className="border border-card-elevated-border shadow-lg bg-gradient-to-r from-card to-card-elevated backdrop-blur-sm">
+        <CardContent className="p-5 sm:p-7">
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
@@ -558,7 +558,7 @@ export const DecisionListPage: React.FC = () => {
 
           {/* Collapsible Advanced Filters */}
           {isFilterOpen && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-muted/50 rounded-xl transition-all duration-300 ease-out mt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gradient-to-br from-muted/60 to-accent/40 rounded-xl transition-all duration-300 ease-out mt-6 border border-border/10 shadow-inner">
               {/* Decision Type Filter */}
               <div className="space-y-2">
                 <Label htmlFor="decision-type-filter">
@@ -685,14 +685,14 @@ export const DecisionListPage: React.FC = () => {
       </Card>
 
       {/* Results Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
+      <Card className="border border-card-elevated-border shadow-xl bg-card backdrop-blur-sm">
+        <CardHeader className="pb-5 border-b border-border/10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle className="flex items-center gap-3 text-xl font-semibold tracking-wide">
-              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-200/30 flex items-center justify-center">
-                <Scale className="h-5 w-5 text-emerald-600" />
+            <CardTitle className="flex items-center gap-4 text-xl font-bold tracking-wide">
+              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg">
+                <Scale className="h-6 w-6 text-primary-700" />
               </div>
-              {t('decision.decisions')}
+              <span className="text-card-foreground">{t('decision.decisions')}</span>
             </CardTitle>
 
             {/* View Toggle and Sort Controls */}
@@ -794,10 +794,10 @@ export const DecisionListPage: React.FC = () => {
 
               {/* Table View (Desktop Only) */}
               {viewMode === 'table' && !isMobile && (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-lg border border-card-elevated-border shadow-sm">
                   <Table>
-                    <TableHeader className="bg-table-header border-b-2 border-border">
-                      <TableRow className="group border-b-0 hover:bg-accent transition-all duration-200">
+                    <TableHeader className="bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30">
+                      <TableRow className="group border-b-0 hover:bg-primary-50/20 transition-all duration-300">
                         <SortableTableHead field="number">
                           {t('decision.fields.number')}
                         </SortableTableHead>
@@ -810,12 +810,12 @@ export const DecisionListPage: React.FC = () => {
                         <SortableTableHead field="status">
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[100px] text-center text-table-header-foreground font-semibold border-b-2 border-b-border/20">{t('common.actions')}</TableHead>
+                        <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">{t('common.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {decisionsData.content.map((decision, index) => (
-                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/50' : 'bg-background'} hover:bg-muted/80 transition-colors duration-200`}>
+                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-primary-50/20 hover:shadow-sm transition-all duration-300 border-b border-border/5`}>
                           <TableCell className="font-mono font-semibold tabular-nums py-4">
                             {decision.number}
                           </TableCell>
@@ -825,7 +825,7 @@ export const DecisionListPage: React.FC = () => {
                                 onClick={() => handleView(decision.id)}
                                 className="text-left w-full"
                               >
-                                <p className="font-semibold text-base leading-tight hover:text-primary transition-colors cursor-pointer tracking-wide">
+                                <p className="font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide">
                                   {decision.nameEn}
                                 </p>
                               </button>
@@ -894,8 +894,8 @@ export const DecisionListPage: React.FC = () => {
               {/* Pagination */}
               {decisionsData.content.length > 0 && (
                 <>
-                  <Separator />
-                  <div className="bg-gradient-to-r from-muted/30 to-muted/50 px-6 py-5 rounded-b-lg border-t border-border/20">
+                  <Separator className="opacity-30" />
+                  <div className="bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm">
                     <PaginationControls />
                   </div>
                 </>

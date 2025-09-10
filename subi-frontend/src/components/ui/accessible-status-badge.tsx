@@ -38,45 +38,48 @@ export function AccessibleStatusBadge({
 
     switch (status.toUpperCase()) {
       case 'APPROVED':
+      case 'ACTIVE':
         return (
           <CheckCircle
-            className={cn(iconClass, 'text-emerald-600 dark:text-emerald-400')}
+            className={cn(iconClass, 'text-success-600')}
             aria-hidden="true"
           />
         );
       case 'REJECTED':
+      case 'INACTIVE':
         return (
           <XCircle
-            className={cn(iconClass, 'text-red-600 dark:text-red-400')}
+            className={cn(iconClass, 'text-destructive-600')}
             aria-hidden="true"
           />
         );
+      case 'PENDING_CONFIRMATION':
       case 'UNDER_REVIEW':
       case 'UNDER_COMPLETION':
         return (
           <AlertCircle
-            className={cn(iconClass, 'text-amber-600 dark:text-amber-400')}
+            className={cn(iconClass, 'text-warning-600')}
             aria-hidden="true"
           />
         );
       case 'SUBMITTED':
         return (
           <Clock
-            className={cn(iconClass, 'text-blue-600 dark:text-blue-400')}
+            className={cn(iconClass, 'text-info-600')}
             aria-hidden="true"
           />
         );
       case 'DRAFT':
         return (
           <FileText
-            className={cn(iconClass, 'text-slate-600 dark:text-slate-400')}
+            className={cn(iconClass, 'text-neutral-600')}
             aria-hidden="true"
           />
         );
       default:
         return (
           <Clock
-            className={cn(iconClass, 'text-slate-600 dark:text-slate-400')}
+            className={cn(iconClass, 'text-neutral-600')}
             aria-hidden="true"
           />
         );
@@ -86,43 +89,25 @@ export function AccessibleStatusBadge({
   const statusLabel = AriaHelpers.getStatusLabel(status, locale);
   const variant = getStatusVariant();
 
-  // Enhanced status-specific color schemes
+  // Enhanced status-specific color schemes using semantic color system
   const getStatusColors = (status: string) => {
     switch (status.toUpperCase()) {
       case 'APPROVED':
       case 'ACTIVE':
-        return [
-          'bg-emerald-50 text-emerald-700 border-emerald-200',
-          'dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800',
-          'hover:bg-emerald-100 dark:hover:bg-emerald-900/30',
-        ];
+        return 'bg-status-approved-bg text-status-approved border-status-approved-border hover:bg-success-100 transition-colors';
       case 'REJECTED':
       case 'INACTIVE':
-        return [
-          'bg-red-50 text-red-700 border-red-200',
-          'dark:bg-red-900/20 dark:text-red-300 dark:border-red-800',
-          'hover:bg-red-100 dark:hover:bg-red-900/30',
-        ];
+        return 'bg-status-rejected-bg text-status-rejected border-status-rejected-border hover:bg-destructive-100 transition-colors';
       case 'PENDING_CONFIRMATION':
       case 'UNDER_REVIEW':
       case 'UNDER_COMPLETION':
-        return [
-          'bg-amber-50 text-amber-700 border-amber-200',
-          'dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800',
-          'hover:bg-amber-100 dark:hover:bg-amber-900/30',
-        ];
+        return 'bg-status-pending-bg text-status-pending border-status-pending-border hover:bg-warning-100 transition-colors';
+      case 'SUBMITTED':
+        return 'bg-status-submitted-bg text-status-submitted border-status-submitted-border hover:bg-info-100 transition-colors';
       case 'DRAFT':
-        return [
-          'bg-slate-50 text-slate-600 border-slate-200',
-          'dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800',
-          'hover:bg-slate-100 dark:hover:bg-slate-900/30',
-        ];
+        return 'bg-status-draft-bg text-status-draft border-status-draft-border hover:bg-neutral-100 transition-colors';
       default:
-        return [
-          'bg-blue-50 text-blue-700 border-blue-200',
-          'dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
-          'hover:bg-blue-100 dark:hover:bg-blue-900/30',
-        ];
+        return 'bg-status-submitted-bg text-status-submitted border-status-submitted-border hover:bg-info-100 transition-colors';
     }
   };
 
@@ -130,11 +115,11 @@ export function AccessibleStatusBadge({
     <Badge
       variant={variant}
       className={cn(
-        'inline-flex items-center gap-2 font-semibold transition-all duration-200 border',
+        'inline-flex items-center gap-2 font-semibold border shadow-sm',
         size === 'sm' && 'px-2.5 py-1 text-xs',
         size === 'default' && 'px-3 py-1.5 text-sm',
         size === 'lg' && 'px-4 py-2 text-base',
-        ...getStatusColors(status),
+        getStatusColors(status),
         className
       )}
       // ARIA attributes for accessibility
