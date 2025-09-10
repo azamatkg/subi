@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { ChevronLeft, LogOut, User, Settings, Bell } from 'lucide-react';
@@ -77,8 +76,6 @@ export const Header: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
           </Button>
-          
-          <LanguageSwitcher variant="ghost" size="sm" className="text-gray-200 hover:bg-gray-800 hover:text-white" />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

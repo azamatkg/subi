@@ -3,15 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
@@ -22,10 +15,6 @@ import {
   Settings,
   ChevronLeft,
   Scale,
-  LogOut,
-  User,
-  Bell,
-  HelpCircle,
 } from 'lucide-react';
 
 interface NavItem {
@@ -81,7 +70,7 @@ const navigationSections: NavSection[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { hasAnyRole, user, userDisplayName, logout } = useAuth();
+  const { hasAnyRole } = useAuth();
   const { t } = useTranslation();
   const sidebarOpen = useAppSelector(state => state.ui.sidebarOpen);
   const dispatch = useAppDispatch();
@@ -128,15 +117,6 @@ export const Sidebar: React.FC = () => {
     }
   };
 
-  // Get user initials for avatar
-  const getInitials = (name?: string) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
-  };
 
   // Filter navigation items based on user roles
   const filteredSections = navigationSections
@@ -290,117 +270,35 @@ export const Sidebar: React.FC = () => {
 
           {/* Enhanced Footer */}
           <div className="border-t border-gray-800 bg-gray-900">
-            {/* User Profile */}
-            <div className="p-3 border-t border-gray-800 bg-gray-900">
+            {/* Language and Theme Controls */}
+            <div className="p-3">
               {!sidebarOpen && !isMobile ? (
                 <div className="flex justify-center gap-1">
-                  <ThemeToggle variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800" />
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="h-10 w-10 p-0 rounded-full"
-                        aria-label="Меню пользователя"
-                      >
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-blue-900/50 text-blue-400 text-sm font-semibold">
-                            {getInitials(userDisplayName)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      side="right"
-                      className="w-56 ml-2 bg-gray-800 border-gray-700"
-                    >
-                      <div className="px-2 py-1.5">
-                        <p className="font-medium text-white">
-                          {userDisplayName}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          {user?.roles?.[0] || 'Пользователь'}
-                        </p>
-                      </div>
-                      <DropdownMenuSeparator className="bg-gray-700" />
-                      <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                        <User className="mr-2 h-4 w-4" />
-                        Профиль
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                        <Bell className="mr-2 h-4 w-4" />
-                        Уведомления
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                        <HelpCircle className="mr-2 h-4 w-4" />
-                        Помощь
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-gray-700" />
-                      <DropdownMenuItem
-                        onClick={logout}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Выход
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <LanguageSwitcher 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800" 
+                  />
+                  <ThemeToggle 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-10 w-10 p-0 rounded-full text-gray-200 hover:bg-gray-800" 
+                  />
                 </div>
               ) : (
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-blue-900/50 text-blue-400 font-semibold">
-                        {getInitials(userDisplayName)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white truncate">
-                        {userDisplayName}
-                      </p>
-                      <p className="text-xs text-gray-400 truncate">
-                        {user?.roles?.[0] || 'Пользователь'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <ThemeToggle variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-200 hover:bg-gray-800" />
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-gray-200 hover:bg-gray-800"
-                            aria-label="Меню пользователя"
-                          >
-                            <Settings className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          side="right"
-                          className="w-48 bg-gray-800 border-gray-700"
-                        >
-                          <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                            <User className="mr-2 h-4 w-4" />
-                            Профиль
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                            <Bell className="mr-2 h-4 w-4" />
-                            Уведомления
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-200 focus:bg-gray-700 focus:text-white">
-                            <HelpCircle className="mr-2 h-4 w-4" />
-                            Помощь
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-gray-700" />
-                          <DropdownMenuItem
-                            onClick={logout}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Выход
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-center gap-2">
+                  <LanguageSwitcher 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800" 
+                    showText={false}
+                  />
+                  <ThemeToggle 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-10 w-10 p-0 text-gray-200 hover:bg-gray-800" 
+                  />
+                </div>
               )}
             </div>
 
