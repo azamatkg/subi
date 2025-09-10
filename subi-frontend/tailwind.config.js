@@ -51,6 +51,8 @@ export default {
         'sidebar-accent-foreground': 'var(--color-sidebar-accent-foreground)',
         'sidebar-border': 'var(--color-sidebar-border)',
         'sidebar-ring': 'var(--color-sidebar-ring)',
+        'table-header': 'var(--color-table-header)',
+        'table-header-foreground': 'var(--color-table-header-foreground)',
       },
       borderRadius: {
         lg: 'var(--radius)',

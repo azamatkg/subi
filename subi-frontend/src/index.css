@@ -53,6 +53,10 @@
   --color-status-pending: hsl(30 90% 55%);
   --color-status-rejected: hsl(350 80% 55%);
   --color-status-draft: hsl(215 10% 45%);
+  
+  /* Table header colors - darker than secondary */
+  --color-table-header: hsl(215 20% 85%);
+  --color-table-header-foreground: hsl(220 15% 15%);
 }
 
 /* Dark theme - user preference based */
@@ -102,6 +106,10 @@
   --color-status-pending: hsl(30 90% 60%);
   --color-status-rejected: hsl(350 80% 60%);
   --color-status-draft: hsl(215 10% 60%);
+  
+  /* Table header colors for dark theme - darker than secondary */
+  --color-table-header: hsl(220 15% 8%);
+  --color-table-header-foreground: hsl(210 20% 95%);
 }
 
 /* Auto dark mode based on system preference */
@@ -152,6 +160,10 @@
     --color-status-pending: hsl(30 90% 60%);
     --color-status-rejected: hsl(350 80% 60%);
     --color-status-draft: hsl(215 10% 60%);
+    
+    /* Table header colors for dark theme - darker than secondary */
+    --color-table-header: hsl(220 15% 8%);
+    --color-table-header-foreground: hsl(210 20% 95%);
   }
 }
 

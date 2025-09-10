@@ -359,13 +359,13 @@ export const DecisionListPage: React.FC = () => {
   }> = ({ field, children, className }) => (
     <TableHead
       className={cn(
-        'cursor-pointer hover:bg-muted/80 transition-all duration-200 select-none border-b-2 border-b-border/20',
+        'cursor-pointer transition-all duration-200 select-none border-b-2 border-b-border/20',
         className
       )}
     >
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 w-full text-left font-semibold text-foreground hover:text-primary transition-colors duration-200 py-2"
+        className="flex items-center gap-2 w-full text-left font-semibold text-table-header-foreground hover:text-primary transition-colors duration-200 py-2"
         aria-label={t('common.sortBy', { field: children })}
       >
         {children}
@@ -377,7 +377,7 @@ export const DecisionListPage: React.FC = () => {
           )
         ) : (
           <div className="h-4 w-4 opacity-50 group-hover:opacity-80 transition-opacity">
-            <SortAsc className="h-4 w-4 text-foreground" />
+            <SortAsc className="h-4 w-4 text-table-header-foreground" />
           </div>
         )}
       </button>
@@ -796,8 +796,8 @@ export const DecisionListPage: React.FC = () => {
               {viewMode === 'table' && !isMobile && (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader className="bg-gradient-to-r from-muted/30 to-muted/50">
-                      <TableRow className="group border-b-0 hover:bg-muted transition-all duration-200">
+                    <TableHeader className="bg-table-header border-b-2 border-border">
+                      <TableRow className="group border-b-0 hover:bg-accent transition-all duration-200">
                         <SortableTableHead field="number">
                           {t('decision.fields.number')}
                         </SortableTableHead>
@@ -810,12 +810,12 @@ export const DecisionListPage: React.FC = () => {
                         <SortableTableHead field="status">
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[100px] text-center text-foreground font-semibold border-b-2 border-b-border/20">{t('common.actions')}</TableHead>
+                        <TableHead className="w-[100px] text-center text-table-header-foreground font-semibold border-b-2 border-b-border/20">{t('common.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {decisionsData.content.map((decision, index) => (
-                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/20' : 'bg-background'} hover:bg-muted/40 transition-colors duration-200`}>
+                        <TableRow key={decision.id} className={`group ${index % 2 === 1 ? 'bg-muted/50' : 'bg-background'} hover:bg-muted/80 transition-colors duration-200`}>
                           <TableCell className="font-mono font-semibold tabular-nums py-4">
                             {decision.number}
                           </TableCell>
