@@ -301,23 +301,6 @@ export const Sidebar: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {/* Footer Info */}
-            {(sidebarOpen || isMobile) && (
-              <div className="px-3 py-2 border-t border-gray-800 bg-gray-900">
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span>ASUBK Financial</span>
-                    <Badge
-                      variant="outline"
-                      className="text-xs px-1 border-gray-700 text-gray-400"
-                    >
-                      v1.0.0
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </aside>

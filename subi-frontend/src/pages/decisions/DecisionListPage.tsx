@@ -23,7 +23,6 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -254,12 +253,12 @@ export const DecisionListPage: React.FC = () => {
   const DecisionCard: React.FC<{ decision: DecisionResponseDto }> = ({
     decision,
   }) => (
-    <Card
-      className="group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm"
+    <div
+      className="group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg"
       role="article"
       aria-labelledby={`decision-title-${decision.id}`}
     >
-      <CardContent className="p-7">
+      <div className="p-7">
         <div className="space-y-4">
           {/* Header with status and actions */}
           <div className="flex items-start justify-between gap-4">
@@ -347,8 +346,8 @@ export const DecisionListPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
   // Enhanced table header with sorting
@@ -480,8 +479,8 @@ export const DecisionListPage: React.FC = () => {
       <LiveRegion />
 
       {/* Search and Filter Controls */}
-      <Card className="border border-card-elevated-border shadow-lg bg-gradient-to-r from-card to-card-elevated backdrop-blur-sm">
-        <CardContent className="p-5 sm:p-7">
+      <div className="bg-muted/10 rounded-lg border border-border/20 shadow-sm">
+        <div className="p-5 sm:p-7">
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
@@ -681,19 +680,19 @@ export const DecisionListPage: React.FC = () => {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Results Section */}
-      <Card className="border border-card-elevated-border shadow-xl bg-card backdrop-blur-sm">
-        <CardHeader className="pb-5 border-b border-border/10">
+      <div className="bg-background rounded-lg">
+        <div className="pb-5 border-b border-border/10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle className="flex items-center gap-4 text-xl font-bold tracking-wide">
+            <h2 className="flex items-center gap-4 text-xl font-bold tracking-wide">
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg">
                 <Scale className="h-6 w-6 text-primary-700" />
               </div>
-              <span className="text-card-foreground">{t('decision.decisions')}</span>
-            </CardTitle>
+              <span className="text-foreground">{t('decision.decisions')}</span>
+            </h2>
 
             {/* View Toggle and Sort Controls */}
             <div className="flex items-center gap-2">
@@ -752,9 +751,9 @@ export const DecisionListPage: React.FC = () => {
               )}
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent>
+        <div>
           {!decisionsData?.content.length ? (
             <div className="text-center py-12">
               <div className="space-y-3">
@@ -902,8 +901,8 @@ export const DecisionListPage: React.FC = () => {
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
