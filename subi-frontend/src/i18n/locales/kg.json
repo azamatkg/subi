@@ -50,7 +50,9 @@
     "clearFilters": "Чыпкаларды тазалоо",
     "refresh": "Жаңылоо",
     "tryAdjustingFilters": "Чыпкаларды өзгөртүп көрүңүз",
-    "actions": "Аракеттер"
+    "actions": "Аракеттер",
+    "main": "Негизги",
+    "programs": "Программалар"
   },
   "navigation": {
     "dashboard": "Башкаруу панели",

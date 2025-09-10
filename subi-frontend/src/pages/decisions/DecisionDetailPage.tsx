@@ -11,6 +11,7 @@ import {
   Tag,
   StickyNote,
   Loader2,
+  CreditCard,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -25,6 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
@@ -178,9 +180,27 @@ export const DecisionDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Main Information */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* Tabs */}
+      <Tabs defaultValue="main" className="space-y-6">
+        <TabsList className="inline-flex w-auto h-12 p-1">
+          <TabsTrigger 
+            value="main" 
+            className="px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+          >
+            {t('common.main')}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="programs" 
+            className="px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+          >
+            {t('common.programs')}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="main" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* Main Information */}
+            <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
           <Card>
             <CardHeader>
@@ -354,6 +374,25 @@ export const DecisionDetailPage: React.FC = () => {
           </Card>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="programs" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <CreditCard className="h-5 w-5" />
+                <span>{t('common.programs')}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <CreditCard className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                <p>Функциональность в разработке</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

@@ -50,7 +50,9 @@
     "clearFilters": "Clear Filters",
     "refresh": "Refresh",
     "tryAdjustingFilters": "Try adjusting your filters",
-    "actions": "Actions"
+    "actions": "Actions",
+    "main": "Main",
+    "programs": "Programs"
   },
   "navigation": {
     "dashboard": "Dashboard",

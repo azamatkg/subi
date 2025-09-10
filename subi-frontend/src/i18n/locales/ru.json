@@ -50,7 +50,9 @@
     "clearFilters": "Очистить фильтры",
     "refresh": "Обновить",
     "tryAdjustingFilters": "Попробуйте изменить фильтры",
-    "actions": "Действия"
+    "actions": "Действия",
+    "main": "Основная",
+    "programs": "Программы"
   },
   "navigation": {
     "dashboard": "Панель управления",
