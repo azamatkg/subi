@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -10,7 +11,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
-import { Home, Settings, ChevronLeft, Scale, CreditCard } from 'lucide-react';
+import { Home, Settings, ChevronLeft, ChevronDown, ChevronRight, Scale, CreditCard } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -23,6 +24,7 @@ interface NavItem {
 }
 
 interface NavSection {
+  id?: string;
   title?: string;
   items: NavItem[];
 }
@@ -39,6 +41,7 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
+    id: 'credit-management',
     title: 'Кредитное управление',
     items: [
       {
@@ -58,6 +61,7 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
+    id: 'administration',
     title: 'Администрирование',
     items: [
       {
@@ -78,6 +82,20 @@ export const Sidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isMobile, setIsMobile] = useState(false);
   const previousMobileRef = useRef(false);
+
+  // Accordion state management with localStorage persistence - single section only
+  const [expandedSection, setExpandedSection] = useState<string | null>(() => {
+    try {
+      const saved = localStorage.getItem('sidebar-expanded-section');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.warn('Failed to load sidebar state from localStorage:', error);
+    }
+    // Default: credit-management section expanded
+    return 'credit-management';
+  });
 
   // Initial mobile setup - runs only once
   useEffect(() => {
@@ -117,6 +135,24 @@ export const Sidebar: React.FC = () => {
     if (isMobile) {
       dispatch(setSidebarOpen(false));
     }
+  };
+
+  // Toggle section expansion with localStorage persistence - single section accordion
+  const toggleSection = (sectionId: string) => {
+    setExpandedSection(prev => {
+      // If clicking the currently expanded section, collapse it
+      // If clicking a different section, expand it (auto-collapses others)
+      const newExpanded = prev === sectionId ? null : sectionId;
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem('sidebar-expanded-section', JSON.stringify(newExpanded));
+      } catch (error) {
+        console.warn('Failed to save sidebar state to localStorage:', error);
+      }
+      
+      return newExpanded;
+    });
   };
 
   // Filter navigation items based on user roles
@@ -240,26 +276,74 @@ export const Sidebar: React.FC = () => {
           {/* Enhanced Navigation */}
           <div className="flex-1 overflow-y-auto p-3 space-y-1">
             {filteredSections.map((section, sectionIndex) => (
-              <div key={sectionIndex} className="space-y-1">
-                {section.title && (sidebarOpen || isMobile) && (
-                  <>
-                    <div className="px-3 py-2">
-                      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                        {section.title}
-                      </h3>
-                    </div>
-                  </>
-                )}
+              <div key={section.id || sectionIndex} className="space-y-1">
+                {section.title ? (
+                  // Collapsible section
+                  <Collapsible
+                    open={section.id ? expandedSection === section.id : true}
+                    onOpenChange={() => section.id && toggleSection(section.id)}
+                  >
+                    {(sidebarOpen || isMobile) ? (
+                      // Full width trigger when sidebar is expanded
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between px-3 py-2 h-auto text-xs font-semibold text-gray-400 uppercase tracking-wider hover:bg-gray-700 hover:text-gray-300 transition-colors"
+                        >
+                          <span>{section.title}</span>
+                          {section.id && (
+                            <ChevronDown
+                              className={cn(
+                                "h-4 w-4 transition-transform duration-200",
+                                expandedSection === section.id ? "rotate-0" : "-rotate-90"
+                              )}
+                            />
+                          )}
+                        </Button>
+                      </CollapsibleTrigger>
+                    ) : (
+                      // Icon-only trigger when sidebar is collapsed
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full h-8 p-0 hover:bg-gray-700 transition-colors"
+                          title={section.title}
+                        >
+                          <ChevronRight
+                            className={cn(
+                              "h-4 w-4 transition-transform duration-200",
+                              section.id && expandedSection === section.id ? "rotate-90" : "rotate-0"
+                            )}
+                          />
+                        </Button>
+                      </CollapsibleTrigger>
+                    )}
 
-                <nav className="space-y-0.5">
-                  {section.items.map(item => (
-                    <EnhancedNavLink
-                      key={item.href}
-                      item={item}
-                      isCollapsed={!sidebarOpen && !isMobile}
-                    />
-                  ))}
-                </nav>
+                    <CollapsibleContent className="space-y-0.5">
+                      <nav className="space-y-0.5 mt-1">
+                        {section.items.map(item => (
+                          <EnhancedNavLink
+                            key={item.href}
+                            item={item}
+                            isCollapsed={!sidebarOpen && !isMobile}
+                          />
+                        ))}
+                      </nav>
+                    </CollapsibleContent>
+                  </Collapsible>
+                ) : (
+                  // Non-collapsible section (like Dashboard)
+                  <nav className="space-y-0.5">
+                    {section.items.map(item => (
+                      <EnhancedNavLink
+                        key={item.href}
+                        item={item}
+                        isCollapsed={!sidebarOpen && !isMobile}
+                      />
+                    ))}
+                  </nav>
+                )}
 
                 {sectionIndex < filteredSections.length - 1 && (
                   <Separator className="my-3 bg-gray-800" />
