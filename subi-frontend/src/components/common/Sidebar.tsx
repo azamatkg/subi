@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
-import { Home, Settings, ChevronLeft, Scale } from 'lucide-react';
+import { Home, Settings, ChevronLeft, Scale, CreditCard } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -39,8 +39,15 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    title: 'Оформление документации',
+    title: 'Кредитное управление',
     items: [
+      {
+        title: 'navigation.creditPrograms',
+        href: '/credit-programs',
+        icon: CreditCard,
+        roles: ['ADMIN', 'CREDIT_MANAGER', 'CREDIT_ANALYST'],
+        description: 'Управление кредитными программами',
+      },
       {
         title: 'navigation.decisions',
         href: '/decisions',
