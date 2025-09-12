@@ -11,7 +11,7 @@ import { AriaHelpers } from '@/lib/accessibility';
 import { cn } from '@/lib/utils';
 
 interface AccessibleStatusBadgeProps {
-  status: string;
+  status: string | undefined | null;
   locale?: string;
   className?: string;
   showIcon?: boolean;
@@ -25,6 +25,8 @@ export function AccessibleStatusBadge({
   showIcon = true,
   size = 'default',
 }: AccessibleStatusBadgeProps) {
+  // Handle null/undefined status
+  const safeStatus = status || 'UNKNOWN';
   const getStatusVariant = () => {
     // Return 'default' for all statuses - we'll handle custom colors via className
     return 'default' as const;
@@ -36,7 +38,7 @@ export function AccessibleStatusBadge({
       size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'
     );
 
-    switch (status.toUpperCase()) {
+    switch (safeStatus.toUpperCase()) {
       case 'APPROVED':
       case 'ACTIVE':
         return (
@@ -86,12 +88,12 @@ export function AccessibleStatusBadge({
     }
   };
 
-  const statusLabel = AriaHelpers.getStatusLabel(status, locale);
+  const statusLabel = AriaHelpers.getStatusLabel(safeStatus, locale);
   const variant = getStatusVariant();
 
   // Enhanced status-specific color schemes using semantic color system
   const getStatusColors = (status: string) => {
-    switch (status.toUpperCase()) {
+    switch (safeStatus.toUpperCase()) {
       case 'APPROVED':
       case 'ACTIVE':
         return 'bg-status-approved-bg text-status-approved border-status-approved-border hover:bg-success-100 transition-colors';
@@ -119,7 +121,7 @@ export function AccessibleStatusBadge({
         size === 'sm' && 'px-2.5 py-1 text-xs',
         size === 'default' && 'px-3 py-1.5 text-sm',
         size === 'lg' && 'px-4 py-2 text-base',
-        getStatusColors(status),
+        getStatusColors(safeStatus),
         className
       )}
       // ARIA attributes for accessibility
@@ -127,7 +129,7 @@ export function AccessibleStatusBadge({
       aria-label={`Статус: ${statusLabel}`}
       title={statusLabel}
     >
-      {showIcon && getStatusIcon(status)}
+      {showIcon && getStatusIcon(safeStatus)}
       <span className="truncate">{statusLabel}</span>
     </Badge>
   );

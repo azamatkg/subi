@@ -55,6 +55,7 @@ export interface ApiResponse<T> {
 export interface PaginatedResponse<T> {
   content: T[];
   totalElements: number;
+  numberOfElements: number;
   totalPages: number;
   size: number;
   number: number;

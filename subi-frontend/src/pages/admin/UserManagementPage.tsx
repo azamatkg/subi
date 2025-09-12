@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants';
 
 export const UserManagementPage: React.FC = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">UserManagementPage</h1>
-      <p>Функциональность в разработке</p>
-    </div>
-  );
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to the new user list page
+    navigate(`${ROUTES.ADMIN}/users`, { replace: true });
+  }, [navigate]);
+
+  return null;
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { ROUTES } from '@/constants';
 
 // Layout components
@@ -41,7 +41,9 @@ import { CommissionDetailPage } from '@/pages/commissions/CommissionDetailPage';
 import { MyReviewsPage } from '@/pages/commissions/MyReviewsPage';
 
 // Admin pages
-import { UserManagementPage } from '@/pages/admin/UserManagementPage';
+import { UserListPage } from '@/pages/admin/UserListPage';
+import { UserDetailPage } from '@/pages/admin/UserDetailPage';
+import { UserAddEditPage } from '@/pages/admin/UserAddEditPage';
 import { ReferenceDataPage } from '@/pages/admin/ReferenceDataPage';
 import { SystemConfigPage } from '@/pages/admin/SystemConfigPage';
 
@@ -234,13 +236,30 @@ export const router = createBrowserRouter([
         path: 'admin',
         element: (
           <AdminRoute>
-            <div />
+            <Outlet />
           </AdminRoute>
         ),
         children: [
           {
             path: 'users',
-            element: <UserManagementPage />,
+            children: [
+              {
+                index: true,
+                element: <UserListPage />,
+              },
+              {
+                path: 'new',
+                element: <UserAddEditPage />,
+              },
+              {
+                path: ':id',
+                element: <UserDetailPage />,
+              },
+              {
+                path: ':id/edit',
+                element: <UserAddEditPage />,
+              },
+            ],
           },
           {
             path: 'reference-data',

@@ -11,7 +11,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
-import { Home, Settings, ChevronLeft, ChevronDown, ChevronRight, Scale, CreditCard } from 'lucide-react';
+import { Home, Settings, ChevronLeft, ChevronDown, ChevronRight, Scale, CreditCard, Users } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -21,6 +21,7 @@ interface NavItem {
   badge?: string | number;
   description?: string;
   isNew?: boolean;
+  end?: boolean;
 }
 
 interface NavSection {
@@ -65,11 +66,19 @@ const navigationSections: NavSection[] = [
     title: 'Администрирование',
     items: [
       {
+        title: 'navigation.userManagement',
+        href: '/admin/users',
+        icon: Users,
+        roles: ['ADMIN'],
+        description: 'Управление пользователями',
+      },
+      {
         title: 'navigation.admin',
         href: '/admin',
         icon: Settings,
         roles: ['ADMIN'],
         description: 'Системные настройки',
+        end: true,
       },
     ],
   },
@@ -173,6 +182,7 @@ export const Sidebar: React.FC = () => {
   }) => (
     <NavLink
       to={item.href}
+      end={item.end}
       onClick={closeSidebar}
       className={({ isActive }) =>
         cn(
