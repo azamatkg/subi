@@ -52,12 +52,6 @@ const navigationSections: NavSection[] = [
         icon: Home,
         description: 'Главная панель управления',
       },
-      {
-        title: 'navigation.userManagement',
-        href: '/admin/users',
-        icon: Users,
-        description: 'Управление пользователями',
-      },
     ],
   },
   {
