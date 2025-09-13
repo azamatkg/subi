@@ -1,12 +1,12 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
-  CheckCircle,
-  XCircle,
-  Pause,
   AlertTriangle,
+  CheckCircle,
   Clock,
-  User
+  Pause,
+  User,
+  XCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserStatus } from '@/types/user';

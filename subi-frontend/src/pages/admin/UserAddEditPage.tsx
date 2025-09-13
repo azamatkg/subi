@@ -47,7 +47,6 @@ import {
 import type { UserCreateDto, UserUpdateDto } from '@/types/user';
 import { UserRole } from '@/types/user';
 import { ROUTES } from '@/constants';
-import { toast } from 'sonner';
 import { handleApiError, showSuccessMessage } from '@/utils/errorHandling';
 
 // Form validation schema
@@ -169,7 +168,8 @@ export const UserAddEditPage: React.FC = () => {
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
-  const user = userResponse?.data;
+  // The API returns user data directly, not wrapped in ApiResponse
+  const user = userResponse;
 
   // Form setup
   const form = useForm<FormData>({
@@ -230,7 +230,7 @@ export const UserAddEditPage: React.FC = () => {
         enabled: user.enabled,
       });
     }
-  }, [user, isEditMode]);
+  }, [user, isEditMode, form]);
 
   // Check permissions
   if (!hasAnyRole(['ADMIN'])) {
@@ -270,7 +270,7 @@ export const UserAddEditPage: React.FC = () => {
 
         const result = await createUser(newUserData).unwrap();
         showSuccessMessage(t('userManagement.messages.userCreated'));
-        navigate(`${ROUTES.ADMIN}/users/${result.data.id}`);
+        navigate(`${ROUTES.ADMIN}/users/${result.id}`);
       }
     } catch (error: unknown) {
       handleApiError(error, t);

@@ -47,13 +47,13 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Get single user by ID with full details
-    getUserById: builder.query<UserResponse, string>({
+    getUserById: builder.query<UserResponseDto, string>({
       query: id => `/users/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'User', id }],
     }),
 
     // Get user by username (documented in API manual)
-    getUserByUsername: builder.query<UserResponse, string>({
+    getUserByUsername: builder.query<UserResponseDto, string>({
       query: username => `/users/username/${username}`,
       providesTags: (_result, _error, username) => [
         { type: 'User', id: username },
@@ -61,7 +61,7 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Create new user
-    createUser: builder.mutation<UserResponse, UserCreateDto>({
+    createUser: builder.mutation<UserResponseDto, UserCreateDto>({
       query: userData => ({
         url: `/users`,
         method: 'POST',
@@ -72,7 +72,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Update user information
     updateUser: builder.mutation<
-      UserResponse,
+      UserResponseDto,
       { id: string; data: UserUpdateDto }
     >({
       query: ({ id, data }) => ({
@@ -97,7 +97,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Update user status (activate/suspend/deactivate)
     updateUserStatus: builder.mutation<
-      UserResponse,
+      UserResponseDto,
       { id: string; data: UserStatusUpdateDto }
     >({
       query: ({ id, data }) => ({
@@ -112,7 +112,7 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Quick activate user
-    activateUser: builder.mutation<UserResponse, string>({
+    activateUser: builder.mutation<UserResponseDto, string>({
       query: id => ({
         url: `/users/${id}/activate`,
         method: 'PATCH',
@@ -122,7 +122,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Quick suspend user
     suspendUser: builder.mutation<
-      UserResponse,
+      UserResponseDto,
       { id: string; reason?: string }
     >({
       query: ({ id, reason }) => ({

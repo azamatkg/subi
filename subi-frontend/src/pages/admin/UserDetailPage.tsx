@@ -59,31 +59,22 @@ import { ROUTES } from '@/constants';
 
 export const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  // Validate ID parameter
+  // Only redirect if ID is completely missing - let API handle invalid formats
   useEffect(() => {
-    console.log('UserDetailPage mounted with ID:', id);
     if (!id) {
       console.error('No user ID provided in URL parameters');
+      navigate(`${ROUTES.ADMIN}/users`, { replace: true });
+      return;
     }
-  }, [id]);
-  const navigate = useNavigate();
+    console.log('UserDetailPage: Loading user with ID:', id);
+  }, [id, navigate]);
   const { t } = useTranslation();
   const {
     hasAnyRole,
-    isAuthenticated,
-    accessToken,
-    user: currentUser,
   } = useAuth();
 
-  // Debug authentication
-  useEffect(() => {
-    console.log('Auth state:', {
-      isAuthenticated,
-      hasToken: !!accessToken,
-      currentUser,
-    });
-  }, [isAuthenticated, accessToken, currentUser]);
 
   // State for modals and actions
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -99,40 +90,46 @@ export const UserDetailPage: React.FC = () => {
     error,
   } = useGetUserByIdQuery(id!, { skip: !id });
 
+  // Debug logging for API query state
+  useEffect(() => {
+    console.log('UserDetailPage: Query state -', {
+      id,
+      isLoading,
+      hasResponse: !!userResponse,
+      hasError: !!error,
+      userData: userResponse?.data ? 'present' : 'missing'
+    });
+    if (userResponse) {
+      console.log('UserDetailPage: Full API response structure:', userResponse);
+      console.log('UserDetailPage: Response data field:', userResponse.data);
+    }
+  }, [id, userResponse, isLoading, error]);
+
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
   const [suspendUser, { isLoading: isSuspending }] = useSuspendUserMutation();
   const [resetPassword, { isLoading: isResetting }] =
     useResetUserPasswordMutation();
 
-  // Handle the actual API response structure (API manual format)
-  const user = userResponse?.data;
+  // Handle the actual API response structure
+  // The API returns user data directly, not wrapped in ApiResponse
+  const user = userResponse;
 
-  // Debug logging
+  // Handle error states with redirect - be more specific about when to redirect
   useEffect(() => {
-    console.log('UserDetailPage Debug:', {
-      id,
-      userResponse,
-      user,
-      isLoading,
-      error,
-      errorDetails: error
-        ? {
-            status: (error as any)?.status,
-            data: (error as any)?.data,
-            message: (error as any)?.message,
-          }
-        : null,
-    });
-
+    if (error && 'status' in error && error.status === 404) {
+      console.log('UserDetailPage: User not found (404), redirecting to user list');
+      navigate(`${ROUTES.ADMIN}/users`, { replace: true });
+    }
+    // Remove the automatic redirect when user is falsy - let the API response determine this
     if (error) {
-      console.error('API Error details:', error);
+      console.log('UserDetailPage: API error:', error);
     }
+    if (user) {
+      console.log('UserDetailPage: User loaded successfully:', user.firstName, user.lastName);
+    }
+  }, [error, user, isLoading, navigate]);
 
-    if (id) {
-      console.log(`Making API call to: GET /api/users/${id}`);
-    }
-  }, [id, userResponse, user, isLoading, error]);
 
   useSetPageTitle(
     user
@@ -244,18 +241,19 @@ export const UserDetailPage: React.FC = () => {
   }
 
   if (error) {
-    console.error('UserDetailPage error:', error);
+    console.log('UserDetailPage: Rendering error state, error status:', 'status' in error ? error.status : 'no status');
+    // If it's a 404 error, it will redirect via useEffect above
+    if ('status' in error && error.status === 404) {
+      console.log('UserDetailPage: Returning null for 404 error (will redirect)');
+      return null;
+    }
     return <ErrorFallback error={error as Error} type='network' />;
   }
 
   if (!user && !isLoading) {
-    console.error('No user data found for id:', id);
-    return (
-      <ErrorFallback
-        error={new Error(`User not found with ID: ${id}`)}
-        type='network'
-      />
-    );
+    console.log('UserDetailPage: No user data and not loading - showing loading state instead of redirecting');
+    // Instead of returning null and redirecting, show a proper loading/error state
+    return <PageSkeleton />;
   }
 
   return (
@@ -354,7 +352,7 @@ export const UserDetailPage: React.FC = () => {
               <div className='flex items-center gap-2'>
                 <AccessibleStatusBadge status={user.status} />
                 <span className={`font-medium ${getStatusColor(user.status)}`}>
-                  {t(`userManagement.status.${user.status.toLowerCase()}`)}
+                  {user.status ? t(`userManagement.status.${user.status.toLowerCase()}`) : t('userManagement.status.unknown')}
                 </span>
               </div>
               {user.isActive ? (
@@ -535,30 +533,37 @@ export const UserDetailPage: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {user.roles.map(role => (
-                  <div
-                    key={role}
-                    className={`p-4 rounded-lg border ${getRoleColor(role)}`}
-                  >
-                    <div className='flex items-center justify-between'>
-                      <div>
-                        <h3 className='font-medium'>
-                          {t(`userManagement.roles.${role.toLowerCase()}`)}
-                        </h3>
-                        <p className='text-sm opacity-75 mt-1'>
-                          {t(
-                            `userManagement.roleDescriptions.${role.toLowerCase()}`
-                          )}
-                        </p>
+              {user.roles && user.roles.length > 0 ? (
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  {user.roles.map(role => (
+                    <div
+                      key={role}
+                      className={`p-4 rounded-lg border ${getRoleColor(typeof role === 'string' ? role : 'USER')}`}
+                    >
+                      <div className='flex items-center justify-between'>
+                        <div>
+                          <h3 className='font-medium'>
+                            {role && typeof role === 'string' ? t(`userManagement.roles.${role.toLowerCase()}`) : t('userManagement.roles.unknown')}
+                          </h3>
+                          <p className='text-sm opacity-75 mt-1'>
+                            {role && typeof role === 'string' ? t(
+                              `userManagement.roleDescriptions.${role.toLowerCase()}`
+                            ) : t('userManagement.roleDescriptions.unknown')}
+                          </p>
+                        </div>
+                        <Badge variant='secondary' className='ml-2'>
+                          {role}
+                        </Badge>
                       </div>
-                      <Badge variant='secondary' className='ml-2'>
-                        {role}
-                      </Badge>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className='text-center py-8'>
+                  <Shield className='h-8 w-8 text-muted-foreground/50 mx-auto mb-2' />
+                  <p className='text-muted-foreground'>{t('userManagement.noRolesAssigned')}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

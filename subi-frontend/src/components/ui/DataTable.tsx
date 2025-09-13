@@ -6,10 +6,10 @@ import {
   ChevronUp,
   ChevronsLeft,
   ChevronsRight,
-  Eye,
   Edit,
-  Trash,
+  Eye,
   MoreHorizontal,
+  Trash,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -120,7 +120,7 @@ const BulkActionsToolbar: React.FC<{
 }> = ({ selectedCount, bulkActions, selectedIds, onClearSelection }) => {
   const { t } = useTranslation();
 
-  if (selectedCount === 0) return null;
+  if (selectedCount === 0) {return null;}
 
   return (
     <div className="flex items-center justify-between p-4 bg-muted/50 border-b">
@@ -259,7 +259,7 @@ export function DataTable<T extends { id: string }>({
 
   // Handle select all
   const handleSelectAll = (checked: boolean) => {
-    if (!selection) return;
+    if (!selection) {return;}
 
     if (checked) {
       const allIds = data.map((item) => item.id);
@@ -271,7 +271,7 @@ export function DataTable<T extends { id: string }>({
 
   // Handle individual row selection
   const handleRowSelection = (itemId: string, checked: boolean) => {
-    if (!selection) return;
+    if (!selection) {return;}
 
     let newSelection: string[];
     if (checked) {
@@ -284,7 +284,7 @@ export function DataTable<T extends { id: string }>({
 
   // Handle sorting
   const handleSort = (field: string) => {
-    if (!sorting) return;
+    if (!sorting) {return;}
 
     const newDirection =
       sorting.field === field && sorting.direction === 'asc' ? 'desc' : 'asc';
@@ -377,7 +377,7 @@ export function DataTable<T extends { id: string }>({
                   <Checkbox
                     checked={allSelected}
                     ref={(el) => {
-                      if (el) el.indeterminate = someSelected;
+                      if (el) {el.indeterminate = someSelected;}
                     }}
                     onCheckedChange={handleSelectAll}
                     aria-label={t('common.selectAll')}

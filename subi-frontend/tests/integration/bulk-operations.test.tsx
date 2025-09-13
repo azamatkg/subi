@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 import { baseApi } from '@/store/api/baseApi'
 import UserListPage from '@/pages/admin/UserListPage'
-import { User, BulkUserAction, UserStatus } from '@/types/user'
+import { BulkUserAction, User, UserStatus } from '@/types/user'
 
 // Mock user data
 const mockUsers: User[] = [

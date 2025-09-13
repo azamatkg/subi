@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, User, Shield, Key, LogIn, LogOut, UserPlus, Trash2 } from 'lucide-react';
+import { Clock, Key, LogIn, LogOut, Shield, Trash2, User, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AccessibleDate, AccessibleLoading } from '@/components/ui/accessible-status-badge';
@@ -101,7 +101,7 @@ export function UserActivityTimeline({
   };
 
   const formatMetadata = (metadata: UserActivityTimelineEntry['metadata']) => {
-    if (!metadata) return null;
+    if (!metadata) {return null;}
 
     const items = [];
 

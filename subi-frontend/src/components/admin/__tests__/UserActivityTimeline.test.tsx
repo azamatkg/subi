@@ -293,7 +293,7 @@ const UserActivityTimeline: React.FC<{
     
     try {
       const response = await fetch(`/api/users/${userId}/activity?page=${pageNum}&size=3`);
-      if (!response.ok) throw new Error('Failed to fetch');
+      if (!response.ok) {throw new Error('Failed to fetch');}
       
       const data = await response.json();
       

@@ -39,12 +39,15 @@ export const roleApi = baseApi.injectEndpoints({
         page?: number;
         size?: number;
         sort?: string;
-      }
+      } | undefined
     >({
-      query: ({ page = 0, size = 20, sort = 'name,asc' }) => ({
-        url: `/roles`,
-        params: { page, size, sort },
-      }),
+      query: (params = {}) => {
+        const { page = 0, size = 20, sort = 'name,asc' } = params;
+        return {
+          url: `/roles`,
+          params: { page, size, sort },
+        };
+      },
       providesTags: ['Role'],
     }),
 
