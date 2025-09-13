@@ -86,6 +86,7 @@ export const UserDetailPage: React.FC = () => {
   // State for modals and actions
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
+  const [activateDialogOpen, setActivateDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword] = useState(() => generateRandomPassword());
@@ -202,7 +203,11 @@ export const UserDetailPage: React.FC = () => {
     }
   };
 
-  const handleActivate = async () => {
+  const handleActivate = () => {
+    setActivateDialogOpen(true);
+  };
+
+  const handleActivateConfirm = async () => {
     if (!user) {
       return;
     }
@@ -214,6 +219,7 @@ export const UserDetailPage: React.FC = () => {
         t('userManagement.messages.userActivated'),
         t('userManagement.messages.userActivatedDescription', { name: user.fullName })
       );
+      setActivateDialogOpen(false);
     } catch (error) {
       const errorInfo = handleApiError(error, t);
 
@@ -776,6 +782,36 @@ export const UserDetailPage: React.FC = () => {
               {isSuspending
                 ? t('userManagement.suspending')
                 : t('userManagement.actions.suspend')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Activate Confirmation Dialog */}
+      <Dialog open={activateDialogOpen} onOpenChange={setActivateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('userManagement.confirmActivateTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('userManagement.messages.confirmActivate', {
+                item: `"${user?.firstName} ${user?.lastName}"`,
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className='flex justify-end space-x-2'>
+            <Button
+              variant='outline'
+              onClick={() => setActivateDialogOpen(false)}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handleActivateConfirm}
+              disabled={isActivating || operationLoading === 'activate'}
+            >
+              {(isActivating || operationLoading === 'activate')
+                ? t('userManagement.activating')
+                : t('userManagement.actions.activate')}
             </Button>
           </div>
         </DialogContent>

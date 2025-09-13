@@ -448,3 +448,58 @@ export { UserRole } from '@/types';
 
 // Re-export base User interface for consistency
 export type { User } from '@/types';
+
+// Enhanced Bulk Operations Progress Types
+export interface BulkOperationProgress {
+  operationId: string;
+  operationType: 'status-change' | 'role-assignment' | 'delete';
+  totalItems: number;
+  processedItems: number;
+  successfulItems: number;
+  failedItems: number;
+  percentage: number;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled' | 'failed';
+  startTime: Date;
+  endTime?: Date;
+  estimatedTimeRemaining?: number;
+  currentItem?: string; // ID or name of current item being processed
+  errorDetails: BulkOperationError[];
+  canCancel: boolean;
+}
+
+export interface BulkOperationError {
+  itemId: string;
+  itemName: string;
+  error: string;
+  errorCode?: string;
+  retryable: boolean;
+  retryCount: number;
+}
+
+export interface BulkOperationItem {
+  id: string;
+  name: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+  error?: string;
+  retryable?: boolean;
+}
+
+export interface BulkOperationResult {
+  operationId: string;
+  success: boolean;
+  totalProcessed: number;
+  successCount: number;
+  failedCount: number;
+  skippedCount: number;
+  items: BulkOperationItem[];
+  summary: string;
+  details?: string;
+}
+
+export interface BulkOperationOptions {
+  continueOnError: boolean;
+  maxRetries: number;
+  batchSize: number;
+  showDetailedProgress: boolean;
+  allowCancel: boolean;
+}

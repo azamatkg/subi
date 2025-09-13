@@ -435,7 +435,171 @@
       "confirmDelete": "Are you sure you want to delete user {item}? This action cannot be undone.",
       "confirmSuspend": "Are you sure you want to suspend user {item}? They will not be able to log in.",
       "noResults": "No users found",
-      "noUsersYet": "No users have been created yet"
+      "noUsersYet": "No users have been created yet",
+      "userCreatedDescription": "The user account has been created and is ready for use",
+      "userUpdatedDescription": "User information has been successfully updated",
+      "userDeletedDescription": "The user account has been permanently removed",
+      "userActivatedDescription": "The user can now log in and access the system",
+      "userSuspendedDescription": "The user has been suspended and cannot log in",
+      "passwordResetDescription": "A new temporary password has been generated",
+      "confirmActivate": "Are you sure you want to activate user {item}? They will be able to log in.",
+      "confirmActivateTitle": "Activate User"
+    },
+    "validation": {
+      "fieldSanitized": "Input has been cleaned of invalid characters",
+      "dataSanitized": "Some data was automatically corrected",
+      "reviewChanges": "Please review the changes before saving",
+      "rolesRequired": "At least one role must be selected",
+      "invalidSearch": "Invalid search criteria",
+      "invalidDateRange": "Invalid date range selected",
+      "inputSanitized": "Input cleaned",
+      "invalidCharactersRemoved": "Invalid characters have been removed"
+    },
+    "errors": {
+      "userNotFound": "User not found",
+      "userAlreadyDeleted": "User has already been deleted",
+      "cannotDeleteUser": "Cannot delete user - they may have dependencies",
+      "cannotSuspendUser": "Cannot suspend user",
+      "cannotActivateUser": "Cannot activate user",
+      "cannotResetPassword": "Cannot reset password",
+      "userHasDependencies": "User cannot be deleted because they have active dependencies",
+      "conflictError": "Conflict error - please refresh and try again",
+      "validationError": "Validation error occurred",
+      "checkUniqueFields": "Please check that username and email are unique",
+      "checkUserStatus": "Please check user status",
+      "reviewFormData": "Please review form data and try again",
+      "tryRefreshing": "Try refreshing the page",
+      "pageError": "Page error occurred"
+    },
+    "navigation": {
+      "userList": {
+        "title": "User List",
+        "description": "View and manage all system users"
+      },
+      "createUser": {
+        "title": "Create User",
+        "description": "Add a new user to the system"
+      },
+      "roles": {
+        "title": "Role Management",
+        "description": "Manage user roles and permissions"
+      },
+      "activity": {
+        "title": "User Activity",
+        "description": "View user activity logs"
+      }
+    },
+    "help": {
+      "title": "User Management Help",
+      "description": "Manage system users, roles, and permissions",
+      "manageUsers": "Create, edit, and manage user accounts",
+      "configureRoles": "Configure user roles and access permissions"
+    },
+    "overview": {
+      "totalUsers": "Total Users",
+      "totalUsersDesc": "Total number of users in the system",
+      "activeUsers": "Active Users",
+      "activeUsersDesc": "Users who can currently access the system",
+      "adminUsers": "Admin Users",
+      "adminUsersDesc": "Users with administrative privileges"
+    },
+    "passwordStrength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "quickActions": {
+      "addNewUser": "Add New User",
+      "viewAllUsers": "View All Users"
+    },
+    "subtitle": "Manage system users and permissions",
+    "enabledUserDescription": "Enabled users can log in and access the system",
+    "activating": "Activating...",
+    "activityLoadError": "Failed to load activity",
+    "activityLoadErrorDescription": "Could not load user activity data",
+    "noRolesAssigned": "No roles assigned",
+    "bulkActions": {
+      "title": "Bulk Actions",
+      "selected": "{count} users selected",
+      "clearSelection": "Clear Selection",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "suspend": "Suspend",
+      "delete": "Delete",
+      "assignRole": "Assign Role",
+      "updatingStatus": "Updating user status...",
+      "assigningRole": "Assigning role to users...",
+      "deletingUsers": "Deleting users...",
+      "operationFailed": "Bulk operation failed. Please try again.",
+      "confirmStatusChange": "Change Status for {count} Users",
+      "confirmStatusChangeMessage": "Are you sure you want to change the status of {count} users to {status}?",
+      "confirmDelete": "Delete {count} Users",
+      "confirmDeleteMessage": "Are you sure you want to delete {count} users? This action cannot be undone.",
+      "statusUpdateSuccess": "User status updated successfully",
+      "roleAssignmentSuccess": "Role assigned successfully",
+      "deleteSuccess": "Users deleted successfully",
+      "partialDeleteSuccess": "Some users were deleted successfully",
+      "partialDeleteMessage": "{deleted} of {total} users were deleted",
+      "usersDeleted": "Users deleted",
+      "usersUpdated": "Users updated",
+      "selectionCleared": "Selection cleared",
+      "selectionClearedDescription": "All selected users have been deselected",
+      "operationCancelled": "Operation cancelled",
+      "operationCancelledDescription": "The bulk operation was cancelled by the user",
+      "conflictError": "Some users could not be processed due to conflicts",
+      "validationError": "Validation error in bulk operation",
+      "insufficientPermissions": "Insufficient permissions for some users",
+      "networkError": "Network error during bulk operation"
+    },
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "name": "Name",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "department": "Department",
+      "roles": "Roles",
+      "status": "Status",
+      "activeStatus": "Active Status",
+      "activeUser": "Active User",
+      "lastLogin": "Last Login",
+      "accountCreated": "Account Created",
+      "userId": "User ID",
+      "lastUpdated": "Last Updated",
+      "createdFrom": "Created From",
+      "createdTo": "Created To",
+      "lastLoginFrom": "Last Login From",
+      "lastLoginTo": "Last Login To",
+      "enabled": "Enabled"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "credit_manager": "Credit Manager",
+      "credit_analyst": "Credit Analyst",
+      "decision_maker": "Decision Maker",
+      "commission_member": "Commission Member",
+      "user": "User",
+      "unknown": "Unknown Role"
+    },
+    "roleDescriptions": {
+      "admin": "Full system access and user management",
+      "credit_manager": "Manage credit programs and applications",
+      "credit_analyst": "Analyze and process credit applications",
+      "decision_maker": "Make credit approval decisions",
+      "commission_member": "Participate in commission reviews",
+      "user": "Basic system access for applications",
+      "unknown": "Role not recognized"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "unknown": "Unknown Status"
     }
   },
   "decision": {

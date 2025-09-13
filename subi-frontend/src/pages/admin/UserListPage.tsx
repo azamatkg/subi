@@ -61,6 +61,7 @@ import {
 } from '@/store/api/userApi';
 import { useGetRolesQuery } from '@/store/api/roleApi';
 import type {
+  BulkOperationProgress,
   UserFilterState,
   UserListResponseDto,
   UserSearchAndFilterParams,
@@ -121,6 +122,8 @@ export const UserListPage: React.FC = () => {
   const [bulkOperationLoading, setBulkOperationLoading] = useState(false);
   const [bulkOperationError, setBulkOperationError] = useState<string | null>(null);
   const [bulkProgressMessage, setBulkProgressMessage] = useState<string | null>(null);
+  const [bulkProgress, setBulkProgress] = useState<BulkOperationProgress | null>(null);
+  const [operationCancelled, setOperationCancelled] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -321,7 +324,7 @@ export const UserListPage: React.FC = () => {
     }
   };
 
-  // Enhanced bulk operations handlers with validation and error recovery
+  // Enhanced bulk operations handlers with detailed progress tracking
   const handleBulkOperation = async (operation: string, params: Record<string, unknown>) => {
     // Validate bulk selection
     const selectionValidation = ValidationUtils.validateBulkSelection(selectedUserIds);
@@ -333,64 +336,149 @@ export const UserListPage: React.FC = () => {
       return;
     }
 
+    const operationId = `${operation}-${Date.now()}`;
+    const startTime = new Date();
+
+    // Initialize progress tracking
+    const initialProgress: BulkOperationProgress = {
+      operationId,
+      operationType: operation as 'status-change' | 'role-assignment' | 'delete',
+      totalItems: selectedUserIds.length,
+      processedItems: 0,
+      successfulItems: 0,
+      failedItems: 0,
+      percentage: 0,
+      status: 'processing',
+      startTime,
+      errorDetails: [],
+      canCancel: true,
+    };
+
     setBulkOperationLoading(true);
     setBulkOperationError(null);
+    setBulkProgress(initialProgress);
+    setOperationCancelled(false);
     setRetryCount(0);
+
+    const updateProgress = (processedItems: number, successfulItems: number, failedItems: number, currentItem?: string, errorDetails: { itemId: string; itemName: string; error: string; retryable: boolean; retryCount: number }[] = []) => {
+      const percentage = (processedItems / selectedUserIds.length) * 100;
+      const elapsed = (Date.now() - startTime.getTime()) / 1000;
+      const estimatedTimeRemaining = processedItems > 0 ? (elapsed / processedItems) * (selectedUserIds.length - processedItems) : undefined;
+
+      setBulkProgress(prev => prev ? {
+        ...prev,
+        processedItems,
+        successfulItems,
+        failedItems,
+        percentage,
+        currentItem,
+        estimatedTimeRemaining,
+        errorDetails,
+      } : null);
+    };
 
     const performOperation = async (): Promise<void> => {
       switch (operation) {
-        case 'status-change':
+        case 'status-change': {
           setBulkProgressMessage(t('userManagement.bulkActions.updatingStatus'));
-          await bulkUpdateUserStatus({
-            userIds: selectedUserIds,
-            status: params.status as UserStatus
-          }).unwrap();
-          showSuccessMessage(
-            t('userManagement.bulkActions.statusUpdateSuccess'),
-            t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
-          );
-          break;
+          updateProgress(0, 0, 0, 'Preparing status update...');
 
-        case 'role-assignment':
-          setBulkProgressMessage(t('userManagement.bulkActions.assigningRole'));
-          await bulkUpdateUserRoles({
-            userIds: selectedUserIds,
-            roleIds: [params.roleId as string]
-          }).unwrap();
-          showSuccessMessage(
-            t('userManagement.bulkActions.roleAssignmentSuccess'),
-            t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
-          );
+          try {
+            await bulkUpdateUserStatus({
+              userIds: selectedUserIds,
+              status: params.status as UserStatus
+            }).unwrap();
+
+            updateProgress(selectedUserIds.length, selectedUserIds.length, 0);
+            showSuccessMessage(
+              t('userManagement.bulkActions.statusUpdateSuccess'),
+              t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
+            );
+          } catch (error) {
+            updateProgress(selectedUserIds.length, 0, selectedUserIds.length);
+            throw error;
+          }
           break;
+        }
+
+        case 'role-assignment': {
+          setBulkProgressMessage(t('userManagement.bulkActions.assigningRole'));
+          updateProgress(0, 0, 0, 'Preparing role assignment...');
+
+          try {
+            await bulkUpdateUserRoles({
+              userIds: selectedUserIds,
+              roleIds: [params.roleId as string]
+            }).unwrap();
+
+            updateProgress(selectedUserIds.length, selectedUserIds.length, 0);
+            showSuccessMessage(
+              t('userManagement.bulkActions.roleAssignmentSuccess'),
+              t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
+            );
+          } catch (error) {
+            updateProgress(selectedUserIds.length, 0, selectedUserIds.length);
+            throw error;
+          }
+          break;
+        }
 
         case 'delete': {
           setBulkProgressMessage(t('userManagement.bulkActions.deletingUsers'));
-          let deletedCount = 0;
-          const failedDeletes: string[] = [];
+          let processedCount = 0;
+          let successCount = 0;
+          let failedCount = 0;
+          const errors: { itemId: string; itemName: string; error: string; retryable: boolean; retryCount: number }[] = [];
 
-          // Perform individual deletes with error tracking
-          for (const userId of selectedUserIds) {
+          // Perform individual deletes with detailed progress tracking
+          for (let i = 0; i < selectedUserIds.length; i++) {
+            if (operationCancelled) {
+              setBulkProgress(prev => prev ? { ...prev, status: 'cancelled' } : null);
+              return;
+            }
+
+            const userId = selectedUserIds[i];
+            const userName = finalData?.content?.find(u => u.id === userId)?.fullName || `User ${userId}`;
+
+            updateProgress(processedCount, successCount, failedCount, `Deleting ${userName}...`, errors);
+
             try {
               await deleteUser(userId).unwrap();
-              deletedCount++;
+              successCount++;
             } catch (error) {
-              failedDeletes.push(userId);
+              failedCount++;
+              errors.push({
+                itemId: userId,
+                itemName: userName,
+                error: handleApiError(error, t).message,
+                retryable: true,
+                retryCount: 0,
+              });
               console.error(`Failed to delete user ${userId}:`, error);
+            }
+
+            processedCount++;
+
+            // Add small delay to show progress for better UX
+            if (selectedUserIds.length > 5) {
+              await new Promise(resolve => setTimeout(resolve, 100));
             }
           }
 
-          if (failedDeletes.length > 0) {
+          updateProgress(processedCount, successCount, failedCount, undefined, errors);
+
+          if (failedCount > 0) {
             showWarningMessage(
               t('userManagement.bulkActions.partialDeleteSuccess'),
               t('userManagement.bulkActions.partialDeleteMessage', {
-                deleted: deletedCount,
-                failed: failedDeletes.length
+                deleted: successCount,
+                failed: failedCount
               })
             );
           } else {
             showSuccessMessage(
               t('userManagement.bulkActions.deleteSuccess'),
-              t('userManagement.bulkActions.usersDeleted', { count: deletedCount })
+              t('userManagement.bulkActions.usersDeleted', { count: successCount })
             );
           }
           break;
@@ -403,10 +491,26 @@ export const UserListPage: React.FC = () => {
       const retryableOperation = NetworkErrorRecovery.createRetryFunction(performOperation, 3, 1000);
       await retryableOperation();
 
+      // Mark as completed
+      setBulkProgress(prev => prev ? {
+        ...prev,
+        status: 'completed',
+        endTime: new Date(),
+        canCancel: false,
+      } : null);
+
       // Clear selection after successful operation
       setSelectedUserIds([]);
     } catch (error) {
       const errorInfo = handleApiError(error, t);
+
+      // Mark as failed
+      setBulkProgress(prev => prev ? {
+        ...prev,
+        status: 'failed',
+        endTime: new Date(),
+        canCancel: false,
+      } : null);
 
       // Set specific error messages based on error type
       if (errorInfo.status === 403) {
@@ -423,7 +527,28 @@ export const UserListPage: React.FC = () => {
     } finally {
       setBulkOperationLoading(false);
       setBulkProgressMessage(null);
+
+      // Keep progress visible for a moment after completion
+      setTimeout(() => {
+        setBulkProgress(null);
+      }, 3000);
     }
+  };
+
+  // Handle operation cancellation
+  const handleCancelOperation = () => {
+    setOperationCancelled(true);
+    setBulkOperationLoading(false);
+    setBulkProgress(prev => prev ? {
+      ...prev,
+      status: 'cancelled',
+      endTime: new Date(),
+      canCancel: false,
+    } : null);
+    showInfoMessage(
+      t('userManagement.bulkActions.operationCancelled'),
+      t('userManagement.bulkActions.operationCancelledDescription')
+    );
   };
 
   // Clear bulk selection with user feedback
@@ -849,10 +974,12 @@ export const UserListPage: React.FC = () => {
           selectedUsers={finalData?.content.filter(user => selectedUserIds.includes(user.id)) || []}
           onClearSelection={handleClearSelection}
           onBulkOperation={handleBulkOperation}
+          onCancelOperation={handleCancelOperation}
           availableRoles={rolesData?.content || []}
           isLoading={bulkOperationLoading}
           progressMessage={bulkProgressMessage || undefined}
           error={bulkOperationError || undefined}
+          progress={bulkProgress || undefined}
         />
       )}
 

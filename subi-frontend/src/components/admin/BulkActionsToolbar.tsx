@@ -3,11 +3,15 @@ import {
   AlertCircle,
   Check,
   ChevronDown,
+  Clock,
+  Eye,
+  EyeOff,
   Loader2,
   MoreHorizontal,
   RefreshCw,
   Shield,
   ShieldAlert,
+  StopCircle,
   Trash2,
   UserMinus,
   UserPlus,
@@ -33,7 +37,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import type { UserListResponseDto, UserStatus } from '@/types/user';
+import { Progress } from '@/components/ui/progress';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import type { BulkOperationProgress, UserListResponseDto, UserStatus } from '@/types/user';
 import type { RoleResponseDto } from '@/types/role';
 import { UserStatus as UserStatusEnum } from '@/types/user';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -45,10 +51,12 @@ export interface BulkActionsToolbarProps {
   selectedUsers: UserListResponseDto[];
   onClearSelection: () => void;
   onBulkOperation: (operation: string, params: Record<string, unknown>) => void;
+  onCancelOperation?: () => void;
   availableRoles: RoleResponseDto[];
   isLoading?: boolean;
   progressMessage?: string;
   error?: string;
+  progress?: BulkOperationProgress;
 }
 
 interface ConfirmationDialogState {
@@ -64,14 +72,17 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   selectedUsers: _selectedUsers,
   onClearSelection,
   onBulkOperation,
+  onCancelOperation,
   availableRoles,
   isLoading = false,
   progressMessage,
   error,
+  progress,
 }) => {
   const { t } = useTranslation();
   const { hasAnyRole } = useAuth();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showProgressDetails, setShowProgressDetails] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<ConfirmationDialogState>({
     open: false,
     title: '',
@@ -131,6 +142,42 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   const handleRetry = () => {
     // Placeholder for retry logic - would depend on the specific operation being retried
     // In a real implementation, this would retry the last failed operation
+  };
+
+  const handleCancelOperation = () => {
+    if (onCancelOperation) {
+      onCancelOperation();
+    }
+  };
+
+  // Format time remaining
+  const formatTimeRemaining = (seconds: number): string => {
+    if (seconds < 60) {
+      return t('common.timeRemaining.seconds', { count: Math.round(seconds) });
+    }
+    if (seconds < 3600) {
+      const minutes = Math.round(seconds / 60);
+      return t('common.timeRemaining.minutes', { count: minutes });
+    }
+    const hours = Math.floor(seconds / 3600);
+    const remainingMinutes = Math.round((seconds % 3600) / 60);
+    return t('common.timeRemaining.hoursMinutes', { hours, minutes: remainingMinutes });
+  };
+
+  // Get progress status color
+  const getProgressStatusColor = (status: string): string => {
+    switch (status) {
+      case 'processing':
+        return 'text-blue-600';
+      case 'completed':
+        return 'text-green-600';
+      case 'failed':
+        return 'text-red-600';
+      case 'cancelled':
+        return 'text-orange-600';
+      default:
+        return 'text-muted-foreground';
+    }
   };
 
   const renderStatusButtons = () => (
@@ -313,16 +360,133 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
           </div>
         </div>
 
-        {/* Progress Message */}
-        {isLoading && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {progressMessage || t('common.loading')}
+        {/* Enhanced Progress Display */}
+        {(isLoading || progress) && (
+          <div className="mt-3 space-y-3">
+            {/* Main Progress Bar and Status */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 space-y-2">
+                {/* Progress Bar */}
+                <div className="flex items-center gap-3">
+                  <Progress
+                    value={progress?.percentage || 0}
+                    className="flex-1 h-2"
+                  />
+                  <span className="text-sm font-medium min-w-[48px] text-right">
+                    {Math.round(progress?.percentage || 0)}%
+                  </span>
+                </div>
+
+                {/* Status and Progress Message */}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <span className={getProgressStatusColor(progress?.status || 'processing')}>
+                      {progressMessage ||
+                       (progress?.currentItem
+                         ? t('bulkOperations.processsingItem', { item: progress.currentItem })
+                         : t('common.loading')
+                       )}
+                    </span>
+                  </div>
+
+                  {/* Time Remaining */}
+                  {progress?.estimatedTimeRemaining && (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{formatTimeRemaining(progress.estimatedTimeRemaining)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Progress Summary */}
+                {progress && (
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span>{t('bulkOperations.processed', {
+                      processed: progress.processedItems,
+                      total: progress.totalItems
+                    })}</span>
+                    {progress.successfulItems > 0 && (
+                      <span className="text-green-600">
+                        ✓ {t('bulkOperations.successful', { count: progress.successfulItems })}
+                      </span>
+                    )}
+                    {progress.failedItems > 0 && (
+                      <span className="text-red-600">
+                        ✗ {t('bulkOperations.failed', { count: progress.failedItems })}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Cancel Button */}
+              {progress?.canCancel && isLoading && onCancelOperation && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancelOperation}
+                  className="flex-shrink-0"
+                >
+                  <StopCircle className="h-4 w-4 mr-2" />
+                  {t('common.cancel')}
+                </Button>
+              )}
+            </div>
+
+            {/* Progress Details Toggle */}
+            {progress?.errorDetails && progress.errorDetails.length > 0 && (
+              <Collapsible open={showProgressDetails} onOpenChange={setShowProgressDetails}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal">
+                    <div className="flex items-center gap-2 text-sm">
+                      {showProgressDetails ? (
+                        <EyeOff className="h-3 w-3" />
+                      ) : (
+                        <Eye className="h-3 w-3" />
+                      )}
+                      <span>
+                        {t('bulkOperations.showDetails')} ({progress.errorDetails.length} {t('bulkOperations.errors')})
+                      </span>
+                    </div>
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-1">
+                  {progress.errorDetails.slice(0, 5).map((errorDetail, index) => (
+                    <div
+                      key={`${errorDetail.itemId}-${index}`}
+                      className="flex items-start gap-2 p-2 bg-red-50 border border-red-200 rounded text-xs"
+                    >
+                      <AlertCircle className="h-3 w-3 text-red-500 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-red-700">{errorDetail.itemName}</div>
+                        <div className="text-red-600">{errorDetail.error}</div>
+                      </div>
+                      {errorDetail.retryable && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-6 px-2 text-xs"
+                          onClick={() => {/* TODO: Implement retry for specific item */}}
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {progress.errorDetails.length > 5 && (
+                    <div className="text-xs text-muted-foreground text-center py-1">
+                      {t('bulkOperations.andMore', { count: progress.errorDetails.length - 5 })}
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
           </div>
         )}
 
-        {/* Error Message */}
-        {error && !isLoading && (
+        {/* Simple Error Message (when not in progress) */}
+        {error && !isLoading && !progress && (
           <div className="mt-3">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
