@@ -95,11 +95,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
-    console.log('Form reset useEffect triggered:', {
-      isEdit,
-      hasInitialData: !!initialData,
-      initialData: initialData,
-    });
+    
 
     if (isEdit && initialData) {
       const resetValues = {
@@ -115,7 +111,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
         documentPackageId: initialData.documentPackageId || '',
       };
 
-      console.log('Resetting form with values:', resetValues);
+      
 
       // Use both reset and manual setValue as backup
       form.reset(resetValues);
@@ -123,7 +119,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
       // Add a slight delay to ensure form is ready and verify the reset worked
       setTimeout(() => {
         const currentValues = form.getValues();
-        console.log('Form values after reset:', currentValues);
+        
 
         // If reset didn't work properly, manually set the values
         if (
@@ -131,9 +127,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
             initialData.decisionMakingBodyId ||
           currentValues.decisionTypeId !== initialData.decisionTypeId
         ) {
-          console.log(
-            "Form reset didn't work properly, setting values manually"
-          );
+          
           form.setValue('nameEn', initialData.nameEn || '');
           form.setValue('nameRu', initialData.nameRu || '');
           form.setValue('nameKg', initialData.nameKg || '');
@@ -153,7 +147,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
           // Verify manual setting worked
           setTimeout(() => {
-            console.log('Form values after manual setValue:', form.getValues());
+            
           }, 50);
         }
       }, 100);
@@ -175,9 +169,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
           initialData.decisionMakingBodyId ||
         currentValues.decisionTypeId !== initialData.decisionTypeId
       ) {
-        console.log(
-          'Reference data loaded after decision data - refreshing form values'
-        );
+        
         form.setValue('decisionMakingBodyId', initialData.decisionMakingBodyId);
         form.setValue('decisionTypeId', initialData.decisionTypeId);
       }
@@ -196,8 +188,8 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
       };
 
       await onSubmit(cleanedData);
-    } catch (error) {
-      console.error('Form submission error:', error);
+    } catch {
+      // TODO: handle error
     }
   };
 
@@ -300,12 +292,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
               control={form.control}
               name='decisionTypeId'
               render={({ field }) => {
-                console.log(
-                  'DecisionType Select render - field.value:',
-                  field.value,
-                  'converted:',
-                  field.value ? field.value.toString() : ''
-                );
+                
                 return (
                   <FormItem>
                     <FormLabel>{t('decision.fields.decisionType')}</FormLabel>
@@ -313,12 +300,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                       <Select
                         value={field.value ? field.value.toString() : ''}
                         onValueChange={value => {
-                          console.log(
-                            'DecisionType Select onChange - raw value:',
-                            value,
-                            'converted:',
-                            value ? Number(value) : undefined
-                          );
+                          
                           field.onChange(value ? Number(value) : undefined);
                         }}
                         disabled={typesLoading}
@@ -360,12 +342,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
               control={form.control}
               name='decisionMakingBodyId'
               render={({ field }) => {
-                console.log(
-                  'DecisionMakingBody Select render - field.value:',
-                  field.value,
-                  'converted:',
-                  field.value ? field.value.toString() : ''
-                );
+                
                 return (
                   <FormItem>
                     <FormLabel>
@@ -375,12 +352,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                       <Select
                         value={field.value ? field.value.toString() : ''}
                         onValueChange={value => {
-                          console.log(
-                            'DecisionMakingBody Select onChange - raw value:',
-                            value,
-                            'converted:',
-                            value ? Number(value) : undefined
-                          );
+                          
                           field.onChange(value ? Number(value) : undefined);
                         }}
                         disabled={bodiesLoading}

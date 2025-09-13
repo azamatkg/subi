@@ -41,6 +41,7 @@ import { CommissionDetailPage } from '@/pages/commissions/CommissionDetailPage';
 import { MyReviewsPage } from '@/pages/commissions/MyReviewsPage';
 
 // Admin pages
+import { UserManagementPage } from '@/pages/admin/UserManagementPage';
 import { UserListPage } from '@/pages/admin/UserListPage';
 import { UserDetailPage } from '@/pages/admin/UserDetailPage';
 import { UserAddEditPage } from '@/pages/admin/UserAddEditPage';
@@ -240,6 +241,10 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
         children: [
+          {
+            index: true,
+            element: <UserManagementPage />,
+          },
           {
             path: 'users',
             children: [

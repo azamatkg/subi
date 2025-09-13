@@ -68,6 +68,14 @@ import type {
 } from '@/types/user';
 import { PAGINATION, ROUTES } from '@/constants';
 import { getStoredViewMode, setStoredViewMode } from '@/utils/auth';
+import {
+  NetworkErrorRecovery,
+  ValidationUtils,
+  handleApiError,
+  showInfoMessage,
+  showSuccessMessage,
+  showWarningMessage
+} from '@/utils/errorHandling';
 
 type SortField =
   | 'lastName'
@@ -113,6 +121,8 @@ export const UserListPage: React.FC = () => {
   const [bulkOperationLoading, setBulkOperationLoading] = useState(false);
   const [bulkOperationError, setBulkOperationError] = useState<string | null>(null);
   const [bulkProgressMessage, setBulkProgressMessage] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Custom view mode setter that persists to localStorage
   const handleSetViewMode = (mode: ViewMode) => {
@@ -192,11 +202,42 @@ export const UserListPage: React.FC = () => {
   const [bulkUpdateUserRoles] = useBulkUpdateUserRolesMutation();
   const { data: rolesData } = useGetRolesQuery();
 
-  // Handle filter changes
+  // Handle filter changes with validation
   const handleFilterChange = (
     key: keyof UserFilterState,
     value: string | string[] | boolean | UserStatus | null
   ) => {
+    // Clear previous validation errors
+    setValidationErrors(prev => ({ ...prev, [key]: '' }));
+
+    // Validate input based on filter type
+    if (key === 'searchTerm' && typeof value === 'string') {
+      const searchValidation = ValidationUtils.validateSearchTerm(value);
+      if (!searchValidation.isValid) {
+        setValidationErrors(prev => ({ ...prev, searchTerm: searchValidation.error || '' }));
+        showWarningMessage(t('userManagement.validation.invalidSearch'), searchValidation.error);
+        return;
+      }
+    }
+
+    if ((key === 'createdDateFrom' || key === 'createdDateTo' || key === 'lastLoginFrom' || key === 'lastLoginTo') && typeof value === 'string') {
+      const otherDateKey = key === 'createdDateFrom' ? 'createdDateTo' :
+                          key === 'createdDateTo' ? 'createdDateFrom' :
+                          key === 'lastLoginFrom' ? 'lastLoginTo' : 'lastLoginFrom';
+      const otherDateValue = filters[otherDateKey as keyof UserFilterState] as string;
+
+      const dateValidation = ValidationUtils.validateDateRange(
+        key.includes('From') ? value : otherDateValue,
+        key.includes('To') ? value : otherDateValue
+      );
+
+      if (!dateValidation.isValid) {
+        setValidationErrors(prev => ({ ...prev, [key]: dateValidation.error || '' }));
+        showWarningMessage(t('userManagement.validation.invalidDateRange'), dateValidation.error);
+        return;
+      }
+    }
+
     setFilters(prev => ({ ...prev, [key]: value }));
     setPage(0);
   };
@@ -252,23 +293,51 @@ export const UserListPage: React.FC = () => {
 
     try {
       await deleteUser(selectedUser.id).unwrap();
+      showSuccessMessage(
+        t('userManagement.messages.userDeleted'),
+        t('userManagement.messages.userDeletedDescription', { name: selectedUser.fullName })
+      );
       setDeleteDialogOpen(false);
       setSelectedUser(null);
     } catch (error) {
+      const errorInfo = handleApiError(error, t);
+
+      // Show specific error messages based on error type
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.cannotDeleteUser'),
+          t('userManagement.errors.userHasDependencies')
+        );
+      } else if (errorInfo.status === 404) {
+        showWarningMessage(
+          t('userManagement.errors.userNotFound'),
+          t('userManagement.errors.userAlreadyDeleted')
+        );
+        // Refresh the list to remove the non-existent user
+        window.location.reload();
+      }
+
       console.error('Failed to delete user:', error);
     }
   };
 
-  // Bulk operations handlers
+  // Enhanced bulk operations handlers with validation and error recovery
   const handleBulkOperation = async (operation: string, params: Record<string, unknown>) => {
-    if (selectedUserIds.length === 0) {
+    // Validate bulk selection
+    const selectionValidation = ValidationUtils.validateBulkSelection(selectedUserIds);
+    if (!selectionValidation.isValid) {
+      showWarningMessage(
+        t('userManagement.bulkActions.validationError'),
+        selectionValidation.error
+      );
       return;
     }
 
     setBulkOperationLoading(true);
     setBulkOperationError(null);
+    setRetryCount(0);
 
-    try {
+    const performOperation = async (): Promise<void> => {
       switch (operation) {
         case 'status-change':
           setBulkProgressMessage(t('userManagement.bulkActions.updatingStatus'));
@@ -276,6 +345,10 @@ export const UserListPage: React.FC = () => {
             userIds: selectedUserIds,
             status: params.status as UserStatus
           }).unwrap();
+          showSuccessMessage(
+            t('userManagement.bulkActions.statusUpdateSuccess'),
+            t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
+          );
           break;
 
         case 'role-assignment':
@@ -284,21 +357,68 @@ export const UserListPage: React.FC = () => {
             userIds: selectedUserIds,
             roleIds: [params.roleId as string]
           }).unwrap();
+          showSuccessMessage(
+            t('userManagement.bulkActions.roleAssignmentSuccess'),
+            t('userManagement.bulkActions.usersUpdated', { count: selectedUserIds.length })
+          );
           break;
 
-        case 'delete':
+        case 'delete': {
           setBulkProgressMessage(t('userManagement.bulkActions.deletingUsers'));
-          // Perform individual deletes since bulk delete API is not available
+          let deletedCount = 0;
+          const failedDeletes: string[] = [];
+
+          // Perform individual deletes with error tracking
           for (const userId of selectedUserIds) {
-            await deleteUser(userId).unwrap();
+            try {
+              await deleteUser(userId).unwrap();
+              deletedCount++;
+            } catch (error) {
+              failedDeletes.push(userId);
+              console.error(`Failed to delete user ${userId}:`, error);
+            }
+          }
+
+          if (failedDeletes.length > 0) {
+            showWarningMessage(
+              t('userManagement.bulkActions.partialDeleteSuccess'),
+              t('userManagement.bulkActions.partialDeleteMessage', {
+                deleted: deletedCount,
+                failed: failedDeletes.length
+              })
+            );
+          } else {
+            showSuccessMessage(
+              t('userManagement.bulkActions.deleteSuccess'),
+              t('userManagement.bulkActions.usersDeleted', { count: deletedCount })
+            );
           }
           break;
+        }
       }
+    };
+
+    try {
+      // Create retry wrapper for the operation
+      const retryableOperation = NetworkErrorRecovery.createRetryFunction(performOperation, 3, 1000);
+      await retryableOperation();
 
       // Clear selection after successful operation
       setSelectedUserIds([]);
     } catch (error) {
-      setBulkOperationError(t('userManagement.bulkActions.operationFailed'));
+      const errorInfo = handleApiError(error, t);
+
+      // Set specific error messages based on error type
+      if (errorInfo.status === 403) {
+        setBulkOperationError(t('userManagement.bulkActions.insufficientPermissions'));
+      } else if (errorInfo.status === 409) {
+        setBulkOperationError(t('userManagement.bulkActions.conflictError'));
+      } else if (NetworkErrorRecovery.isRetryableError(error)) {
+        setBulkOperationError(t('userManagement.bulkActions.networkError'));
+      } else {
+        setBulkOperationError(errorInfo.message || t('userManagement.bulkActions.operationFailed'));
+      }
+
       console.error('Bulk operation failed:', error);
     } finally {
       setBulkOperationLoading(false);
@@ -306,22 +426,32 @@ export const UserListPage: React.FC = () => {
     }
   };
 
-  // Clear bulk selection
+  // Clear bulk selection with user feedback
   const handleClearSelection = () => {
+    if (selectedUserIds.length > 0) {
+      showInfoMessage(
+        t('userManagement.bulkActions.selectionCleared'),
+        t('userManagement.bulkActions.selectionClearedDescription', { count: selectedUserIds.length })
+      );
+    }
     setSelectedUserIds([]);
     setBulkOperationError(null);
+    setValidationErrors({});
   };
 
   // Format user roles for display
-  const formatRoles = (roles: string[]) => {
+  const formatRoles = (roles: (string | { name?: string })[]) => {
     if (!roles || roles.length === 0) {
       return t('common.none');
     }
-    const firstRole = String(roles[0] || '').toLowerCase();
+    // Handle both string and object role formats
+    const firstRole = typeof roles[0] === 'string' ? roles[0] : (roles[0]?.name || 'unknown');
+    const firstRoleKey = String(firstRole || '').toLowerCase();
+
     if (roles.length === 1) {
-      return t(`userManagement.roles.${firstRole}`);
+      return t(`userManagement.roles.${firstRoleKey}`);
     }
-    return `${t(`userManagement.roles.${firstRole}`)} +${roles.length - 1}`;
+    return `${t(`userManagement.roles.${firstRoleKey}`)} +${roles.length - 1}`;
   };
 
   // DataTable columns definition
@@ -377,15 +507,21 @@ export const UserListPage: React.FC = () => {
       label: t('userManagement.fields.roles'),
       render: (user) => (
         <div className="flex flex-wrap gap-1">
-          {user.roles.slice(0, 2).map(role => (
-            <Badge
-              key={role}
-              variant="secondary"
-              className="text-xs"
-            >
-              {t(`userManagement.roles.${String(role || '').toLowerCase()}`)}
-            </Badge>
-          ))}
+          {user.roles.slice(0, 2).map((role, index) => {
+            // Handle both string and object role formats
+            const roleKey = typeof role === 'string' ? role : (role?.id || role?.name || `role-${index}`);
+            const roleValue = typeof role === 'string' ? role : (role?.name || 'UNKNOWN');
+
+            return (
+              <Badge
+                key={roleKey}
+                variant="secondary"
+                className="text-xs"
+              >
+                {t(`userManagement.roles.${String(roleValue || '').toLowerCase()}`)}
+              </Badge>
+            );
+          })}
           {user.roles.length > 2 && (
             <Badge variant="outline" className="text-xs">
               +{user.roles.length - 2}
@@ -646,9 +782,33 @@ export const UserListPage: React.FC = () => {
     return <PageSkeleton />;
   }
 
-  // Handle error states
+  // Enhanced error handling with recovery options
   if (finalError) {
-    return <ErrorFallback error={finalError as Error} type='network' />;
+    const errorInfo = handleApiError(finalError, t);
+
+    // Check if error is retryable
+    if (NetworkErrorRecovery.isRetryableError(finalError) && retryCount < 3) {
+      const retryOperation = async () => {
+        setRetryCount(prev => prev + 1);
+        // Trigger a refetch by refreshing the page
+        window.location.reload();
+      };
+
+      // Auto-retry after delay for network errors
+      setTimeout(retryOperation, NetworkErrorRecovery.getRetryDelay(retryCount));
+    }
+
+    return (
+      <ErrorFallback
+        error={finalError as Error}
+        type={errorInfo.status === 403 ? 'permission' : 'network'}
+        onRetry={() => {
+          setRetryCount(0);
+          window.location.reload();
+        }}
+        showRetry={NetworkErrorRecovery.isRetryableError(finalError)}
+      />
+    );
   }
 
   return (

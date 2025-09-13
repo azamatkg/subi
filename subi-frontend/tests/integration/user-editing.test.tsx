@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
@@ -380,8 +380,7 @@ describe('User Editing Workflow Integration', () => {
   })
 
   it('should prevent navigation with unsaved changes', async () => {
-    const mockNavigate = vi.fn()
-    vi.mocked(require('react-router-dom').useNavigate).mockReturnValue(mockNavigate)
+    // Mock is already set up globally in the file
 
     render(
       <TestWrapper>

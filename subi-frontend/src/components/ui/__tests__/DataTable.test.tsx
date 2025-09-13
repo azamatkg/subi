@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  type Mock,
   afterAll,
   afterEach,
   beforeEach,
@@ -10,18 +9,15 @@ import {
   vi,
 } from 'vitest';
 import {
-  fireEvent,
   render,
   screen,
-  waitFor,
-  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupServer } from 'msw/node';
-import { HttpResponse, http } from 'msw';
+// MSW imports removed as unused
 
 import { DataTable } from '../DataTable';
 import { userApi } from '@/store/api/userApi';
@@ -141,7 +137,7 @@ const mockUsers: UserListResponseDto[] = [
   },
 ];
 
-const mockPaginatedResponse: UserListResponse = {
+const _mockPaginatedResponse: UserListResponse = {
   content: mockUsers,
   page: 0,
   size: 20,
@@ -152,7 +148,7 @@ const mockPaginatedResponse: UserListResponse = {
   empty: false,
 };
 
-const mockEmptyResponse: UserListResponse = {
+const _mockEmptyResponse: UserListResponse = {
   content: [],
   page: 0,
   size: 20,

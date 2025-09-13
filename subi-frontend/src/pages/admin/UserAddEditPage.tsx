@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,8 +6,10 @@ import * as z from 'zod';
 import {
   AlertCircle,
   ArrowLeft,
+  CheckCircle2,
   Eye,
   EyeOff,
+  Loader2,
   Mail,
   Phone,
   Save,
@@ -21,6 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import {
   Form,
   FormControl,
@@ -37,6 +40,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   useCheckEmailAvailabilityQuery,
   useCheckUsernameAvailabilityQuery,
@@ -47,7 +51,12 @@ import {
 import type { UserCreateDto, UserUpdateDto } from '@/types/user';
 import { UserRole } from '@/types/user';
 import { ROUTES } from '@/constants';
-import { handleApiError, showSuccessMessage } from '@/utils/errorHandling';
+import {
+  InputSanitizer,
+  handleApiError,
+  showSuccessMessage,
+  showWarningMessage
+} from '@/utils/errorHandling';
 
 // Form validation schema
 const createUserSchema = z
@@ -141,15 +150,85 @@ type CreateFormData = z.infer<typeof createUserSchema>;
 type UpdateFormData = z.infer<typeof updateUserSchema>;
 type FormData = CreateFormData & UpdateFormData;
 
+// Password strength calculation
+interface PasswordStrength {
+  score: number; // 0-100
+  level: 'weak' | 'fair' | 'good' | 'strong';
+  requirements: {
+    length: boolean;
+    lowercase: boolean;
+    uppercase: boolean;
+    number: boolean;
+    special: boolean;
+  };
+  suggestions: string[];
+}
+
+const calculatePasswordStrength = (password: string): PasswordStrength => {
+  const requirements = {
+    length: password.length >= 8,
+    lowercase: /[a-z]/.test(password),
+    uppercase: /[A-Z]/.test(password),
+    number: /\d/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
+  const metRequirements = Object.values(requirements).filter(Boolean).length;
+  const score = Math.min(100, (metRequirements / 5) * 100 + (password.length - 6) * 2);
+
+  let level: 'weak' | 'fair' | 'good' | 'strong' = 'weak';
+  if (score >= 80) {
+    level = 'strong';
+  } else if (score >= 60) {
+    level = 'good';
+  } else if (score >= 40) {
+    level = 'fair';
+  }
+
+  const suggestions: string[] = [];
+  if (!requirements.length) {
+    suggestions.push('Use at least 8 characters');
+  }
+  if (!requirements.lowercase) {
+    suggestions.push('Add lowercase letters');
+  }
+  if (!requirements.uppercase) {
+    suggestions.push('Add uppercase letters');
+  }
+  if (!requirements.number) {
+    suggestions.push('Add numbers');
+  }
+  if (!requirements.special) {
+    suggestions.push('Add special characters');
+  }
+
+  return { score, level, requirements, suggestions };
+};
+
+
 export const UserAddEditPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const navigate = useNavigate();
   const { t, isLoading: translationLoading } = useTranslation();
   const { hasAnyRole } = useAuth();
 
   const isEditMode = Boolean(id);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
+    score: 0,
+    level: 'weak',
+    requirements: {
+      length: false,
+      lowercase: false,
+      uppercase: false,
+      number: false,
+      special: false,
+    },
+    suggestions: [],
+  });
+  const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [_fieldWarnings, setFieldWarnings] = useState<Record<string, string>>({});
 
   useSetPageTitle(
     isEditMode ? t('userManagement.editUser') : t('userManagement.createUser')
@@ -203,19 +282,53 @@ export const UserAddEditPage: React.FC = () => {
     ? undefined
     : (form.watch('username' as keyof FormData) as string | undefined);
   const watchedEmail = form.watch('email') as string;
+  const watchedPassword = isEditMode
+    ? undefined
+    : (form.watch('password' as keyof FormData) as string | undefined);
+  const watchedConfirmPassword = isEditMode
+    ? undefined
+    : (form.watch('confirmPassword' as keyof FormData) as string | undefined);
+
+  // Debounced values for API calls
+  const debouncedUsername = useDebounce(watchedUsername || '', 500);
+  const debouncedEmail = useDebounce(watchedEmail || '', 500);
 
   // Username availability check
   const { data: usernameExists, isLoading: usernameChecking } =
-    useCheckUsernameAvailabilityQuery(watchedUsername || '', {
-      skip: !watchedUsername || watchedUsername.length < 3,
+    useCheckUsernameAvailabilityQuery(debouncedUsername, {
+      skip: !debouncedUsername || debouncedUsername.length < 3 || isEditMode,
     });
 
-  // Email availability check
+  // Email availability check - skip if editing and email hasn't changed
+  const skipEmailCheck = useMemo(() => {
+    if (!debouncedEmail || !z.string().email().safeParse(debouncedEmail).success) {
+      return true;
+    }
+    if (isEditMode && user && user.email === debouncedEmail) {
+      return true;
+    }
+    return false;
+  }, [debouncedEmail, isEditMode, user]);
+
   const { data: emailExists, isLoading: emailChecking } =
-    useCheckEmailAvailabilityQuery(watchedEmail || '', {
-      skip:
-        !watchedEmail || !z.string().email().safeParse(watchedEmail).success,
+    useCheckEmailAvailabilityQuery(debouncedEmail, {
+      skip: skipEmailCheck,
     });
+
+  // Password strength calculation
+  useEffect(() => {
+    if (watchedPassword && !isEditMode) {
+      setPasswordStrength(calculatePasswordStrength(watchedPassword));
+    }
+  }, [watchedPassword, isEditMode]);
+
+  // Real-time password confirmation validation
+  const passwordsMatch = useMemo(() => {
+    if (isEditMode || !watchedPassword || !watchedConfirmPassword) {
+      return null;
+    }
+    return watchedPassword === watchedConfirmPassword;
+  }, [watchedPassword, watchedConfirmPassword, isEditMode]);
 
   // Load user data for edit mode
   useEffect(() => {
@@ -239,41 +352,128 @@ export const UserAddEditPage: React.FC = () => {
     );
   }
 
-  // Handle form submission
+  // Enhanced form submission with validation and sanitization
   const onSubmit = async (data: FormData) => {
+    // Clear previous validation errors
+    setValidationErrors({});
+    setFieldWarnings({});
+
     try {
+      // Pre-submission validation and sanitization
+      const sanitizedData = {
+        ...data,
+        firstName: InputSanitizer.sanitizeText(data.firstName),
+        lastName: InputSanitizer.sanitizeText(data.lastName),
+        email: InputSanitizer.sanitizeEmail(data.email),
+        phone: data.phone ? InputSanitizer.sanitizePhone(data.phone) : undefined,
+        department: data.department ? InputSanitizer.sanitizeText(data.department) : undefined,
+      };
+
+      // Add username sanitization for create mode
+      if (!isEditMode && 'username' in data) {
+        (sanitizedData as CreateFormData).username = InputSanitizer.sanitizeUsername(data.username as string);
+      }
+
+      // Warn user if data was sanitized
+      const warnings: Record<string, string> = {};
+      if (sanitizedData.firstName !== data.firstName) {
+        warnings.firstName = t('userManagement.validation.fieldSanitized');
+      }
+      if (sanitizedData.lastName !== data.lastName) {
+        warnings.lastName = t('userManagement.validation.fieldSanitized');
+      }
+      if (sanitizedData.email !== data.email) {
+        warnings.email = t('userManagement.validation.fieldSanitized');
+      }
+
+      if (Object.keys(warnings).length > 0) {
+        setFieldWarnings(warnings);
+        showWarningMessage(
+          t('userManagement.validation.dataSanitized'),
+          t('userManagement.validation.reviewChanges')
+        );
+      }
+
+      // Additional role validation
+      if (!sanitizedData.roles || sanitizedData.roles.length === 0) {
+        setValidationErrors({ roles: t('userManagement.validation.rolesRequired') });
+        showWarningMessage(t('userManagement.validation.rolesRequired'));
+        return;
+      }
+
+      // Check for username/email availability conflicts before submission
+      if (!isEditMode && usernameExists) {
+        setValidationErrors({ username: t('userManagement.usernameNotAvailable') });
+        showWarningMessage(t('userManagement.usernameNotAvailable'));
+        return;
+      }
+
+      if (emailExists && (!isEditMode || (user && user.email !== sanitizedData.email))) {
+        setValidationErrors({ email: t('userManagement.emailNotAvailable') });
+        showWarningMessage(t('userManagement.emailNotAvailable'));
+        return;
+      }
+
       if (isEditMode && id) {
         const updateData: UserUpdateDto = {
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          phone: data.phone || undefined,
-          department: data.department || undefined,
-          roles: data.roles,
-          enabled: data.enabled,
+          email: sanitizedData.email,
+          firstName: sanitizedData.firstName,
+          lastName: sanitizedData.lastName,
+          phone: sanitizedData.phone,
+          department: sanitizedData.department,
+          roles: sanitizedData.roles,
+          enabled: sanitizedData.enabled,
         };
 
         await updateUser({ id, data: updateData }).unwrap();
-        showSuccessMessage(t('userManagement.messages.userUpdated'));
+        showSuccessMessage(
+          t('userManagement.messages.userUpdated'),
+          t('userManagement.messages.userUpdatedDescription', {
+            name: `${sanitizedData.firstName} ${sanitizedData.lastName}`
+          })
+        );
         navigate(`${ROUTES.ADMIN}/users/${id}`);
       } else {
         const newUserData: UserCreateDto = {
-          username: data.username as string,
-          email: data.email,
+          username: (sanitizedData as CreateFormData).username,
+          email: sanitizedData.email,
           password: data.password as string,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          phone: data.phone || undefined,
-          department: data.department || undefined,
-          enabled: data.enabled,
+          firstName: sanitizedData.firstName,
+          lastName: sanitizedData.lastName,
+          phone: sanitizedData.phone,
+          department: sanitizedData.department,
+          enabled: sanitizedData.enabled,
         };
 
         const result = await createUser(newUserData).unwrap();
-        showSuccessMessage(t('userManagement.messages.userCreated'));
+        showSuccessMessage(
+          t('userManagement.messages.userCreated'),
+          t('userManagement.messages.userCreatedDescription', {
+            name: `${sanitizedData.firstName} ${sanitizedData.lastName}`
+          })
+        );
         navigate(`${ROUTES.ADMIN}/users/${result.id}`);
       }
     } catch (error: unknown) {
-      handleApiError(error, t);
+      const errorInfo = handleApiError(error, t);
+
+      // Handle specific validation errors from API
+      if (errorInfo.validationErrors) {
+        setValidationErrors(errorInfo.validationErrors);
+      }
+
+      // Provide specific guidance based on error type
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.conflictError'),
+          t('userManagement.errors.checkUniqueFields')
+        );
+      } else if (errorInfo.status === 422) {
+        showWarningMessage(
+          t('userManagement.errors.validationError'),
+          t('userManagement.errors.reviewFormData')
+        );
+      }
     }
   };
 
@@ -293,6 +493,64 @@ export const UserAddEditPage: React.FC = () => {
   if (isEditMode && userError) {
     return <ErrorFallback error={userError as Error} type='network' />;
   }
+
+  // Password strength component
+  const PasswordStrengthMeter: React.FC<{ strength: PasswordStrength }> = ({ strength }) => {
+    const getStrengthColor = (level: string) => {
+      switch (level) {
+        case 'weak': return 'bg-red-500';
+        case 'fair': return 'bg-yellow-500';
+        case 'good': return 'bg-blue-500';
+        case 'strong': return 'bg-green-500';
+        default: return 'bg-gray-200';
+      }
+    };
+
+    const getStrengthText = (level: string) => {
+      switch (level) {
+        case 'weak': return t('userManagement.passwordStrength.weak');
+        case 'fair': return t('userManagement.passwordStrength.fair');
+        case 'good': return t('userManagement.passwordStrength.good');
+        case 'strong': return t('userManagement.passwordStrength.strong');
+        default: return '';
+      }
+    };
+
+    return (
+      <div className='space-y-2'>
+        <div className='flex items-center justify-between'>
+          <span className='text-sm font-medium'>Password Strength</span>
+          <Badge variant={strength.level === 'strong' ? 'default' : 'secondary'}>
+            {getStrengthText(strength.level)}
+          </Badge>
+        </div>
+        <div className='w-full bg-gray-200 rounded-full h-2 overflow-hidden'>
+          <div
+            className={`h-full transition-all duration-300 ${getStrengthColor(strength.level)}`}
+            style={{ width: `${strength.score}%` }}
+          />
+        </div>
+        <div className='grid grid-cols-2 gap-1 text-xs'>
+          {Object.entries(strength.requirements).map(([key, met]) => (
+            <div key={key} className='flex items-center gap-1'>
+              {met ? (
+                <CheckCircle2 className='h-3 w-3 text-green-500' />
+              ) : (
+                <AlertCircle className='h-3 w-3 text-gray-400' />
+              )}
+              <span className={met ? 'text-green-600' : 'text-gray-500'}>
+                {key === 'length' && '8+ chars'}
+                {key === 'lowercase' && 'lowercase'}
+                {key === 'uppercase' && 'uppercase'}
+                {key === 'number' && 'number'}
+                {key === 'special' && 'special'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const roleOptions = [
     {
@@ -388,6 +646,23 @@ export const UserAddEditPage: React.FC = () => {
                           <Input
                             placeholder={t('userManagement.enterFirstName')}
                             {...field}
+                            maxLength={50}
+                            onChange={e => {
+                              const sanitized = InputSanitizer.sanitizeText(e.target.value);
+                              field.onChange(sanitized);
+
+                              if (sanitized !== e.target.value) {
+                                setFieldWarnings(prev => ({
+                                  ...prev,
+                                  firstName: t('userManagement.validation.invalidCharactersRemoved')
+                                }));
+                              } else {
+                                setFieldWarnings(prev => {
+                                  const { firstName, ...rest } = prev;
+                                  return rest;
+                                });
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -424,25 +699,47 @@ export const UserAddEditPage: React.FC = () => {
                         <div className='relative'>
                           <Mail className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className='pl-10'
+                            className='pl-10 pr-10'
                             placeholder={t('userManagement.enterEmail')}
                             {...field}
+                            aria-describedby={`email-status-${field.name}`}
                           />
+                          <div className='absolute right-3 top-3'>
+                            {emailChecking && (
+                              <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+                            )}
+                            {!emailChecking && debouncedEmail && z.string().email().safeParse(debouncedEmail).success && (
+                              emailExists ? (
+                                <AlertCircle className='h-4 w-4 text-red-500' />
+                              ) : debouncedEmail.length > 0 && !skipEmailCheck ? (
+                                <CheckCircle2 className='h-4 w-4 text-green-500' />
+                              ) : null
+                            )}
+                          </div>
                         </div>
                       </FormControl>
-                      {emailChecking && (
-                        <FormDescription>
-                          {t('userManagement.checkingEmailAvailability')}
-                        </FormDescription>
-                      )}
-                      {emailExists && (
-                        <Alert>
-                          <AlertCircle className='h-4 w-4' />
-                          <AlertDescription>
-                            {t('userManagement.emailNotAvailable')}
-                          </AlertDescription>
-                        </Alert>
-                      )}
+                      <div id={`email-status-${field.name}`}>
+                        {emailChecking && (
+                          <FormDescription className='flex items-center gap-2'>
+                            <Loader2 className='h-3 w-3 animate-spin' />
+                            {t('userManagement.checkingEmailAvailability')}
+                          </FormDescription>
+                        )}
+                        {!emailChecking && emailExists && (
+                          <Alert variant='destructive'>
+                            <AlertCircle className='h-4 w-4' />
+                            <AlertDescription>
+                              {t('userManagement.emailNotAvailable')}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                        {!emailChecking && debouncedEmail && !emailExists && !skipEmailCheck && z.string().email().safeParse(debouncedEmail).success && (
+                          <FormDescription className='flex items-center gap-2 text-green-600'>
+                            <CheckCircle2 className='h-3 w-3' />
+                            Email is available
+                          </FormDescription>
+                        )}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -523,25 +820,47 @@ export const UserAddEditPage: React.FC = () => {
                                 @
                               </span>
                               <Input
-                                className='pl-8'
+                                className='pl-8 pr-10'
                                 placeholder={t('userManagement.enterUsername')}
                                 {...field}
+                                aria-describedby={`username-status-${field.name}`}
                               />
+                              <div className='absolute right-3 top-3'>
+                                {usernameChecking && (
+                                  <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+                                )}
+                                {!usernameChecking && debouncedUsername && debouncedUsername.length >= 3 && (
+                                  usernameExists ? (
+                                    <AlertCircle className='h-4 w-4 text-red-500' />
+                                  ) : (
+                                    <CheckCircle2 className='h-4 w-4 text-green-500' />
+                                  )
+                                )}
+                              </div>
                             </div>
                           </FormControl>
-                          {usernameChecking && (
-                            <FormDescription>
-                              {t('userManagement.checkingUsernameAvailability')}
-                            </FormDescription>
-                          )}
-                          {usernameExists && (
-                            <Alert>
-                              <AlertCircle className='h-4 w-4' />
-                              <AlertDescription>
-                                {t('userManagement.usernameNotAvailable')}
-                              </AlertDescription>
-                            </Alert>
-                          )}
+                          <div id={`username-status-${field.name}`}>
+                            {usernameChecking && (
+                              <FormDescription className='flex items-center gap-2'>
+                                <Loader2 className='h-3 w-3 animate-spin' />
+                                {t('userManagement.checkingUsernameAvailability')}
+                              </FormDescription>
+                            )}
+                            {!usernameChecking && usernameExists && (
+                              <Alert variant='destructive'>
+                                <AlertCircle className='h-4 w-4' />
+                                <AlertDescription>
+                                  {t('userManagement.usernameNotAvailable')}
+                                </AlertDescription>
+                              </Alert>
+                            )}
+                            {!usernameChecking && debouncedUsername && !usernameExists && debouncedUsername.length >= 3 && (
+                              <FormDescription className='flex items-center gap-2 text-green-600'>
+                                <CheckCircle2 className='h-3 w-3' />
+                                Username is available
+                              </FormDescription>
+                            )}
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -583,6 +902,9 @@ export const UserAddEditPage: React.FC = () => {
                             <FormDescription>
                               {t('userManagement.passwordRequirements')}
                             </FormDescription>
+                            {watchedPassword && watchedPassword.length > 0 && (
+                              <PasswordStrengthMeter strength={passwordStrength} />
+                            )}
                             <FormMessage />
                           </FormItem>
                         )}
@@ -624,6 +946,22 @@ export const UserAddEditPage: React.FC = () => {
                                 </Button>
                               </div>
                             </FormControl>
+                            {watchedConfirmPassword && watchedConfirmPassword.length > 0 && (
+                              <div className='flex items-center gap-2 text-sm'>
+                                {passwordsMatch === true && (
+                                  <div className='flex items-center gap-1 text-green-600'>
+                                    <CheckCircle2 className='h-3 w-3' />
+                                    <span>Passwords match</span>
+                                  </div>
+                                )}
+                                {passwordsMatch === false && (
+                                  <div className='flex items-center gap-1 text-red-600'>
+                                    <AlertCircle className='h-3 w-3' />
+                                    <span>Passwords do not match</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                             <FormMessage />
                           </FormItem>
                         )}

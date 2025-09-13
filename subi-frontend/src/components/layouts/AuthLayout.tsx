@@ -8,12 +8,12 @@ const AuthEventListener: React.FC = () => {
   React.useEffect(() => {
     const handleAuthError = () => {
       // Already on auth page, but we still need to clear state
-      console.log('Auth error occurred');
+      
     };
 
-    const handleTokenRefresh = (event: CustomEvent) => {
+    const handleTokenRefresh = (_event: CustomEvent) => {
       // Token was refreshed successfully - could dispatch to update store if needed
-      console.log('Token refreshed:', event.detail);
+
     };
 
     window.addEventListener('auth-error', handleAuthError);

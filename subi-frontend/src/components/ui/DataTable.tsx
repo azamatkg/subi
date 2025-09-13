@@ -118,7 +118,7 @@ const BulkActionsToolbar: React.FC<{
   selectedIds: string[];
   onClearSelection: () => void;
 }> = ({ selectedCount, bulkActions, selectedIds, onClearSelection }) => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
 
   if (selectedCount === 0) {return null;}
 

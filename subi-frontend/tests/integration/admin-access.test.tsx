@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { BrowserRouter, Navigate } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { baseApi } from '@/store/api/baseApi'
 import UserListPage from '@/pages/admin/UserListPage'
 import UserAddEditPage from '@/pages/admin/UserAddEditPage'
 import UserDetailPage from '@/pages/admin/UserDetailPage'
-import { User, UserRole } from '@/types/user'
+import { User } from '@/types/user'
 
 // Mock user profiles with different roles
 const adminUser: User = {
@@ -85,7 +85,7 @@ const createMockStore = (currentUser: User) => {
   return configureStore({
     reducer: {
       [baseApi.reducerPath]: baseApi.reducer,
-      auth: (state = { currentUser }, action) => state
+      auth: (state = { currentUser }, _action) => state
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(baseApi.middleware)

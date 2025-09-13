@@ -169,6 +169,127 @@ subi-frontend/
 - **ESLint Config:** TypeScript ESLint with React hooks and React refresh plugins
 - **Import Aliases:** Use `@/` prefix for all internal imports (configured in vite.config.ts)
 
+## ESLint & Code Quality Guidelines
+
+### **MANDATORY: Pre-completion Quality Checks**
+```bash
+npm run lint      # Must pass with zero errors/warnings
+npm run type-check # Must pass with zero TypeScript errors
+```
+**Never consider work complete until both commands pass without issues.**
+
+### **Common ESLint Error Prevention**
+
+#### **1. Unused Variables & Imports**
+- **Remove unused imports** - Don't leave imported modules that aren't used
+  ```typescript
+  // ❌ Bad - fireEvent imported but not used
+  import { fireEvent, render } from '@testing-library/react'
+
+  // ✅ Good - only import what you use
+  import { render } from '@testing-library/react'
+  ```
+- **Handle unused parameters** - Prefix with underscore or remove entirely
+  ```typescript
+  // ❌ Bad
+  const handler = (event: CustomEvent) => { /* event not used */ }
+
+  // ✅ Good
+  const handler = (_event: CustomEvent) => { /* clearly intentionally unused */ }
+  // or
+  const handler = () => { /* remove parameter if not needed */ }
+  ```
+
+#### **2. TypeScript Type Safety**
+- **Never use `any` type** - Create proper union types or use generics
+  ```typescript
+  // ❌ Bad
+  const setValue = (field: string, value: any) => {}
+
+  // ✅ Good - Use proper union types
+  const setValue = (field: string, value: string | boolean | UserRole[]) => {}
+  ```
+- **Use existing hooks** - Check `/src/hooks/` before creating duplicates
+  ```typescript
+  // ❌ Bad - Creating duplicate useDebounce
+  const useDebounce = <T>(value: T, delay: number) => { /* implementation */ }
+
+  // ✅ Good - Import existing hook
+  import { useDebounce } from '@/hooks/useDebounce'
+  ```
+
+#### **3. React Hooks Best Practices**
+- **Wrap objects in `useMemo`** when used in dependency arrays
+  ```typescript
+  // ❌ Bad - Object recreated on every render
+  const defaultValues = { username: '', email: '' }
+  const reset = useCallback(() => {}, [defaultValues]) // Causes re-renders
+
+  // ✅ Good - Memoized object
+  const defaultValues = useMemo(() => ({
+    username: '',
+    email: ''
+  }), [initialData])
+  ```
+- **Handle dependency arrays correctly** - Include all dependencies or use proper exceptions
+
+#### **4. Code Style Requirements**
+- **Always use curly braces** for if statements (project enforces `curly` rule)
+  ```typescript
+  // ❌ Bad
+  if (condition) doSomething()
+
+  // ✅ Good
+  if (condition) {
+    doSomething()
+  }
+  ```
+
+#### **5. Error Handling Patterns**
+- **Remove unused error parameters** in catch blocks when not handling errors
+  ```typescript
+  // ❌ Bad
+  try {
+    await apiCall()
+  } catch (error) { // error defined but never used
+    // TODO: handle error
+  }
+
+  // ✅ Good
+  try {
+    await apiCall()
+  } catch {
+    // TODO: handle error
+  }
+  ```
+
+#### **6. Test File Cleanup**
+- **Remove unused testing utilities** that aren't needed for the specific test
+  ```typescript
+  // ❌ Bad - Importing unused testing utilities
+  import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+
+  // ✅ Good - Only import what's actually used in the test
+  import { render, screen, waitFor } from '@testing-library/react'
+  ```
+
+### **Quick ESLint Error Reference**
+| Error Type | Solution |
+|------------|----------|
+| `defined but never used` | Remove import/variable or prefix with `_` |
+| `Unexpected any` | Create proper union type or use generics |
+| `exhaustive-deps` | Add missing dependencies or wrap objects in `useMemo` |
+| `Expected { after 'if' condition` | Add curly braces around if statement body |
+| `Parsing error: Unexpected token` | Check for malformed JSX or TypeScript syntax |
+
+### **Pre-commit Checklist**
+- [ ] `npm run lint` passes with zero issues
+- [ ] `npm run type-check` passes with zero issues
+- [ ] No unused imports or variables
+- [ ] All `any` types replaced with proper types
+- [ ] All React hooks have correct dependencies
+- [ ] All if statements use curly braces
+
 ## Additional Development Notes
 - **Test Environment:** Vitest with jsdom environment and custom setup in `src/test/setup.ts`
 - **TypeScript Config:** Project references setup with separate app and node configurations

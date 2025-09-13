@@ -8,7 +8,6 @@ import {
   RefreshCw,
   Shield,
   ShieldAlert,
-  ShieldCheck,
   Trash2,
   UserMinus,
   UserPlus,
@@ -62,7 +61,7 @@ interface ConfirmationDialogState {
 
 export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   selectedUserIds,
-  selectedUsers,
+  selectedUsers: _selectedUsers,
   onClearSelection,
   onBulkOperation,
   availableRoles,

@@ -48,8 +48,15 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import {
+  handleApiError,
+  showSuccessMessage,
+  showWarningMessage
+} from '@/utils/errorHandling';
+import { UserActivityTimeline } from '@/components/admin/UserActivityTimeline';
+import {
   useActivateUserMutation,
   useDeleteUserMutation,
+  useGetUserActivityLogQuery,
   useGetUserByIdQuery,
   useResetUserPasswordMutation,
   useSuspendUserMutation,
@@ -68,7 +75,7 @@ export const UserDetailPage: React.FC = () => {
       navigate(`${ROUTES.ADMIN}/users`, { replace: true });
       return;
     }
-    console.log('UserDetailPage: Loading user with ID:', id);
+    // Loading user with provided ID
   }, [id, navigate]);
   const { t } = useTranslation();
   const {
@@ -82,6 +89,7 @@ export const UserDetailPage: React.FC = () => {
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword] = useState(() => generateRandomPassword());
+  const [operationLoading, setOperationLoading] = useState<string | null>(null);
 
   // API queries and mutations
   const {
@@ -90,18 +98,23 @@ export const UserDetailPage: React.FC = () => {
     error,
   } = useGetUserByIdQuery(id!, { skip: !id });
 
+  const {
+    data: activitiesResponse,
+    isLoading: activitiesLoading,
+    error: activitiesError,
+  } = useGetUserActivityLogQuery(id!, { skip: !id });
+
   // Debug logging for API query state
   useEffect(() => {
-    console.log('UserDetailPage: Query state -', {
-      id,
-      isLoading,
-      hasResponse: !!userResponse,
-      hasError: !!error,
-      userData: userResponse?.data ? 'present' : 'missing'
-    });
+    // Query state debugging removed - console.log({
+    //   id,
+    //   isLoading,
+    //   hasResponse: !!userResponse,
+    //   hasError: !!error,
+    //   userData: userResponse?.data ? 'present' : 'missing'
+    // });
     if (userResponse) {
-      console.log('UserDetailPage: Full API response structure:', userResponse);
-      console.log('UserDetailPage: Response data field:', userResponse.data);
+      // API response structure debugging removed
     }
   }, [id, userResponse, isLoading, error]);
 
@@ -114,19 +127,20 @@ export const UserDetailPage: React.FC = () => {
   // Handle the actual API response structure
   // The API returns user data directly, not wrapped in ApiResponse
   const user = userResponse;
+  const activities = activitiesResponse?.data || [];
 
   // Handle error states with redirect - be more specific about when to redirect
   useEffect(() => {
     if (error && 'status' in error && error.status === 404) {
-      console.log('UserDetailPage: User not found (404), redirecting to user list');
+      // User not found (404), redirecting to user list
       navigate(`${ROUTES.ADMIN}/users`, { replace: true });
     }
     // Remove the automatic redirect when user is falsy - let the API response determine this
     if (error) {
-      console.log('UserDetailPage: API error:', error);
+      // API error handling
     }
     if (user) {
-      console.log('UserDetailPage: User loaded successfully:', user.firstName, user.lastName);
+      // User loaded successfully
     }
   }, [error, user, isLoading, navigate]);
 
@@ -157,11 +171,34 @@ export const UserDetailPage: React.FC = () => {
     if (!user) {
       return;
     }
+
+    setOperationLoading('delete');
     try {
       await deleteUser(user.id).unwrap();
+      showSuccessMessage(
+        t('userManagement.messages.userDeleted'),
+        t('userManagement.messages.userDeletedDescription', { name: user.fullName })
+      );
       navigate(`${ROUTES.ADMIN}/users`);
     } catch (error) {
+      const errorInfo = handleApiError(error, t);
+
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.cannotDeleteUser'),
+          t('userManagement.errors.userHasDependencies')
+        );
+      } else if (errorInfo.status === 404) {
+        showWarningMessage(
+          t('userManagement.errors.userNotFound'),
+          t('userManagement.errors.userAlreadyDeleted')
+        );
+        navigate(`${ROUTES.ADMIN}/users`);
+      }
+
       console.error('Failed to delete user:', error);
+    } finally {
+      setOperationLoading(null);
     }
   };
 
@@ -169,10 +206,27 @@ export const UserDetailPage: React.FC = () => {
     if (!user) {
       return;
     }
+
+    setOperationLoading('activate');
     try {
       await activateUser(user.id).unwrap();
+      showSuccessMessage(
+        t('userManagement.messages.userActivated'),
+        t('userManagement.messages.userActivatedDescription', { name: user.fullName })
+      );
     } catch (error) {
+      const errorInfo = handleApiError(error, t);
+
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.cannotActivateUser'),
+          t('userManagement.errors.checkUserStatus')
+        );
+      }
+
       console.error('Failed to activate user:', error);
+    } finally {
+      setOperationLoading(null);
     }
   };
 
@@ -180,14 +234,31 @@ export const UserDetailPage: React.FC = () => {
     if (!user) {
       return;
     }
+
+    setOperationLoading('suspend');
     try {
       await suspendUser({
         id: user.id,
         reason: 'Suspended by administrator',
       }).unwrap();
+      showSuccessMessage(
+        t('userManagement.messages.userSuspended'),
+        t('userManagement.messages.userSuspendedDescription', { name: user.fullName })
+      );
       setSuspendDialogOpen(false);
     } catch (error) {
+      const errorInfo = handleApiError(error, t);
+
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.cannotSuspendUser'),
+          t('userManagement.errors.checkUserStatus')
+        );
+      }
+
       console.error('Failed to suspend user:', error);
+    } finally {
+      setOperationLoading(null);
     }
   };
 
@@ -195,6 +266,8 @@ export const UserDetailPage: React.FC = () => {
     if (!user) {
       return;
     }
+
+    setOperationLoading('resetPassword');
     try {
       await resetPassword({
         id: user.id,
@@ -203,9 +276,24 @@ export const UserDetailPage: React.FC = () => {
           requirePasswordChange: true,
         },
       }).unwrap();
+      showSuccessMessage(
+        t('userManagement.messages.passwordReset'),
+        t('userManagement.messages.passwordResetDescription')
+      );
       setResetPasswordDialogOpen(false);
     } catch (error) {
+      const errorInfo = handleApiError(error, t);
+
+      if (errorInfo.status === 409) {
+        showWarningMessage(
+          t('userManagement.errors.cannotResetPassword'),
+          t('userManagement.errors.checkUserStatus')
+        );
+      }
+
       console.error('Failed to reset password:', error);
+    } finally {
+      setOperationLoading(null);
     }
   };
 
@@ -241,17 +329,17 @@ export const UserDetailPage: React.FC = () => {
   }
 
   if (error) {
-    console.log('UserDetailPage: Rendering error state, error status:', 'status' in error ? error.status : 'no status');
+    // Rendering error state
     // If it's a 404 error, it will redirect via useEffect above
     if ('status' in error && error.status === 404) {
-      console.log('UserDetailPage: Returning null for 404 error (will redirect)');
+      // Returning null for 404 error (will redirect)
       return null;
     }
     return <ErrorFallback error={error as Error} type='network' />;
   }
 
   if (!user && !isLoading) {
-    console.log('UserDetailPage: No user data and not loading - showing loading state instead of redirecting');
+    // No user data and not loading - showing loading state instead of redirecting
     // Instead of returning null and redirecting, show a proper loading/error state
     return <PageSkeleton />;
   }
@@ -288,7 +376,11 @@ export const UserDetailPage: React.FC = () => {
 
         {canModifyUser && (
           <div className='flex items-center gap-2'>
-            <Button onClick={handleEdit} className='gap-2'>
+            <Button
+              onClick={handleEdit}
+              className='gap-2'
+              disabled={operationLoading !== null}
+            >
               <Edit className='h-4 w-4' />
               {t('common.edit')}
             </Button>
@@ -311,11 +403,11 @@ export const UserDetailPage: React.FC = () => {
                 ) : (
                   <DropdownMenuItem
                     onClick={handleActivate}
-                    disabled={isActivating}
+                    disabled={isActivating || operationLoading === 'activate'}
                     className='text-green-600'
                   >
                     <UserCheck className='mr-2 h-4 w-4' />
-                    {t('userManagement.actions.activate')}
+                    {operationLoading === 'activate' ? t('common.activating') : t('userManagement.actions.activate')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
@@ -535,28 +627,35 @@ export const UserDetailPage: React.FC = () => {
             <CardContent>
               {user.roles && user.roles.length > 0 ? (
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {user.roles.map(role => (
-                    <div
-                      key={role}
-                      className={`p-4 rounded-lg border ${getRoleColor(typeof role === 'string' ? role : 'USER')}`}
-                    >
-                      <div className='flex items-center justify-between'>
-                        <div>
-                          <h3 className='font-medium'>
-                            {role && typeof role === 'string' ? t(`userManagement.roles.${role.toLowerCase()}`) : t('userManagement.roles.unknown')}
-                          </h3>
-                          <p className='text-sm opacity-75 mt-1'>
-                            {role && typeof role === 'string' ? t(
-                              `userManagement.roleDescriptions.${role.toLowerCase()}`
-                            ) : t('userManagement.roleDescriptions.unknown')}
-                          </p>
+                  {user.roles.map((role, index) => {
+                    // Handle both string and object role formats
+                    const roleKey = typeof role === 'string' ? role : (role?.id || role?.name || index);
+                    const roleValue = typeof role === 'string' ? role : (role?.name || 'UNKNOWN');
+                    const roleDisplayValue = typeof role === 'string' ? role : (role?.name || role?.value || 'UNKNOWN');
+
+                    return (
+                      <div
+                        key={roleKey}
+                        className={`p-4 rounded-lg border ${getRoleColor(roleValue)}`}
+                      >
+                        <div className='flex items-center justify-between'>
+                          <div>
+                            <h3 className='font-medium'>
+                              {roleValue ? t(`userManagement.roles.${roleValue.toLowerCase()}`) : t('userManagement.roles.unknown')}
+                            </h3>
+                            <p className='text-sm opacity-75 mt-1'>
+                              {roleValue ? t(
+                                `userManagement.roleDescriptions.${roleValue.toLowerCase()}`
+                              ) : t('userManagement.roleDescriptions.unknown')}
+                            </p>
+                          </div>
+                          <Badge variant='secondary' className='ml-2'>
+                            {roleDisplayValue}
+                          </Badge>
                         </div>
-                        <Badge variant='secondary' className='ml-2'>
-                          {role}
-                        </Badge>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className='text-center py-8'>
@@ -569,25 +668,34 @@ export const UserDetailPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value='activity' className='space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Activity className='h-5 w-5' />
-                {t('userManagement.recentActivity')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className='text-center py-12'>
-                <Activity className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
-                <h3 className='text-lg font-medium text-muted-foreground mb-2'>
-                  {t('userManagement.activityNotAvailable')}
-                </h3>
-                <p className='text-sm text-muted-foreground max-w-md mx-auto'>
-                  {t('userManagement.activityNotAvailableDescription')}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {activitiesError ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <Activity className='h-5 w-5' />
+                  {t('userManagement.recentActivity')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='text-center py-12'>
+                  <Activity className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
+                  <h3 className='text-lg font-medium text-muted-foreground mb-2'>
+                    {t('userManagement.activityLoadError')}
+                  </h3>
+                  <p className='text-sm text-muted-foreground max-w-md mx-auto'>
+                    {t('userManagement.activityLoadErrorDescription')}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <UserActivityTimeline
+              activities={activities}
+              isLoading={activitiesLoading}
+              maxItems={20}
+              showPerformedBy={true}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value='history' className='space-y-6'>
@@ -634,9 +742,9 @@ export const UserDetailPage: React.FC = () => {
             <Button
               variant='destructive'
               onClick={handleDelete}
-              disabled={isDeleting}
+              disabled={isDeleting || operationLoading === 'delete'}
             >
-              {isDeleting ? t('common.deleting') : t('common.delete')}
+              {(isDeleting || operationLoading === 'delete') ? t('common.deleting') : t('common.delete')}
             </Button>
           </div>
         </DialogContent>

@@ -3,7 +3,6 @@ import type {
   CreatePermissionDto,
   PermissionListResponse,
   PermissionResponse,
-  PermissionResponseDto,
   PermissionSearchParams,
   UpdatePermissionDto,
 } from '@/types/role';

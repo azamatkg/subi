@@ -3,7 +3,6 @@ import type {
   CreateRoleDto,
   RoleListResponse,
   RoleResponse,
-  RoleResponseDto,
   RoleSearchParams,
   UpdateRoleDto,
 } from '@/types/role';

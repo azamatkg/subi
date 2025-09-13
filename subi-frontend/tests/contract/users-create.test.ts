@@ -3,7 +3,7 @@ import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { store } from '@/store';
 import { userApi } from '@/store/api/userApi';
-import type { UserCreateDto, UserResponse, UserResponseDto } from '@/types/user';
+import type { UserCreateDto, UserResponse } from '@/types/user';
 
 // Mock server for API contract testing
 const server = setupServer();

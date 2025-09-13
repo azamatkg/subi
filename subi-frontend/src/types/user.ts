@@ -1,5 +1,9 @@
 import { UserRole } from '@/types';
 import type { ApiResponse } from '@/types';
+import type { RoleResponseDto } from '@/types/role';
+
+// Utility type for role handling - supports both string and object formats for backward compatibility
+export type UserRoleValue = UserRole | RoleResponseDto;
 
 // User Status Enum
 export const UserStatus = {
@@ -19,7 +23,7 @@ export interface UserResponseDto {
   lastName: string;
   phone?: string;
   department?: string;
-  roles: UserRole[];
+  roles: RoleResponseDto[]; // Changed to use RoleResponseDto objects instead of string array
   status: UserStatus;
   enabled: boolean; // From API manual
   isActive: boolean; // Internal status
@@ -37,7 +41,7 @@ export interface UserListResponseDto {
   firstName: string;
   lastName: string;
   fullName: string;
-  roles: UserRole[];
+  roles: RoleResponseDto[]; // Changed to use RoleResponseDto objects instead of string array
   status: UserStatus;
   enabled: boolean; // From API manual
   isActive: boolean; // Internal status

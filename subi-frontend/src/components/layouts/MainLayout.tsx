@@ -14,9 +14,9 @@ const AuthEventListener: React.FC = () => {
       navigate('/auth/login');
     };
 
-    const handleTokenRefresh = (event: CustomEvent) => {
+    const handleTokenRefresh = (_event: CustomEvent) => {
       // Token was refreshed successfully - could dispatch to update store if needed
-      console.log('Token refreshed:', event.detail);
+      // Token refreshed - logging removed for production
     };
 
     window.addEventListener('auth-error', handleAuthError);

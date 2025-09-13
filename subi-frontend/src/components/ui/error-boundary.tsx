@@ -130,7 +130,7 @@ export class ErrorBoundary extends Component<
 
     navigator.clipboard.writeText(errorText).then(() => {
       // Could add a toast notification here
-      console.log('Error details copied to clipboard');
+      // Error details copied to clipboard
     });
   };
 

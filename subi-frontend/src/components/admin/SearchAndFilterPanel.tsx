@@ -33,6 +33,11 @@ import type {
 } from '@/types/user';
 import { UserStatus as UserStatusEnum } from '@/types/user';
 import { cn } from '@/lib/utils';
+import {
+  InputSanitizer,
+  ValidationUtils,
+  showWarningMessage
+} from '@/utils/errorHandling';
 
 export interface SearchAndFilterPanelProps {
   /** Current filter state */
@@ -129,9 +134,29 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
     setFiltersApplied(count);
   }, [filters, showDateFilters]);
 
-  // Handle search input changes
+  // Handle search input changes with validation and sanitization
   const handleSearchChange = (value: string) => {
-    onFilterChange('searchTerm', value);
+    // Sanitize input
+    const sanitizedValue = InputSanitizer.sanitizeText(value);
+
+    // Validate search term
+    if (sanitizedValue !== value.trim()) {
+      showWarningMessage(
+        t('userManagement.validation.inputSanitized'),
+        t('userManagement.validation.invalidCharactersRemoved')
+      );
+    }
+
+    const validation = ValidationUtils.validateSearchTerm(sanitizedValue);
+    if (!validation.isValid && sanitizedValue.length > 0) {
+      showWarningMessage(
+        t('userManagement.validation.invalidSearch'),
+        validation.error
+      );
+      return;
+    }
+
+    onFilterChange('searchTerm', sanitizedValue);
   };
 
   // Handle role selection
@@ -166,6 +191,14 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                 className='pl-10'
                 aria-label={getSearchPlaceholder()}
                 disabled={isLoading}
+                maxLength={100}
+                onPaste={e => {
+                  // Handle paste events with sanitization
+                  e.preventDefault();
+                  const pastedText = e.clipboardData.getData('text');
+                  const sanitized = InputSanitizer.sanitizeText(pastedText);
+                  handleSearchChange(sanitized);
+                }}
               />
             </div>
           </div>

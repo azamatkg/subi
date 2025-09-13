@@ -9,19 +9,22 @@ export default tseslint.config([
     ignores: ['dist', 'build', 'coverage', 'node_modules', '**/*.min.js']
   },
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}', 'eslint.config.js', 'postcss.config.js', 'tailwind.config.js', 'vite.config.ts', 'playwright.config.ts'],
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommended,
     ],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: {
-          jsx: true
-        }
-      }
+          jsx: true,
+        },
+        
+      },
+      globals: {
+        ...globals.browser,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,

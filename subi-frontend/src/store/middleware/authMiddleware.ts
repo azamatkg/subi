@@ -21,7 +21,7 @@ authListenerMiddleware.startListening({
       const handleTokenRefresh = () => {
         // The tokens are already stored by the API client
         // Redux state will be updated by the next API call
-        console.log('Token refreshed successfully');
+        // Token refreshed successfully
       };
 
       // Handle auth errors

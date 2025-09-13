@@ -32,7 +32,7 @@ export function AccessibleStatusBadge({
     return 'default' as const;
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (_status: string) => {
     const iconClass = cn(
       'flex-shrink-0',
       size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'
@@ -92,7 +92,7 @@ export function AccessibleStatusBadge({
   const variant = getStatusVariant();
 
   // Enhanced status-specific color schemes using semantic color system
-  const getStatusColors = (status: string) => {
+  const getStatusColors = (_status: string) => {
     switch (safeStatus.toUpperCase()) {
       case 'APPROVED':
       case 'ACTIVE':

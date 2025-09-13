@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  type Mock,
   afterAll,
   afterEach,
   beforeEach,
@@ -10,11 +9,9 @@ import {
   vi,
 } from 'vitest';
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
-  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -195,10 +192,10 @@ const mockLoadMoreData: UserActivityTimelineEntry[] = [
 // Mock server
 const server = setupServer(
   http.get('/api/users/:userId/activity', ({ params }) => {
-    const { userId } = params;
+    const { userId: _userId } = params;
     const url = new URL(window.location.href);
     const page = parseInt(url.searchParams.get('page') || '0');
-    const size = parseInt(url.searchParams.get('size') || '10');
+    const _size = parseInt(url.searchParams.get('size') || '10');
     
     if (page === 0) {
       return HttpResponse.json({
@@ -305,7 +302,7 @@ const UserActivityTimeline: React.FC<{
       
       setHasMore(!data.last);
       setPage(pageNum);
-    } catch (err) {
+    } catch {
       setError('Failed to load activity');
     } finally {
       setLoading(false);

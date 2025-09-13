@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  type Mock,
   afterAll,
   afterEach,
   beforeEach,
@@ -10,11 +9,9 @@ import {
   vi,
 } from 'vitest';
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
-  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -639,8 +636,6 @@ describe('UserListPage', () => {
     });
 
     it('handles page size changes', async () => {
-      const user = userEvent.setup();
-
       render(
         <TestWrapper>
           <UserListPage />
