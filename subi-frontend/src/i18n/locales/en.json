@@ -93,6 +93,7 @@
     "documents": "Documents",
     "commissions": "Commissions",
     "admin": "Administration",
+    "userManagementPage": "System Management",
     "userManagement": "User Management",
     "decisions": "Decisions",
     "decisionTypes": "Decision Types",

@@ -52,6 +52,12 @@ const navigationSections: NavSection[] = [
         icon: Home,
         description: 'Главная панель управления',
       },
+      {
+        title: 'navigation.userManagement',
+        href: '/admin/users',
+        icon: Users,
+        description: 'Управление пользователями',
+      },
     ],
   },
   {
@@ -79,18 +85,11 @@ const navigationSections: NavSection[] = [
     title: 'Администрирование',
     items: [
       {
-        title: 'navigation.userManagement',
-        href: '/admin/users',
-        icon: Users,
-        roles: ['ADMIN'],
-        description: 'Управление пользователями',
-      },
-      {
-        title: 'navigation.admin',
+        title: 'navigation.userManagementPage',
         href: '/admin',
         icon: Settings,
         roles: ['ADMIN'],
-        description: 'Системные настройки',
+        description: 'Управление пользователями, ролями и правами',
         end: true,
       },
     ],
