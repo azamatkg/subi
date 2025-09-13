@@ -120,8 +120,8 @@ export const UserDetailPage: React.FC = () => {
   }, [id, userResponse, isLoading, error]);
 
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
-  const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
-  const [suspendUser, { isLoading: isSuspending }] = useSuspendUserMutation();
+  const [activateUser, { isLoading: _isActivating }] = useActivateUserMutation();
+  const [suspendUser, { isLoading: _isSuspending }] = useSuspendUserMutation();
   const [resetPassword, { isLoading: isResetting }] =
     useResetUserPasswordMutation();
 
@@ -212,27 +212,33 @@ export const UserDetailPage: React.FC = () => {
       return;
     }
 
-    setOperationLoading('activate');
+    // Close dialog immediately and show optimistic feedback
+    setActivateDialogOpen(false);
+    showSuccessMessage(
+      t('userManagement.messages.userActivated'),
+      t('userManagement.messages.userActivatedDescription', { name: user.fullName })
+    );
+
     try {
       await activateUser(user.id).unwrap();
-      showSuccessMessage(
-        t('userManagement.messages.userActivated'),
-        t('userManagement.messages.userActivatedDescription', { name: user.fullName })
-      );
-      setActivateDialogOpen(false);
+      // Success - optimistic update was correct, no additional action needed
     } catch (error) {
       const errorInfo = handleApiError(error, t);
 
+      // Show error and let the optimistic update rollback handle the UI
       if (errorInfo.status === 409) {
         showWarningMessage(
           t('userManagement.errors.cannotActivateUser'),
           t('userManagement.errors.checkUserStatus')
         );
+      } else {
+        showWarningMessage(
+          t('userManagement.errors.operationFailed'),
+          t('userManagement.errors.tryAgainLater')
+        );
       }
 
       console.error('Failed to activate user:', error);
-    } finally {
-      setOperationLoading(null);
     }
   };
 
@@ -241,30 +247,36 @@ export const UserDetailPage: React.FC = () => {
       return;
     }
 
-    setOperationLoading('suspend');
+    // Close dialog immediately and show optimistic feedback
+    setSuspendDialogOpen(false);
+    showSuccessMessage(
+      t('userManagement.messages.userSuspended'),
+      t('userManagement.messages.userSuspendedDescription', { name: user.fullName })
+    );
+
     try {
       await suspendUser({
         id: user.id,
         reason: 'Suspended by administrator',
       }).unwrap();
-      showSuccessMessage(
-        t('userManagement.messages.userSuspended'),
-        t('userManagement.messages.userSuspendedDescription', { name: user.fullName })
-      );
-      setSuspendDialogOpen(false);
+      // Success - optimistic update was correct, no additional action needed
     } catch (error) {
       const errorInfo = handleApiError(error, t);
 
+      // Show error and let the optimistic update rollback handle the UI
       if (errorInfo.status === 409) {
         showWarningMessage(
           t('userManagement.errors.cannotSuspendUser'),
           t('userManagement.errors.checkUserStatus')
         );
+      } else {
+        showWarningMessage(
+          t('userManagement.errors.operationFailed'),
+          t('userManagement.errors.tryAgainLater')
+        );
       }
 
       console.error('Failed to suspend user:', error);
-    } finally {
-      setOperationLoading(null);
     }
   };
 
@@ -409,11 +421,10 @@ export const UserDetailPage: React.FC = () => {
                 ) : (
                   <DropdownMenuItem
                     onClick={handleActivate}
-                    disabled={isActivating || operationLoading === 'activate'}
                     className='text-green-600'
                   >
                     <UserCheck className='mr-2 h-4 w-4' />
-                    {operationLoading === 'activate' ? t('common.activating') : t('userManagement.actions.activate')}
+                    {t('userManagement.actions.activate')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
@@ -777,11 +788,8 @@ export const UserDetailPage: React.FC = () => {
             <Button
               variant='destructive'
               onClick={handleSuspend}
-              disabled={isSuspending}
             >
-              {isSuspending
-                ? t('userManagement.suspending')
-                : t('userManagement.actions.suspend')}
+              {t('userManagement.actions.suspend')}
             </Button>
           </div>
         </DialogContent>
@@ -807,11 +815,8 @@ export const UserDetailPage: React.FC = () => {
             </Button>
             <Button
               onClick={handleActivateConfirm}
-              disabled={isActivating || operationLoading === 'activate'}
             >
-              {(isActivating || operationLoading === 'activate')
-                ? t('userManagement.activating')
-                : t('userManagement.actions.activate')}
+              {t('userManagement.actions.activate')}
             </Button>
           </div>
         </DialogContent>

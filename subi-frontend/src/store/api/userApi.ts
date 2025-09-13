@@ -12,6 +12,7 @@ import type {
   UserRoleHistory,
   UserSearchAndFilterParams,
   UserStatisticsResponse,
+  UserStatus,
   UserStatusUpdateDto,
   UserUpdateDto,
 } from '@/types/user';
@@ -105,6 +106,48 @@ export const userApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        // Optimistic update for individual user query
+        const userPatchResult = dispatch(
+          userApi.util.updateQueryData('getUserById', id, draft => {
+            if (draft) {
+              draft.status = data.status;
+              draft.updatedAt = new Date().toISOString();
+            }
+          })
+        );
+
+        // Optimistic update for user list queries
+        const updateUserInList = (draft: UserListResponse) => {
+          if (draft?.content) {
+            const userIndex = draft.content.findIndex((user) => user.id === id);
+            if (userIndex !== -1) {
+              draft.content[userIndex].status = data.status;
+              draft.content[userIndex].updatedAt = new Date().toISOString();
+            }
+          }
+        };
+
+        const userListPatches: Array<{ undo: () => void }> = [];
+        // Update common user list queries - we'll handle the most common query params
+        try {
+          userListPatches.push(
+            dispatch(
+              userApi.util.updateQueryData('getUsers', { page: 0, size: 20, sort: 'lastName,asc' }, updateUserInList)
+            )
+          );
+        } catch {
+          // Ignore if query doesn't exist in cache
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Rollback on failure
+          userPatchResult.undo();
+          userListPatches.forEach(patch => patch.undo());
+        }
+      },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'User', id },
         'User',
@@ -117,6 +160,52 @@ export const userApi = baseApi.injectEndpoints({
         url: `/users/${id}/activate`,
         method: 'PATCH',
       }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        // Optimistic update for individual user query
+        const userPatchResult = dispatch(
+          userApi.util.updateQueryData('getUserById', id, draft => {
+            if (draft) {
+              draft.status = 'ACTIVE' as UserStatus;
+              draft.isActive = true;
+              draft.enabled = true;
+              draft.updatedAt = new Date().toISOString();
+            }
+          })
+        );
+
+        // Optimistic update for user list queries
+        const updateUserInList = (draft: UserListResponse) => {
+          if (draft?.content) {
+            const userIndex = draft.content.findIndex((user) => user.id === id);
+            if (userIndex !== -1) {
+              draft.content[userIndex].status = 'ACTIVE' as UserStatus;
+              draft.content[userIndex].isActive = true;
+              draft.content[userIndex].enabled = true;
+              draft.content[userIndex].updatedAt = new Date().toISOString();
+            }
+          }
+        };
+
+        const userListPatches: Array<{ undo: () => void }> = [];
+        // Update common user list queries - handle the most common query params
+        try {
+          userListPatches.push(
+            dispatch(
+              userApi.util.updateQueryData('getUsers', { page: 0, size: 20, sort: 'lastName,asc' }, updateUserInList)
+            )
+          );
+        } catch {
+          // Ignore if query doesn't exist in cache
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Rollback on failure
+          userPatchResult.undo();
+          userListPatches.forEach(patch => patch.undo());
+        }
+      },
       invalidatesTags: (_result, _error, id) => [{ type: 'User', id }, 'User'],
     }),
 
@@ -130,6 +219,50 @@ export const userApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: reason ? { reason } : {},
       }),
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        // Optimistic update for individual user query
+        const userPatchResult = dispatch(
+          userApi.util.updateQueryData('getUserById', id, draft => {
+            if (draft) {
+              draft.status = 'SUSPENDED' as UserStatus;
+              draft.isActive = false;
+              draft.updatedAt = new Date().toISOString();
+            }
+          })
+        );
+
+        // Optimistic update for user list queries
+        const updateUserInList = (draft: UserListResponse) => {
+          if (draft?.content) {
+            const userIndex = draft.content.findIndex((user) => user.id === id);
+            if (userIndex !== -1) {
+              draft.content[userIndex].status = 'SUSPENDED' as UserStatus;
+              draft.content[userIndex].isActive = false;
+              draft.content[userIndex].updatedAt = new Date().toISOString();
+            }
+          }
+        };
+
+        const userListPatches: Array<{ undo: () => void }> = [];
+        // Update common user list queries
+        try {
+          userListPatches.push(
+            dispatch(
+              userApi.util.updateQueryData('getUsers', { page: 0, size: 20, sort: 'lastName,asc' }, updateUserInList)
+            )
+          );
+        } catch {
+          // Ignore if query doesn't exist in cache
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Rollback on failure
+          userPatchResult.undo();
+          userListPatches.forEach(patch => patch.undo());
+        }
+      },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'User', id },
         'User',
@@ -143,6 +276,65 @@ export const userApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      async onQueryStarted({ userIds, status }, { dispatch, queryFulfilled }) {
+        // Optimistic update for individual user queries
+        const userPatches: Array<{ undo: () => void }> = [];
+        userIds.forEach(userId => {
+          const patch = dispatch(
+            userApi.util.updateQueryData('getUserById', userId, draft => {
+              if (draft) {
+                draft.status = status;
+                if (status === 'ACTIVE') {
+                  draft.isActive = true;
+                  draft.enabled = true;
+                } else if (status === 'SUSPENDED' || status === 'INACTIVE') {
+                  draft.isActive = false;
+                }
+                draft.updatedAt = new Date().toISOString();
+              }
+            })
+          );
+          userPatches.push(patch);
+        });
+
+        // Optimistic update for user list queries
+        const updateUsersInList = (draft: UserListResponse) => {
+          if (draft?.content) {
+            draft.content.forEach((user) => {
+              if (userIds.includes(user.id)) {
+                user.status = status;
+                if (status === 'ACTIVE') {
+                  user.isActive = true;
+                  user.enabled = true;
+                } else if (status === 'SUSPENDED' || status === 'INACTIVE') {
+                  user.isActive = false;
+                }
+                user.updatedAt = new Date().toISOString();
+              }
+            });
+          }
+        };
+
+        const userListPatches: Array<{ undo: () => void }> = [];
+        // Update common user list queries
+        try {
+          userListPatches.push(
+            dispatch(
+              userApi.util.updateQueryData('getUsers', { page: 0, size: 20, sort: 'lastName,asc' }, updateUsersInList)
+            )
+          );
+        } catch {
+          // Ignore if query doesn't exist in cache
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Rollback on failure
+          userPatches.forEach(patch => patch.undo());
+          userListPatches.forEach(patch => patch.undo());
+        }
+      },
       invalidatesTags: ['User'],
     }),
 

@@ -81,7 +81,7 @@ This is a React TypeScript frontend enhancement project using:
 
 ### API Integration
 - [x] T041 Connect enhanced components to RTK Query userApi endpoints
-- [ ] T042 Implement optimistic updates for user status changes
+- [x] T042 Implement optimistic updates for user status changes
 - [ ] T043 Add error boundary components for graceful error handling
 - [ ] T044 Implement proper loading states and skeleton components
 

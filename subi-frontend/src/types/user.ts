@@ -48,6 +48,7 @@ export interface UserListResponseDto {
   department?: string;
   lastLoginAt?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 // User Creation DTO (matches API manual CreateUserDto)
