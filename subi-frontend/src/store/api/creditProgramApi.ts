@@ -1,14 +1,14 @@
 import { baseApi } from './baseApi';
 import type {
-  CreditProgramResponseDto,
   CreateCreditProgramDto,
-  UpdateCreditProgramDto,
+  CreditProgramResponseDto,
   CreditProgramSearchAndFilterParams,
-  CreditProgramStatusUpdateDto,
   CreditProgramStatisticsDto,
+  CreditProgramStatusUpdateDto,
   PaginatedCreditProgramResponse,
   PaginatedCreditProgramSummaryResponse,
   ProgramStatus,
+  UpdateCreditProgramDto,
 } from '@/types/creditProgram';
 
 export const creditProgramApi = baseApi.injectEndpoints({

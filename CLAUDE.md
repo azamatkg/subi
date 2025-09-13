@@ -156,6 +156,14 @@ subi-frontend/
 - Multilingual enum support is essential for status displays
 - http://localhost:8080/swagger-ui/index.html this is swagger url
 
+## Current Feature Development
+- **Active Feature**: User Management Pages Implementation (Branch: 001-user-management-pages)
+- **API Integration**: Comprehensive userApi with RTK Query (25+ endpoints)
+- **Validation**: Real-time username/email availability checking with debouncing
+- **Testing**: TDD approach with contract tests, integration tests, and E2E with Playwright
+- **Components**: Enhanced user list, creation/edit forms, activity timeline, bulk operations
+- **Access Control**: ADMIN-only user management with role-based permissions
+
 ## Code Quality & Formatting
 - **Prettier Config:** Single quotes, 2-space indentation, 80-character print width
 - **ESLint Config:** TypeScript ESLint with React hooks and React refresh plugins

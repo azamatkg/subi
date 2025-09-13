@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Plus,
-  Search,
-  Filter,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash,
+  Calendar,
   ChevronDown,
   ChevronUp,
-  Calendar,
+  Edit,
+  Eye,
   FileText,
-  Scale,
-  X,
+  Filter,
   Grid,
   List,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Scale,
+  Search,
   SortAsc,
   SortDesc,
-  RefreshCw,
+  Trash,
+  X,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -56,8 +56,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import {
-  AccessibleStatusBadge,
   AccessibleDate,
+  AccessibleStatusBadge,
 } from '@/components/ui/accessible-status-badge';
 import { LiveRegion } from '@/components/ui/focus-trap';
 import { ErrorFallback } from '@/components/ui/error-fallback';
@@ -66,8 +66,8 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import {
-  useSearchAndFilterDecisionsQuery,
   useDeleteDecisionMutation,
+  useSearchAndFilterDecisionsQuery,
 } from '@/store/api/decisionApi';
 import { useGetActiveDecisionTypesQuery } from '@/store/api/decisionTypeApi';
 import { useGetActiveDecisionMakingBodiesQuery } from '@/store/api/decisionMakingBodyApi';
@@ -77,7 +77,7 @@ import type {
   DecisionStatus,
 } from '@/types/decision';
 import { DecisionStatus as DecisionStatusEnum } from '@/types/decision';
-import { ROUTES, PAGINATION } from '@/constants';
+import { PAGINATION, ROUTES } from '@/constants';
 import { getStoredViewMode, setStoredViewMode } from '@/utils/auth';
 
 interface FilterState {
@@ -147,12 +147,24 @@ export const DecisionListPage: React.FC = () => {
   // Count applied filters
   useEffect(() => {
     let count = 0;
-    if (filters.searchTerm) count++;
-    if (filters.decisionTypeId) count++;
-    if (filters.decisionMakingBodyId) count++;
-    if (filters.status) count++;
-    if (filters.dateFrom) count++;
-    if (filters.dateTo) count++;
+    if (filters.searchTerm) {
+      count++;
+    }
+    if (filters.decisionTypeId) {
+      count++;
+    }
+    if (filters.decisionMakingBodyId) {
+      count++;
+    }
+    if (filters.status) {
+      count++;
+    }
+    if (filters.dateFrom) {
+      count++;
+    }
+    if (filters.dateTo) {
+      count++;
+    }
     setFiltersApplied(count);
   }, [filters]);
 
@@ -238,7 +250,9 @@ export const DecisionListPage: React.FC = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!selectedDecision) return;
+    if (!selectedDecision) {
+      return;
+    }
 
     try {
       await deleteDecision(selectedDecision.id).unwrap();
@@ -254,80 +268,80 @@ export const DecisionListPage: React.FC = () => {
     decision,
   }) => (
     <div
-      className="group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg"
-      role="article"
+      className='group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg'
+      role='article'
       aria-labelledby={`decision-title-${decision.id}`}
     >
-      <div className="p-7">
-        <div className="space-y-4">
+      <div className='p-7'>
+        <div className='space-y-4'>
           {/* Header with status and actions */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm">
-                  <Scale className="h-5 w-5 text-primary-700 shrink-0" />
+          <div className='flex items-start justify-between gap-4'>
+            <div className='min-w-0 flex-1'>
+              <div className='flex items-center gap-3 mb-3'>
+                <div className='flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm'>
+                  <Scale className='h-5 w-5 text-primary-700 shrink-0' />
                 </div>
-                <span className="text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide">
+                <span className='text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide'>
                   #{decision.number}
                 </span>
               </div>
               <button
                 onClick={() => handleView(decision.id)}
-                className="text-left w-full"
+                className='text-left w-full'
               >
                 <h3
                   id={`decision-title-${decision.id}`}
-                  className="text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide"
+                  className='text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide'
                 >
                   {decision.nameEn}
                 </h3>
               </button>
               {decision.note && (
-                <p className="text-sm text-muted-foreground mt-2 line-clamp-2 font-medium">
+                <p className='text-sm text-muted-foreground mt-2 line-clamp-2 font-medium'>
                   {decision.note}
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className='flex items-center gap-2 shrink-0'>
               <AccessibleStatusBadge
                 status={decision.status}
-                className="shrink-0 shadow-sm"
+                className='shrink-0 shadow-sm'
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg"
+                    variant='ghost'
+                    size='sm'
+                    className='h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg'
                     aria-label={t('common.actions', { item: decision.nameEn })}
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className='h-4 w-4' />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  align="end"
-                  className="shadow-lg border-border/20"
+                  align='end'
+                  className='shadow-lg border-border/20'
                 >
                   <DropdownMenuItem
                     onClick={() => handleView(decision.id)}
-                    className="hover:bg-accent focus:bg-accent"
+                    className='hover:bg-accent focus:bg-accent'
                   >
-                    <Eye className="mr-2 h-4 w-4" />
+                    <Eye className='mr-2 h-4 w-4' />
                     {t('common.view')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleEdit(decision.id)}
-                    className="hover:bg-accent focus:bg-accent"
+                    className='hover:bg-accent focus:bg-accent'
                   >
-                    <Edit className="mr-2 h-4 w-4" />
+                    <Edit className='mr-2 h-4 w-4' />
                     {t('common.edit')}
                   </DropdownMenuItem>
                   <Separator />
                   <DropdownMenuItem
                     onClick={() => handleDeleteClick(decision)}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className='text-destructive hover:text-destructive hover:bg-destructive/10'
                   >
-                    <Trash className="mr-2 h-4 w-4" />
+                    <Trash className='mr-2 h-4 w-4' />
                     {t('common.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -336,13 +350,13 @@ export const DecisionListPage: React.FC = () => {
           </div>
 
           {/* Details grid */}
-          <div className="flex items-center gap-3 text-sm">
-            <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
+          <div className='flex items-center gap-3 text-sm'>
+            <Calendar className='h-5 w-5 text-muted-foreground shrink-0' />
             <div>
-              <span className="font-medium">{t('decision.fields.date')}:</span>
+              <span className='font-medium'>{t('decision.fields.date')}:</span>
               <AccessibleDate
                 date={decision.date}
-                className="ml-2 font-semibold"
+                className='ml-2 font-semibold'
               />
             </div>
           </div>
@@ -365,19 +379,19 @@ export const DecisionListPage: React.FC = () => {
     >
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 w-full text-left font-bold text-table-header-foreground hover:text-primary-600 transition-colors duration-300 py-3 px-1 rounded-lg hover:bg-primary-50/50"
+        className='flex items-center gap-2 w-full text-left font-bold text-table-header-foreground hover:text-primary-600 transition-colors duration-300 py-3 px-1 rounded-lg hover:bg-primary-50/50'
         aria-label={t('common.sortBy', { field: children })}
       >
         {children}
         {sortField === field ? (
           sortDirection === 'asc' ? (
-            <SortAsc className="h-4 w-4 text-primary animate-in slide-in-from-bottom-1 duration-200" />
+            <SortAsc className='h-4 w-4 text-primary animate-in slide-in-from-bottom-1 duration-200' />
           ) : (
-            <SortDesc className="h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200" />
+            <SortDesc className='h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200' />
           )
         ) : (
-          <div className="h-4 w-4 opacity-40 group-hover:opacity-70 transition-opacity">
-            <SortAsc className="h-4 w-4 text-table-header-foreground" />
+          <div className='h-4 w-4 opacity-40 group-hover:opacity-70 transition-opacity'>
+            <SortAsc className='h-4 w-4 text-table-header-foreground' />
           </div>
         )}
       </button>
@@ -386,21 +400,23 @@ export const DecisionListPage: React.FC = () => {
 
   // Pagination component
   const PaginationControls: React.FC = () => {
-    if (!decisionsData) return null;
+    if (!decisionsData) {
+      return null;
+    }
 
     const totalPages = decisionsData.totalPages;
     const currentPage = decisionsData.number;
 
     return (
-      <div className="flex items-center justify-between">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className='flex items-center justify-between'>
+        <div className='flex-1 text-sm text-muted-foreground'>
           {t('common.showing')} {decisionsData.numberOfElements}{' '}
           {t('common.of')} {decisionsData.totalElements}{' '}
           {t('decision.decisions').toLowerCase()}
         </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">{t('common.rowsPerPage')}</p>
+        <div className='flex items-center space-x-6 lg:space-x-8'>
+          <div className='flex items-center space-x-2'>
+            <p className='text-sm font-medium'>{t('common.rowsPerPage')}</p>
             <Select
               value={size.toString()}
               onValueChange={value => {
@@ -408,7 +424,7 @@ export const DecisionListPage: React.FC = () => {
                 setPage(0);
               }}
             >
-              <SelectTrigger className="h-8 w-[70px]">
+              <SelectTrigger className='h-8 w-[70px]'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -420,43 +436,43 @@ export const DecisionListPage: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
             {t('common.page')} {currentPage + 1} {t('common.of')}{' '}
             {totalPages || 1}
           </div>
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(0)}
               disabled={currentPage === 0}
             >
-              <span className="sr-only">{t('common.first')}</span>
+              <span className='sr-only'>{t('common.first')}</span>
               ««
             </Button>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(Math.max(0, currentPage - 1))}
               disabled={currentPage === 0}
             >
-              <span className="sr-only">{t('common.previous')}</span>«
+              <span className='sr-only'>{t('common.previous')}</span>«
             </Button>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
               disabled={currentPage >= totalPages - 1}
             >
-              <span className="sr-only">{t('common.next')}</span>»
+              <span className='sr-only'>{t('common.next')}</span>»
             </Button>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(totalPages - 1)}
               disabled={currentPage >= totalPages - 1}
             >
-              <span className="sr-only">{t('common.last')}</span>
+              <span className='sr-only'>{t('common.last')}</span>
               »»
             </Button>
           </div>
@@ -472,36 +488,36 @@ export const DecisionListPage: React.FC = () => {
 
   // Handle error states
   if (decisionsError) {
-    return <ErrorFallback error={decisionsError as Error} type="network" />;
+    return <ErrorFallback error={decisionsError as Error} type='network' />;
   }
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className='space-y-3 sm:space-y-4'>
       <LiveRegion />
 
       {/* Search and Filter Controls */}
-      <div className="bg-muted/10 rounded-lg border border-border/20 shadow-sm">
-        <div className="p-3 sm:p-4">
+      <div className='bg-muted/10 rounded-lg border border-border/20 shadow-sm'>
+        <div className='p-3 sm:p-4'>
           {/* Search Bar */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
+            <div className='flex-1'>
+              <div className='relative'>
+                <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                 <Input
                   placeholder={t('decision.placeholders.searchTerm')}
                   value={filters.searchTerm}
                   onChange={e =>
                     handleFilterChange('searchTerm', e.target.value)
                   }
-                  className="pl-10"
+                  className='pl-10'
                   aria-label={t('decision.placeholders.searchTerm')}
                 />
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className={cn(
                   'relative gap-2 transition-all duration-200',
@@ -509,46 +525,46 @@ export const DecisionListPage: React.FC = () => {
                 )}
                 aria-expanded={isFilterOpen}
               >
-                <Filter className="h-4 w-4" />
+                <Filter className='h-4 w-4' />
                 {t('decision.advancedSearch')}
                 {filtersApplied > 0 && (
                   <Badge
                     variant={isFilterOpen ? 'secondary' : 'destructive'}
-                    className="ml-2 px-1.5 py-0.5 text-xs -mr-1"
+                    className='ml-2 px-1.5 py-0.5 text-xs -mr-1'
                   >
                     {filtersApplied}
                   </Badge>
                 )}
                 {isFilterOpen ? (
-                  <ChevronUp className="h-4 w-4" />
+                  <ChevronUp className='h-4 w-4' />
                 ) : (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className='h-4 w-4' />
                 )}
               </Button>
 
               {filtersApplied > 0 && (
                 <Button
-                  variant="outline"
-                  size="icon"
+                  variant='outline'
+                  size='icon'
                   onClick={clearFilters}
                   aria-label={t('common.clearFilters')}
-                  className="shrink-0"
+                  className='shrink-0'
                 >
-                  <X className="h-4 w-4" />
+                  <X className='h-4 w-4' />
                 </Button>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <Button
                 onClick={handleCreate}
-                className="add-new-decision-button shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto relative group"
+                className='add-new-decision-button shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto relative group'
                 size={isMobile ? 'default' : 'default'}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className='h-4 w-4' />
                 <span
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-background border border-border rounded-md px-2 py-1 text-xs text-foreground shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"
-                  role="tooltip"
-                  aria-hidden="true"
+                  className='absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-background border border-border rounded-md px-2 py-1 text-xs text-foreground shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10'
+                  role='tooltip'
+                  aria-hidden='true'
                 >
                   {t('decision.newDecision')}
                 </span>
@@ -558,10 +574,10 @@ export const DecisionListPage: React.FC = () => {
 
           {/* Collapsible Advanced Filters */}
           {isFilterOpen && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gradient-to-br from-muted/60 to-accent/40 rounded-xl transition-all duration-300 ease-out mt-6 border border-border/10 shadow-inner">
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gradient-to-br from-muted/60 to-accent/40 rounded-xl transition-all duration-300 ease-out mt-6 border border-border/10 shadow-inner'>
               {/* Decision Type Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="decision-type-filter">
+              <div className='space-y-2'>
+                <Label htmlFor='decision-type-filter'>
                   {t('decision.fields.decisionType')}
                 </Label>
                 <Select
@@ -573,7 +589,7 @@ export const DecisionListPage: React.FC = () => {
                     )
                   }
                 >
-                  <SelectTrigger id="decision-type-filter">
+                  <SelectTrigger id='decision-type-filter'>
                     <SelectValue
                       placeholder={t(
                         'decision.placeholders.selectDecisionType'
@@ -581,7 +597,7 @@ export const DecisionListPage: React.FC = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value='all'>{t('common.all')}</SelectItem>
                     {decisionTypesData?.content.map(type => (
                       <SelectItem key={type.id} value={type.id.toString()}>
                         {type.nameEn}
@@ -592,8 +608,8 @@ export const DecisionListPage: React.FC = () => {
               </div>
 
               {/* Decision Making Body Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="decision-body-filter">
+              <div className='space-y-2'>
+                <Label htmlFor='decision-body-filter'>
                   {t('decision.fields.decisionMakingBody')}
                 </Label>
                 <Select
@@ -605,7 +621,7 @@ export const DecisionListPage: React.FC = () => {
                     )
                   }
                 >
-                  <SelectTrigger id="decision-body-filter">
+                  <SelectTrigger id='decision-body-filter'>
                     <SelectValue
                       placeholder={t(
                         'decision.placeholders.selectDecisionMakingBody'
@@ -613,7 +629,7 @@ export const DecisionListPage: React.FC = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value='all'>{t('common.all')}</SelectItem>
                     {decisionMakingBodiesData?.content.map(body => (
                       <SelectItem key={body.id} value={body.id.toString()}>
                         {body.nameEn}
@@ -624,8 +640,8 @@ export const DecisionListPage: React.FC = () => {
               </div>
 
               {/* Status Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="status-filter">
+              <div className='space-y-2'>
+                <Label htmlFor='status-filter'>
                   {t('decision.fields.status')}
                 </Label>
                 <Select
@@ -634,13 +650,13 @@ export const DecisionListPage: React.FC = () => {
                     handleFilterChange('status', value === 'all' ? null : value)
                   }
                 >
-                  <SelectTrigger id="status-filter">
+                  <SelectTrigger id='status-filter'>
                     <SelectValue
                       placeholder={t('decision.placeholders.selectStatus')}
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value='all'>{t('common.all')}</SelectItem>
                     {Object.values(DecisionStatusEnum).map(status => (
                       <SelectItem key={status} value={status}>
                         {t(`decision.status.${status.toLowerCase()}`)}
@@ -651,23 +667,23 @@ export const DecisionListPage: React.FC = () => {
               </div>
 
               {/* Filter Actions */}
-              <div className="flex flex-col sm:flex-row gap-2 pt-2 col-span-full">
+              <div className='flex flex-col sm:flex-row gap-2 pt-2 col-span-full'>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={clearFilters}
                   disabled={filtersApplied === 0}
-                  className="w-full sm:w-auto"
+                  className='w-full sm:w-auto'
                 >
-                  <X className="mr-2 h-4 w-4" />
+                  <X className='mr-2 h-4 w-4' />
                   {t('common.clear')}
                   {filtersApplied > 0 && ` (${filtersApplied})`}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={() => window.location.reload()}
-                  className="w-full sm:w-auto"
+                  className='w-full sm:w-auto'
                 >
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw className='mr-2 h-4 w-4' />
                   {t('common.refresh')}
                 </Button>
               </div>
@@ -677,35 +693,35 @@ export const DecisionListPage: React.FC = () => {
       </div>
 
       {/* Results Section */}
-      <div className="bg-transparent rounded-lg">
-        <div className="pb-3 border-b border-border/10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="flex items-center gap-4 text-xl font-bold tracking-wide">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg">
-                <Scale className="h-6 w-6 text-primary-700" />
+      <div className='bg-transparent rounded-lg'>
+        <div className='pb-3 border-b border-border/10'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+            <h2 className='flex items-center gap-4 text-xl font-bold tracking-wide'>
+              <div className='h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg'>
+                <Scale className='h-6 w-6 text-primary-700' />
               </div>
-              <span className="text-foreground">{t('decision.decisions')}</span>
+              <span className='text-foreground'>{t('decision.decisions')}</span>
             </h2>
 
             {/* View Toggle and Sort Controls */}
-            <div className="flex items-center gap-2">
+            <div className='flex items-center gap-2'>
               {!isMobile && (
                 <>
                   <Button
                     variant={viewMode === 'card' ? 'default' : 'outline'}
-                    size="sm"
+                    size='sm'
                     onClick={() => handleSetViewMode('card')}
                     aria-label={t('common.cardView')}
                   >
-                    <Grid className="h-5 w-5" />
+                    <Grid className='h-5 w-5' />
                   </Button>
                   <Button
                     variant={viewMode === 'table' ? 'default' : 'outline'}
-                    size="sm"
+                    size='sm'
                     onClick={() => handleSetViewMode('table')}
                     aria-label={t('common.tableView')}
                   >
-                    <List className="h-5 w-5" />
+                    <List className='h-5 w-5' />
                   </Button>
                 </>
               )}
@@ -713,30 +729,30 @@ export const DecisionListPage: React.FC = () => {
               {(viewMode === 'card' || isMobile) && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
+                    <Button variant='outline' size='sm'>
                       {sortDirection === 'asc' ? (
-                        <SortAsc className="h-4 w-4 mr-2" />
+                        <SortAsc className='h-4 w-4 mr-2' />
                       ) : (
-                        <SortDesc className="h-4 w-4 mr-2" />
+                        <SortDesc className='h-4 w-4 mr-2' />
                       )}
                       {t(`decision.fields.${sortField}`)}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handleSort('date')}>
-                      <Calendar className="mr-2 h-4 w-4" />
+                      <Calendar className='mr-2 h-4 w-4' />
                       {t('decision.fields.date')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSort('number')}>
-                      <FileText className="mr-2 h-4 w-4" />
+                      <FileText className='mr-2 h-4 w-4' />
                       {t('decision.fields.number')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSort('nameEn')}>
-                      <FileText className="mr-2 h-4 w-4" />
+                      <FileText className='mr-2 h-4 w-4' />
                       {t('decision.fields.nameEn')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSort('status')}>
-                      <Scale className="mr-2 h-4 w-4" />
+                      <Scale className='mr-2 h-4 w-4' />
                       {t('decision.fields.status')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -748,14 +764,14 @@ export const DecisionListPage: React.FC = () => {
 
         <div>
           {!decisionsData?.content.length ? (
-            <div className="text-center py-12">
-              <div className="space-y-3">
-                <Scale className="h-12 w-12 text-muted-foreground mx-auto opacity-50" />
+            <div className='text-center py-12'>
+              <div className='space-y-3'>
+                <Scale className='h-12 w-12 text-muted-foreground mx-auto opacity-50' />
                 <div>
-                  <p className="text-lg font-medium text-muted-foreground">
+                  <p className='text-lg font-medium text-muted-foreground'>
                     {t('decision.messages.noResults')}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className='text-sm text-muted-foreground mt-1'>
                     {filtersApplied > 0
                       ? t('common.tryAdjustingFilters')
                       : t('decision.messages.noDecisionsYet')}
@@ -763,21 +779,21 @@ export const DecisionListPage: React.FC = () => {
                 </div>
                 {filtersApplied > 0 && (
                   <Button
-                    variant="outline"
+                    variant='outline'
                     onClick={clearFilters}
-                    className="mt-4"
+                    className='mt-4'
                   >
-                    <X className="mr-2 h-4 w-4" />
+                    <X className='mr-2 h-4 w-4' />
                     {t('common.clearFilters')}
                   </Button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className='space-y-4'>
               {/* Card View (Mobile First) */}
               {(viewMode === 'card' || isMobile) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
                   {decisionsData.content.map(decision => (
                     <DecisionCard key={decision.id} decision={decision} />
                   ))}
@@ -786,23 +802,23 @@ export const DecisionListPage: React.FC = () => {
 
               {/* Table View (Desktop Only) */}
               {viewMode === 'table' && !isMobile && (
-                <div className="overflow-x-auto rounded-lg border border-card-elevated-border shadow-sm">
+                <div className='overflow-x-auto rounded-lg border border-card-elevated-border shadow-sm'>
                   <Table>
-                    <TableHeader className="bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30">
-                      <TableRow className="group border-b-0 hover:bg-primary-50/20 transition-all duration-300">
-                        <SortableTableHead field="number">
+                    <TableHeader className='bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30'>
+                      <TableRow className='group border-b-0 hover:bg-primary-50/20 transition-all duration-300'>
+                        <SortableTableHead field='number'>
                           {t('decision.fields.number')}
                         </SortableTableHead>
-                        <SortableTableHead field="nameEn">
+                        <SortableTableHead field='nameEn'>
                           {t('decision.fields.nameEn')}
                         </SortableTableHead>
-                        <SortableTableHead field="date">
+                        <SortableTableHead field='date'>
                           {t('decision.fields.date')}
                         </SortableTableHead>
-                        <SortableTableHead field="status">
+                        <SortableTableHead field='status'>
                           {t('decision.fields.status')}
                         </SortableTableHead>
-                        <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+                        <TableHead className='w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70'>
                           {t('common.actions')}
                         </TableHead>
                       </TableRow>
@@ -813,71 +829,71 @@ export const DecisionListPage: React.FC = () => {
                           key={decision.id}
                           className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-primary-50/20 hover:shadow-sm transition-all duration-300 border-b border-border/5`}
                         >
-                          <TableCell className="font-mono font-semibold tabular-nums py-4">
+                          <TableCell className='font-mono font-semibold tabular-nums py-4'>
                             {decision.number}
                           </TableCell>
-                          <TableCell className="py-4">
-                            <div className="space-y-1 max-w-[300px]">
+                          <TableCell className='py-4'>
+                            <div className='space-y-1 max-w-[300px]'>
                               <button
                                 onClick={() => handleView(decision.id)}
-                                className="text-left w-full"
+                                className='text-left w-full'
                               >
-                                <p className="font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide">
+                                <p className='font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide'>
                                   {decision.nameEn}
                                 </p>
                               </button>
                               {decision.note && (
-                                <p className="text-sm text-muted-foreground line-clamp-2 font-medium">
+                                <p className='text-sm text-muted-foreground line-clamp-2 font-medium'>
                                   {decision.note}
                                 </p>
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="py-4">
+                          <TableCell className='py-4'>
                             <AccessibleDate date={decision.date} />
                           </TableCell>
-                          <TableCell className="py-4">
+                          <TableCell className='py-4'>
                             <AccessibleStatusBadge status={decision.status} />
                           </TableCell>
-                          <TableCell className="w-[100px] py-4">
-                            <div className="flex items-center justify-center">
+                          <TableCell className='w-[100px] py-4'>
+                            <div className='flex items-center justify-center'>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20"
+                                    variant='ghost'
+                                    size='sm'
+                                    className='h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20'
                                     aria-label={t('common.actions', {
                                       item: decision.nameEn,
                                     })}
                                   >
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    <MoreHorizontal className='h-4 w-4' />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                  align="end"
-                                  className="shadow-lg border-border/20"
+                                  align='end'
+                                  className='shadow-lg border-border/20'
                                 >
                                   <DropdownMenuItem
                                     onClick={() => handleView(decision.id)}
-                                    className="hover:bg-accent focus:bg-accent"
+                                    className='hover:bg-accent focus:bg-accent'
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className='mr-2 h-4 w-4' />
                                     {t('common.view')}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleEdit(decision.id)}
-                                    className="hover:bg-accent focus:bg-accent"
+                                    className='hover:bg-accent focus:bg-accent'
                                   >
-                                    <Edit className="mr-2 h-4 w-4" />
+                                    <Edit className='mr-2 h-4 w-4' />
                                     {t('common.edit')}
                                   </DropdownMenuItem>
                                   <Separator />
                                   <DropdownMenuItem
                                     onClick={() => handleDeleteClick(decision)}
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    className='text-destructive hover:text-destructive hover:bg-destructive/10'
                                   >
-                                    <Trash className="mr-2 h-4 w-4" />
+                                    <Trash className='mr-2 h-4 w-4' />
                                     {t('common.delete')}
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -894,8 +910,8 @@ export const DecisionListPage: React.FC = () => {
               {/* Pagination */}
               {decisionsData.content.length > 0 && (
                 <>
-                  <Separator className="opacity-30" />
-                  <div className="bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm">
+                  <Separator className='opacity-30' />
+                  <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
                     <PaginationControls />
                   </div>
                 </>
@@ -918,15 +934,15 @@ export const DecisionListPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setDeleteDialogOpen(false)}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
             >

@@ -1,4 +1,4 @@
-import { TokenPayload, AuthUser } from '@/types/auth';
+import { AuthUser, TokenPayload } from '@/types/auth';
 import { UserRole } from '@/types';
 import { STORAGE_KEYS } from '@/constants';
 
@@ -22,7 +22,9 @@ export const decodeToken = (token: string): TokenPayload | null => {
 
 export const isTokenExpired = (token: string): boolean => {
   const decoded = decodeToken(token);
-  if (!decoded) return true;
+  if (!decoded) {
+    return true;
+  }
 
   const currentTime = Date.now() / 1000;
   return decoded.exp < currentTime;
@@ -30,7 +32,9 @@ export const isTokenExpired = (token: string): boolean => {
 
 export const getTokenExpirationDate = (token: string): Date | null => {
   const decoded = decodeToken(token);
-  if (!decoded) return null;
+  if (!decoded) {
+    return null;
+  }
 
   return new Date(decoded.exp * 1000);
 };
@@ -109,12 +113,16 @@ export const setStoredViewMode = (viewMode: 'table' | 'card'): void => {
 
 // Permission utilities
 export const hasRole = (user: AuthUser | null, role: string): boolean => {
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
   return user.roles.includes(role as UserRole);
 };
 
 export const hasAnyRole = (user: AuthUser | null, roles: string[]): boolean => {
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
   return roles.some(role => hasRole(user, role));
 };
 
@@ -140,7 +148,9 @@ export const isCommissionMember = (user: AuthUser | null): boolean => {
 
 // Format user display name
 export const getUserDisplayName = (user: AuthUser | null): string => {
-  if (!user) return '';
+  if (!user) {
+    return '';
+  }
 
   if (user.firstName && user.lastName) {
     return `${user.firstName} ${user.lastName}`;

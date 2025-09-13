@@ -1,14 +1,14 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthState, LoginCredentials, AuthUser } from '@/types/auth';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AuthState, AuthUser, LoginCredentials } from '@/types/auth';
 import { authService } from '@/services/auth.service';
 import {
-  setStoredTokens,
-  setStoredUser,
   clearStoredAuth,
+  getStoredRefreshToken,
   getStoredToken,
   getStoredUser,
-  getStoredRefreshToken,
   isTokenExpired,
+  setStoredTokens,
+  setStoredUser,
 } from '@/utils/auth';
 
 const initialState: AuthState = {

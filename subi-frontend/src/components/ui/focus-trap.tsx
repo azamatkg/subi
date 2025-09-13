@@ -22,7 +22,9 @@ export function FocusTrap({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!active || !containerRef.current) return;
+    if (!active || !containerRef.current) {
+      return;
+    }
 
     // Save current focus if we should restore it later
     if (restoreFocus) {

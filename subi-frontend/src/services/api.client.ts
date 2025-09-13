@@ -6,11 +6,11 @@ import axios, {
 } from 'axios';
 import { API_BASE_URL } from '@/constants';
 import {
-  getStoredToken,
-  getStoredRefreshToken,
-  setStoredTokens,
   clearStoredAuth,
+  getStoredRefreshToken,
+  getStoredToken,
   isTokenExpired,
+  setStoredTokens,
 } from '@/utils/auth';
 import { authService } from './auth.service';
 

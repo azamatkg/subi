@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
+  Activity,
   ArrowLeft,
-  Edit,
-  Trash,
-  Shield,
-  Mail,
-  Phone,
   Calendar,
   Clock,
-  User,
-  Users,
-  Key,
-  Activity,
-  MoreHorizontal,
+  Edit,
   Eye,
   EyeOff,
+  Key,
+  Mail,
+  MoreHorizontal,
+  Phone,
+  RotateCcw,
+  Shield,
+  Trash,
+  User,
   UserCheck,
   UserX,
-  RotateCcw,
+  Users,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -41,27 +41,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PageSkeleton } from '@/components/ui/skeleton';
-import {
-  AccessibleStatusBadge,
-} from '@/components/ui/accessible-status-badge';
+import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
 import { ErrorFallback } from '@/components/ui/error-fallback';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  useGetUserByIdQuery,
-  useDeleteUserMutation,
   useActivateUserMutation,
-  useSuspendUserMutation,
+  useDeleteUserMutation,
+  useGetUserByIdQuery,
   useResetUserPasswordMutation,
+  useSuspendUserMutation,
 } from '@/store/api/userApi';
 import { UserStatus } from '@/types/user';
 import { ROUTES } from '@/constants';
 
 export const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  
+
   // Validate ID parameter
   useEffect(() => {
     console.log('UserDetailPage mounted with ID:', id);
@@ -71,7 +69,12 @@ export const UserDetailPage: React.FC = () => {
   }, [id]);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { hasAnyRole, isAuthenticated, accessToken, user: currentUser } = useAuth();
+  const {
+    hasAnyRole,
+    isAuthenticated,
+    accessToken,
+    user: currentUser,
+  } = useAuth();
 
   // Debug authentication
   useEffect(() => {
@@ -99,52 +102,48 @@ export const UserDetailPage: React.FC = () => {
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
   const [suspendUser, { isLoading: isSuspending }] = useSuspendUserMutation();
-  const [resetPassword, { isLoading: isResetting }] = useResetUserPasswordMutation();
+  const [resetPassword, { isLoading: isResetting }] =
+    useResetUserPasswordMutation();
 
-  // Handle the actual API response structure
-  const rawUser = userResponse?.data || userResponse;
-  const user = rawUser ? {
-    ...rawUser,
-    isActive: rawUser.enabled,
-    status: rawUser.enabled ? 'ACTIVE' : 'INACTIVE',
-    roles: rawUser.roles?.map((role: any) => role.name) || [],
-    lastLoginAt: rawUser.lastLoginAt || null,
-    phone: rawUser.phone || null,
-    department: rawUser.department || null,
-  } : null;
+  // Handle the actual API response structure (API manual format)
+  const user = userResponse?.data;
 
   // Debug logging
   useEffect(() => {
     console.log('UserDetailPage Debug:', {
       id,
       userResponse,
-      rawUser,
-      transformedUser: user,
+      user,
       isLoading,
       error,
-      errorDetails: error ? {
-        status: (error as any)?.status,
-        data: (error as any)?.data,
-        message: (error as any)?.message,
-      } : null,
+      errorDetails: error
+        ? {
+            status: (error as any)?.status,
+            data: (error as any)?.data,
+            message: (error as any)?.message,
+          }
+        : null,
     });
-    
+
     if (error) {
       console.error('API Error details:', error);
     }
-    
+
     if (id) {
       console.log(`Making API call to: GET /api/users/${id}`);
     }
-  }, [id, userResponse, rawUser, user, isLoading, error]);
+  }, [id, userResponse, user, isLoading, error]);
 
   useSetPageTitle(
-    user ? `${user.firstName} ${user.lastName}` : t('userManagement.userDetails')
+    user
+      ? `${user.firstName} ${user.lastName}`
+      : t('userManagement.userDetails')
   );
 
   // Generate random password for reset
   function generateRandomPassword(): string {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
+    const charset =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
     let password = '';
     for (let i = 0; i < 12; i++) {
       password += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -158,7 +157,9 @@ export const UserDetailPage: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     try {
       await deleteUser(user.id).unwrap();
       navigate(`${ROUTES.ADMIN}/users`);
@@ -168,7 +169,9 @@ export const UserDetailPage: React.FC = () => {
   };
 
   const handleActivate = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     try {
       await activateUser(user.id).unwrap();
     } catch (error) {
@@ -177,7 +180,9 @@ export const UserDetailPage: React.FC = () => {
   };
 
   const handleSuspend = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     try {
       await suspendUser({
         id: user.id,
@@ -190,7 +195,9 @@ export const UserDetailPage: React.FC = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     try {
       await resetPassword({
         id: user.id,
@@ -238,38 +245,43 @@ export const UserDetailPage: React.FC = () => {
 
   if (error) {
     console.error('UserDetailPage error:', error);
-    return <ErrorFallback error={error as Error} type="network" />;
+    return <ErrorFallback error={error as Error} type='network' />;
   }
 
   if (!user && !isLoading) {
     console.error('No user data found for id:', id);
-    return <ErrorFallback error={new Error(`User not found with ID: ${id}`)} type="network" />;
+    return (
+      <ErrorFallback
+        error={new Error(`User not found with ID: ${id}`)}
+        type='network'
+      />
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header with navigation and actions */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-4'>
           <Button
-            variant="ghost"
-            size="sm"
+            variant='ghost'
+            size='sm'
             onClick={() => navigate(`${ROUTES.ADMIN}/users`)}
-            className="gap-2"
+            className='gap-2'
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className='h-4 w-4' />
             {t('common.back')}
           </Button>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center">
-              <User className="h-5 w-5 text-primary-700" />
+          <Separator orientation='vertical' className='h-6' />
+          <div className='flex items-center gap-3'>
+            <div className='h-10 w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center'>
+              <User className='h-5 w-5 text-primary-700' />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className='text-2xl font-bold text-foreground'>
                 {user.firstName} {user.lastName}
               </h1>
-              <p className="text-muted-foreground">
+              <p className='text-muted-foreground'>
                 @{user.username} • {user.email}
               </p>
             </div>
@@ -277,49 +289,49 @@ export const UserDetailPage: React.FC = () => {
         </div>
 
         {canModifyUser && (
-          <div className="flex items-center gap-2">
-            <Button onClick={handleEdit} className="gap-2">
-              <Edit className="h-4 w-4" />
+          <div className='flex items-center gap-2'>
+            <Button onClick={handleEdit} className='gap-2'>
+              <Edit className='h-4 w-4' />
               {t('common.edit')}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant='outline' size='icon'>
+                  <MoreHorizontal className='h-4 w-4' />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align='end'>
                 {user.status === UserStatus.ACTIVE ? (
                   <DropdownMenuItem
                     onClick={() => setSuspendDialogOpen(true)}
-                    className="text-orange-600"
+                    className='text-orange-600'
                   >
-                    <UserX className="mr-2 h-4 w-4" />
+                    <UserX className='mr-2 h-4 w-4' />
                     {t('userManagement.actions.suspend')}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
                     onClick={handleActivate}
                     disabled={isActivating}
-                    className="text-green-600"
+                    className='text-green-600'
                   >
-                    <UserCheck className="mr-2 h-4 w-4" />
+                    <UserCheck className='mr-2 h-4 w-4' />
                     {t('userManagement.actions.activate')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
                   onClick={() => setResetPasswordDialogOpen(true)}
                 >
-                  <Key className="mr-2 h-4 w-4" />
+                  <Key className='mr-2 h-4 w-4' />
                   {t('userManagement.actions.resetPassword')}
                 </DropdownMenuItem>
                 <Separator />
                 <DropdownMenuItem
                   onClick={() => setDeleteDialogOpen(true)}
-                  className="text-destructive"
+                  className='text-destructive'
                 >
-                  <Trash className="mr-2 h-4 w-4" />
+                  <Trash className='mr-2 h-4 w-4' />
                   {t('common.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -329,31 +341,33 @@ export const UserDetailPage: React.FC = () => {
       </div>
 
       {/* User status and basic info cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-lg flex items-center gap-2'>
+              <Shield className='h-5 w-5' />
               {t('userManagement.fields.status')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
+            <div className='space-y-3'>
+              <div className='flex items-center gap-2'>
                 <AccessibleStatusBadge status={user.status} />
                 <span className={`font-medium ${getStatusColor(user.status)}`}>
                   {t(`userManagement.status.${user.status.toLowerCase()}`)}
                 </span>
               </div>
               {user.isActive ? (
-                <div className="flex items-center gap-2 text-green-600">
-                  <UserCheck className="h-4 w-4" />
-                  <span className="text-sm">{t('userManagement.active')}</span>
+                <div className='flex items-center gap-2 text-green-600'>
+                  <UserCheck className='h-4 w-4' />
+                  <span className='text-sm'>{t('userManagement.active')}</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <UserX className="h-4 w-4" />
-                  <span className="text-sm">{t('userManagement.inactive')}</span>
+                <div className='flex items-center gap-2 text-gray-600'>
+                  <UserX className='h-4 w-4' />
+                  <span className='text-sm'>
+                    {t('userManagement.inactive')}
+                  </span>
                 </div>
               )}
             </div>
@@ -361,43 +375,45 @@ export const UserDetailPage: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-lg flex items-center gap-2'>
+              <Clock className='h-5 w-5' />
               {t('userManagement.fields.lastLogin')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className='space-y-2'>
               {user.lastLoginAt ? (
                 <>
-                  <p className="font-medium">
+                  <p className='font-medium'>
                     {new Date(user.lastLoginAt).toLocaleDateString()}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className='text-sm text-muted-foreground'>
                     {new Date(user.lastLoginAt).toLocaleTimeString()}
                   </p>
                 </>
               ) : (
-                <p className="text-muted-foreground">{t('userManagement.never')}</p>
+                <p className='text-muted-foreground'>
+                  {t('userManagement.never')}
+                </p>
               )}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-lg flex items-center gap-2'>
+              <Calendar className='h-5 w-5' />
               {t('userManagement.fields.accountCreated')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <p className="font-medium">
+            <div className='space-y-2'>
+              <p className='font-medium'>
                 {new Date(user.createdAt).toLocaleDateString()}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className='text-sm text-muted-foreground'>
                 {new Date(user.createdAt).toLocaleTimeString()}
               </p>
             </div>
@@ -406,54 +422,62 @@ export const UserDetailPage: React.FC = () => {
       </div>
 
       {/* Main content tabs */}
-      <Tabs defaultValue="details" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="details">{t('userManagement.tabs.details')}</TabsTrigger>
-          <TabsTrigger value="roles">{t('userManagement.tabs.roles')}</TabsTrigger>
-          <TabsTrigger value="activity">{t('userManagement.tabs.activity')}</TabsTrigger>
-          <TabsTrigger value="history">{t('userManagement.tabs.history')}</TabsTrigger>
+      <Tabs defaultValue='details' className='w-full'>
+        <TabsList className='grid w-full grid-cols-4'>
+          <TabsTrigger value='details'>
+            {t('userManagement.tabs.details')}
+          </TabsTrigger>
+          <TabsTrigger value='roles'>
+            {t('userManagement.tabs.roles')}
+          </TabsTrigger>
+          <TabsTrigger value='activity'>
+            {t('userManagement.tabs.activity')}
+          </TabsTrigger>
+          <TabsTrigger value='history'>
+            {t('userManagement.tabs.history')}
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="details" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value='details' className='space-y-6'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
+                <CardTitle className='flex items-center gap-2'>
+                  <User className='h-5 w-5' />
                   {t('userManagement.personalInformation')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className='space-y-4'>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.firstName')}
                   </Label>
-                  <p className="text-base font-medium">{user.firstName}</p>
+                  <p className='text-base font-medium'>{user.firstName}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.lastName')}
                   </Label>
-                  <p className="text-base font-medium">{user.lastName}</p>
+                  <p className='text-base font-medium'>{user.lastName}</p>
                 </div>
                 {user.phone && (
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className='text-sm font-medium text-muted-foreground'>
                       {t('userManagement.fields.phone')}
                     </Label>
-                    <p className="text-base font-medium flex items-center gap-2">
-                      <Phone className="h-4 w-4" />
+                    <p className='text-base font-medium flex items-center gap-2'>
+                      <Phone className='h-4 w-4' />
                       {user.phone}
                     </p>
                   </div>
                 )}
                 {user.department && (
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className='text-sm font-medium text-muted-foreground'>
                       {t('userManagement.fields.department')}
                     </Label>
-                    <p className="text-base font-medium flex items-center gap-2">
-                      <Users className="h-4 w-4" />
+                    <p className='text-base font-medium flex items-center gap-2'>
+                      <Users className='h-4 w-4' />
                       {user.department}
                     </p>
                   </div>
@@ -463,35 +487,37 @@ export const UserDetailPage: React.FC = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
+                <CardTitle className='flex items-center gap-2'>
+                  <Mail className='h-5 w-5' />
                   {t('userManagement.systemInformation')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className='space-y-4'>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.username')}
                   </Label>
-                  <p className="text-base font-mono">@{user.username}</p>
+                  <p className='text-base font-mono'>@{user.username}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.email')}
                   </Label>
-                  <p className="text-base">{user.email}</p>
+                  <p className='text-base'>{user.email}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.userId')}
                   </Label>
-                  <p className="text-sm font-mono text-muted-foreground">{user.id}</p>
+                  <p className='text-sm font-mono text-muted-foreground'>
+                    {user.id}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className='text-sm font-medium text-muted-foreground'>
                     {t('userManagement.fields.lastUpdated')}
                   </Label>
-                  <p className="text-sm">
+                  <p className='text-sm'>
                     {new Date(user.updatedAt).toLocaleString()}
                   </p>
                 </div>
@@ -500,31 +526,33 @@ export const UserDetailPage: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="roles" className="space-y-6">
+        <TabsContent value='roles' className='space-y-6'>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+              <CardTitle className='flex items-center gap-2'>
+                <Shield className='h-5 w-5' />
                 {t('userManagement.currentRoles')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 {user.roles.map(role => (
                   <div
                     key={role}
                     className={`p-4 rounded-lg border ${getRoleColor(role)}`}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className='flex items-center justify-between'>
                       <div>
-                        <h3 className="font-medium">
+                        <h3 className='font-medium'>
                           {t(`userManagement.roles.${role.toLowerCase()}`)}
                         </h3>
-                        <p className="text-sm opacity-75 mt-1">
-                          {t(`userManagement.roleDescriptions.${role.toLowerCase()}`)}
+                        <p className='text-sm opacity-75 mt-1'>
+                          {t(
+                            `userManagement.roleDescriptions.${role.toLowerCase()}`
+                          )}
                         </p>
                       </div>
-                      <Badge variant="secondary" className="ml-2">
+                      <Badge variant='secondary' className='ml-2'>
                         {role}
                       </Badge>
                     </div>
@@ -535,21 +563,21 @@ export const UserDetailPage: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="activity" className="space-y-6">
+        <TabsContent value='activity' className='space-y-6'>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
+              <CardTitle className='flex items-center gap-2'>
+                <Activity className='h-5 w-5' />
                 {t('userManagement.recentActivity')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <Activity className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-muted-foreground mb-2">
+              <div className='text-center py-12'>
+                <Activity className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
+                <h3 className='text-lg font-medium text-muted-foreground mb-2'>
                   {t('userManagement.activityNotAvailable')}
                 </h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                <p className='text-sm text-muted-foreground max-w-md mx-auto'>
                   {t('userManagement.activityNotAvailableDescription')}
                 </p>
               </div>
@@ -557,21 +585,21 @@ export const UserDetailPage: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-6">
+        <TabsContent value='history' className='space-y-6'>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RotateCcw className="h-5 w-5" />
+              <CardTitle className='flex items-center gap-2'>
+                <RotateCcw className='h-5 w-5' />
                 {t('userManagement.roleHistory')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <RotateCcw className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-muted-foreground mb-2">
+              <div className='text-center py-12'>
+                <RotateCcw className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
+                <h3 className='text-lg font-medium text-muted-foreground mb-2'>
                   {t('userManagement.roleHistoryNotAvailable')}
                 </h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                <p className='text-sm text-muted-foreground max-w-md mx-auto'>
                   {t('userManagement.roleHistoryNotAvailableDescription')}
                 </p>
               </div>
@@ -591,15 +619,15 @@ export const UserDetailPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setDeleteDialogOpen(false)}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleDelete}
               disabled={isDeleting}
             >
@@ -620,26 +648,31 @@ export const UserDetailPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setSuspendDialogOpen(false)}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleSuspend}
               disabled={isSuspending}
             >
-              {isSuspending ? t('userManagement.suspending') : t('userManagement.actions.suspend')}
+              {isSuspending
+                ? t('userManagement.suspending')
+                : t('userManagement.actions.suspend')}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Reset Password Dialog */}
-      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+      <Dialog
+        open={resetPasswordDialogOpen}
+        onOpenChange={setResetPasswordDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('userManagement.resetPasswordTitle')}</DialogTitle>
@@ -647,44 +680,43 @@ export const UserDetailPage: React.FC = () => {
               {t('userManagement.resetPasswordDescription')}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <Label className="text-sm font-medium">
+          <div className='space-y-4'>
+            <div className='p-4 bg-muted/50 rounded-lg'>
+              <Label className='text-sm font-medium'>
                 {t('userManagement.newPassword')}
               </Label>
-              <div className="flex items-center gap-2 mt-2">
-                <code className="flex-1 p-2 bg-background border rounded font-mono text-sm">
+              <div className='flex items-center gap-2 mt-2'>
+                <code className='flex-1 p-2 bg-background border rounded font-mono text-sm'>
                   {showPassword ? newPassword : '••••••••••••'}
                 </code>
                 <Button
-                  variant="outline"
-                  size="icon"
+                  variant='outline'
+                  size='icon'
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className='h-4 w-4' />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className='h-4 w-4' />
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className='text-xs text-muted-foreground mt-2'>
                 {t('userManagement.passwordChangeRequired')}
               </p>
             </div>
           </div>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setResetPasswordDialogOpen(false)}
             >
               {t('common.cancel')}
             </Button>
-            <Button
-              onClick={handleResetPassword}
-              disabled={isResetting}
-            >
-              {isResetting ? t('userManagement.resetting') : t('userManagement.actions.resetPassword')}
+            <Button onClick={handleResetPassword} disabled={isResetting}>
+              {isResetting
+                ? t('userManagement.resetting')
+                : t('userManagement.actions.resetPassword')}
             </Button>
           </div>
         </DialogContent>

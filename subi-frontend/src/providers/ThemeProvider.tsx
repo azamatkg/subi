@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import type { Theme, ThemeProviderProps } from '@/lib/theme';
 import {
-  getSystemTheme,
   applyTheme,
   getStoredTheme,
-  setStoredTheme,
+  getSystemTheme,
   resolveTheme,
+  setStoredTheme,
 } from '@/lib/theme';
 import { ThemeProviderContext } from '@/contexts/ThemeContext';
 

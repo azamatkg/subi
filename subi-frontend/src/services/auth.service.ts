@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import {
-  LoginCredentials,
   AuthResponse,
+  LoginCredentials,
   RefreshTokenResponse,
 } from '@/types/auth';
 import { UserRole } from '@/types';

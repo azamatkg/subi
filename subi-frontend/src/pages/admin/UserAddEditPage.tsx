@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
+  AlertCircle,
   ArrowLeft,
-  Save,
-  User,
-  Mail,
-  Phone,
-  Shield,
-  Users,
   Eye,
   EyeOff,
-  AlertCircle,
+  Mail,
+  Phone,
+  Save,
+  Shield,
+  User,
+  Users,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -38,67 +38,69 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  useGetUserByIdQuery,
-  useCreateUserMutation,
-  useUpdateUserMutation,
-  useCheckUsernameAvailabilityQuery,
   useCheckEmailAvailabilityQuery,
+  useCheckUsernameAvailabilityQuery,
+  useCreateUserMutation,
+  useGetUserByIdQuery,
+  useUpdateUserMutation,
 } from '@/store/api/userApi';
 import type { UserCreateDto, UserUpdateDto } from '@/types/user';
 import { UserRole } from '@/types/user';
 import { ROUTES } from '@/constants';
 import { toast } from 'sonner';
+import { handleApiError, showSuccessMessage } from '@/utils/errorHandling';
 
 // Form validation schema
-const createUserSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(50, 'Username must be less than 50 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
-  email: z
-    .string()
-    .email('Invalid email address')
-    .max(255, 'Email must be less than 255 characters'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-    ),
-  confirmPassword: z.string(),
-  firstName: z
-    .string()
-    .min(1, 'First name is required')
-    .max(100, 'First name must be less than 100 characters'),
-  lastName: z
-    .string()
-    .min(1, 'Last name is required')
-    .max(100, 'Last name must be less than 100 characters'),
-  phone: z
-    .string()
-    .optional()
-    .refine(
-      (value) => !value || /^[+]?[1-9][\d]{0,15}$/.test(value),
-      'Invalid phone number format'
-    ),
-  department: z.string().optional(),
-  roles: z
-    .array(z.enum([
-      UserRole.ADMIN,
-      UserRole.CREDIT_MANAGER,
-      UserRole.CREDIT_ANALYST,
-      UserRole.DECISION_MAKER,
-      UserRole.COMMISSION_MEMBER,
-      UserRole.USER,
-    ]))
-    .min(1, 'At least one role must be selected'),
-  isActive: z.boolean().default(true),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const createUserSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(50, 'Username must be less than 50 characters')
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        'Username can only contain letters, numbers, and underscores'
+      ),
+    email: z
+      .string()
+      .email('Invalid email address')
+      .max(255, 'Email must be less than 255 characters'),
+    password: z.string().min(6, 'Password must be at least 6 characters'), // API manual requires min 6 chars
+    confirmPassword: z.string(),
+    firstName: z
+      .string()
+      .min(2, 'First name must be at least 2 characters') // API manual requires 2-50 chars
+      .max(50, 'First name must be less than 50 characters'),
+    lastName: z
+      .string()
+      .min(2, 'Last name must be at least 2 characters') // API manual requires 2-50 chars
+      .max(50, 'Last name must be less than 50 characters'),
+    phone: z
+      .string()
+      .optional()
+      .refine(
+        value => !value || /^[+]?[1-9][\d]{0,15}$/.test(value),
+        'Invalid phone number format'
+      ),
+    department: z.string().optional(),
+    roles: z
+      .array(
+        z.enum([
+          UserRole.ADMIN,
+          UserRole.CREDIT_MANAGER,
+          UserRole.CREDIT_ANALYST,
+          UserRole.DECISION_MAKER,
+          UserRole.COMMISSION_MEMBER,
+          UserRole.USER,
+        ])
+      )
+      .min(1, 'At least one role must be selected'),
+    enabled: z.boolean().default(true), // From API manual
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 const updateUserSchema = z.object({
   email: z
@@ -107,31 +109,33 @@ const updateUserSchema = z.object({
     .max(255, 'Email must be less than 255 characters'),
   firstName: z
     .string()
-    .min(1, 'First name is required')
-    .max(100, 'First name must be less than 100 characters'),
+    .min(2, 'First name must be at least 2 characters') // API manual requires 2-50 chars
+    .max(50, 'First name must be less than 50 characters'),
   lastName: z
     .string()
-    .min(1, 'Last name is required')
-    .max(100, 'Last name must be less than 100 characters'),
+    .min(2, 'Last name must be at least 2 characters') // API manual requires 2-50 chars
+    .max(50, 'Last name must be less than 50 characters'),
   phone: z
     .string()
     .optional()
     .refine(
-      (value) => !value || /^[+]?[1-9][\d]{0,15}$/.test(value),
+      value => !value || /^[+]?[1-9][\d]{0,15}$/.test(value),
       'Invalid phone number format'
     ),
   department: z.string().optional(),
   roles: z
-    .array(z.enum([
-      UserRole.ADMIN,
-      UserRole.CREDIT_MANAGER,
-      UserRole.CREDIT_ANALYST,
-      UserRole.DECISION_MAKER,
-      UserRole.COMMISSION_MEMBER,
-      UserRole.USER,
-    ]))
+    .array(
+      z.enum([
+        UserRole.ADMIN,
+        UserRole.CREDIT_MANAGER,
+        UserRole.CREDIT_ANALYST,
+        UserRole.DECISION_MAKER,
+        UserRole.COMMISSION_MEMBER,
+        UserRole.USER,
+      ])
+    )
     .min(1, 'At least one role must be selected'),
-  isActive: z.boolean().default(true),
+  enabled: z.boolean().default(true), // From API manual
 });
 
 type CreateFormData = z.infer<typeof createUserSchema>;
@@ -143,7 +147,7 @@ export const UserAddEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { t, isLoading: translationLoading } = useTranslation();
   const { hasAnyRole } = useAuth();
-  
+
   const isEditMode = Boolean(id);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
@@ -171,58 +175,47 @@ export const UserAddEditPage: React.FC = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(isEditMode ? updateUserSchema : createUserSchema),
     mode: 'onChange',
-    defaultValues: isEditMode ? {
-      email: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      department: '',
-      roles: [UserRole.USER],
-      isActive: true,
-    } : {
-      username: '',
-      password: '',
-      confirmPassword: '',
-      email: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      department: '',
-      roles: [UserRole.USER],
-      isActive: true,
-    },
+    defaultValues: isEditMode
+      ? {
+          email: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+          department: '',
+          roles: [UserRole.USER],
+          enabled: true,
+        }
+      : {
+          username: '',
+          password: '',
+          confirmPassword: '',
+          email: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+          department: '',
+          roles: [UserRole.USER],
+          enabled: true,
+        },
   });
 
-  const watchedUsername = isEditMode ? undefined : form.watch('username' as keyof FormData) as string | undefined;
+  const watchedUsername = isEditMode
+    ? undefined
+    : (form.watch('username' as keyof FormData) as string | undefined);
   const watchedEmail = form.watch('email') as string;
 
   // Username availability check
-  const {
-    data: usernameCheckResponse,
-    isLoading: usernameChecking,
-  } = useCheckUsernameAvailabilityQuery(
-    {
-      username: watchedUsername || '',
-      excludeUserId: isEditMode ? id : undefined,
-    },
-    {
+  const { data: usernameExists, isLoading: usernameChecking } =
+    useCheckUsernameAvailabilityQuery(watchedUsername || '', {
       skip: !watchedUsername || watchedUsername.length < 3,
-    }
-  );
+    });
 
   // Email availability check
-  const {
-    data: emailCheckResponse,
-    isLoading: emailChecking,
-  } = useCheckEmailAvailabilityQuery(
-    {
-      email: watchedEmail || '',
-      excludeUserId: isEditMode ? id : undefined,
-    },
-    {
-      skip: !watchedEmail || !z.string().email().safeParse(watchedEmail).success,
-    }
-  );
+  const { data: emailExists, isLoading: emailChecking } =
+    useCheckEmailAvailabilityQuery(watchedEmail || '', {
+      skip:
+        !watchedEmail || !z.string().email().safeParse(watchedEmail).success,
+    });
 
   // Load user data for edit mode
   useEffect(() => {
@@ -234,14 +227,16 @@ export const UserAddEditPage: React.FC = () => {
         phone: user.phone || '',
         department: user.department || '',
         roles: user.roles,
-        isActive: user.isActive,
+        enabled: user.enabled,
       });
     }
-  }, [user, isEditMode, form]);
+  }, [user, isEditMode]);
 
   // Check permissions
   if (!hasAnyRole(['ADMIN'])) {
-    return <ErrorFallback error={new Error('Unauthorized')} type="permission" />;
+    return (
+      <ErrorFallback error={new Error('Unauthorized')} type='permission' />
+    );
   }
 
   // Handle form submission
@@ -255,11 +250,11 @@ export const UserAddEditPage: React.FC = () => {
           phone: data.phone || undefined,
           department: data.department || undefined,
           roles: data.roles,
-          isActive: data.isActive,
+          enabled: data.enabled,
         };
 
         await updateUser({ id, data: updateData }).unwrap();
-        toast.success(t('userManagement.messages.userUpdated'));
+        showSuccessMessage(t('userManagement.messages.userUpdated'));
         navigate(`${ROUTES.ADMIN}/users/${id}`);
       } else {
         const newUserData: UserCreateDto = {
@@ -270,17 +265,15 @@ export const UserAddEditPage: React.FC = () => {
           lastName: data.lastName,
           phone: data.phone || undefined,
           department: data.department || undefined,
-          roles: data.roles,
-          isActive: data.isActive,
+          enabled: data.enabled,
         };
 
         const result = await createUser(newUserData).unwrap();
-        toast.success(t('userManagement.messages.userCreated'));
+        showSuccessMessage(t('userManagement.messages.userCreated'));
         navigate(`${ROUTES.ADMIN}/users/${result.data.id}`);
       }
     } catch (error: unknown) {
-      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || (error as { message?: string })?.message || t('common.error');
-      toast.error(errorMessage);
+      handleApiError(error, t);
     }
   };
 
@@ -298,7 +291,7 @@ export const UserAddEditPage: React.FC = () => {
   }
 
   if (isEditMode && userError) {
-    return <ErrorFallback error={userError as Error} type="network" />;
+    return <ErrorFallback error={userError as Error} type='network' />;
   }
 
   const roleOptions = [
@@ -335,36 +328,34 @@ export const UserAddEditPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-4'>
           <Button
-            variant="ghost"
-            size="sm"
+            variant='ghost'
+            size='sm'
             onClick={handleCancel}
-            className="gap-2"
+            className='gap-2'
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className='h-4 w-4' />
             {t('common.back')}
           </Button>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center">
-              <User className="h-5 w-5 text-primary-700" />
+          <Separator orientation='vertical' className='h-6' />
+          <div className='flex items-center gap-3'>
+            <div className='h-10 w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center'>
+              <User className='h-5 w-5 text-primary-700' />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className='text-2xl font-bold text-foreground'>
                 {isEditMode
                   ? t('userManagement.editUser')
-                  : t('userManagement.createUser')
-                }
+                  : t('userManagement.createUser')}
               </h1>
-              <p className="text-muted-foreground">
+              <p className='text-muted-foreground'>
                 {isEditMode
                   ? t('userManagement.editUserDescription')
-                  : t('userManagement.createUserDescription')
-                }
+                  : t('userManagement.createUserDescription')}
               </p>
             </div>
           </div>
@@ -373,26 +364,31 @@ export const UserAddEditPage: React.FC = () => {
 
       {/* Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Personal Information */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
+                <CardTitle className='flex items-center gap-2'>
+                  <User className='h-5 w-5' />
                   {t('userManagement.personalInformation')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <CardContent className='space-y-4'>
+                <div className='grid grid-cols-2 gap-4'>
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name='firstName'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('userManagement.fields.firstName')}</FormLabel>
+                        <FormLabel>
+                          {t('userManagement.fields.firstName')}
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder={t('userManagement.enterFirstName')} {...field} />
+                          <Input
+                            placeholder={t('userManagement.enterFirstName')}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -400,12 +396,17 @@ export const UserAddEditPage: React.FC = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="lastName"
+                    name='lastName'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('userManagement.fields.lastName')}</FormLabel>
+                        <FormLabel>
+                          {t('userManagement.fields.lastName')}
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder={t('userManagement.enterLastName')} {...field} />
+                          <Input
+                            placeholder={t('userManagement.enterLastName')}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -415,15 +416,15 @@ export const UserAddEditPage: React.FC = () => {
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name='email'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('userManagement.fields.email')}</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <div className='relative'>
+                          <Mail className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className="pl-10"
+                            className='pl-10'
                             placeholder={t('userManagement.enterEmail')}
                             {...field}
                           />
@@ -434,9 +435,9 @@ export const UserAddEditPage: React.FC = () => {
                           {t('userManagement.checkingEmailAvailability')}
                         </FormDescription>
                       )}
-                      {emailCheckResponse && !emailCheckResponse.data.available && (
+                      {emailExists && (
                         <Alert>
-                          <AlertCircle className="h-4 w-4" />
+                          <AlertCircle className='h-4 w-4' />
                           <AlertDescription>
                             {t('userManagement.emailNotAvailable')}
                           </AlertDescription>
@@ -449,15 +450,18 @@ export const UserAddEditPage: React.FC = () => {
 
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name='phone'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('userManagement.fields.phone')} {t('common.optional')}</FormLabel>
+                      <FormLabel>
+                        {t('userManagement.fields.phone')}{' '}
+                        {t('common.optional')}
+                      </FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <div className='relative'>
+                          <Phone className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className="pl-10"
+                            className='pl-10'
                             placeholder={t('userManagement.enterPhone')}
                             {...field}
                           />
@@ -470,15 +474,18 @@ export const UserAddEditPage: React.FC = () => {
 
                 <FormField
                   control={form.control}
-                  name="department"
+                  name='department'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('userManagement.fields.department')} {t('common.optional')}</FormLabel>
+                      <FormLabel>
+                        {t('userManagement.fields.department')}{' '}
+                        {t('common.optional')}
+                      </FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <div className='relative'>
+                          <Users className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className="pl-10"
+                            className='pl-10'
                             placeholder={t('userManagement.enterDepartment')}
                             {...field}
                           />
@@ -494,25 +501,29 @@ export const UserAddEditPage: React.FC = () => {
             {/* System Access */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
+                <CardTitle className='flex items-center gap-2'>
+                  <Shield className='h-5 w-5' />
                   {t('userManagement.systemAccess')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className='space-y-4'>
                 {!isEditMode && (
                   <>
                     <FormField
                       control={form.control}
-                      name="username"
+                      name='username'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('userManagement.fields.username')}</FormLabel>
+                          <FormLabel>
+                            {t('userManagement.fields.username')}
+                          </FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-3 text-sm text-muted-foreground">@</span>
+                            <div className='relative'>
+                              <span className='absolute left-3 top-3 text-sm text-muted-foreground'>
+                                @
+                              </span>
                               <Input
-                                className="pl-8"
+                                className='pl-8'
                                 placeholder={t('userManagement.enterUsername')}
                                 {...field}
                               />
@@ -523,9 +534,9 @@ export const UserAddEditPage: React.FC = () => {
                               {t('userManagement.checkingUsernameAvailability')}
                             </FormDescription>
                           )}
-                          {usernameCheckResponse && !usernameCheckResponse.data.available && (
+                          {usernameExists && (
                             <Alert>
-                              <AlertCircle className="h-4 w-4" />
+                              <AlertCircle className='h-4 w-4' />
                               <AlertDescription>
                                 {t('userManagement.usernameNotAvailable')}
                               </AlertDescription>
@@ -536,31 +547,35 @@ export const UserAddEditPage: React.FC = () => {
                       )}
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className='grid grid-cols-2 gap-4'>
                       <FormField
                         control={form.control}
-                        name="password"
+                        name='password'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('userManagement.fields.password')}</FormLabel>
+                            <FormLabel>
+                              {t('userManagement.fields.password')}
+                            </FormLabel>
                             <FormControl>
-                              <div className="relative">
+                              <div className='relative'>
                                 <Input
                                   type={showPassword ? 'text' : 'password'}
-                                  placeholder={t('userManagement.enterPassword')}
+                                  placeholder={t(
+                                    'userManagement.enterPassword'
+                                  )}
                                   {...field}
                                 />
                                 <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                  type='button'
+                                  variant='ghost'
+                                  size='sm'
+                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
                                   onClick={() => setShowPassword(!showPassword)}
                                 >
                                   {showPassword ? (
-                                    <EyeOff className="h-4 w-4" />
+                                    <EyeOff className='h-4 w-4' />
                                   ) : (
-                                    <Eye className="h-4 w-4" />
+                                    <Eye className='h-4 w-4' />
                                   )}
                                 </Button>
                               </div>
@@ -575,28 +590,36 @@ export const UserAddEditPage: React.FC = () => {
 
                       <FormField
                         control={form.control}
-                        name="confirmPassword"
+                        name='confirmPassword'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('userManagement.fields.confirmPassword')}</FormLabel>
+                            <FormLabel>
+                              {t('userManagement.fields.confirmPassword')}
+                            </FormLabel>
                             <FormControl>
-                              <div className="relative">
+                              <div className='relative'>
                                 <Input
-                                  type={showConfirmPassword ? 'text' : 'password'}
-                                  placeholder={t('userManagement.confirmPassword')}
+                                  type={
+                                    showConfirmPassword ? 'text' : 'password'
+                                  }
+                                  placeholder={t(
+                                    'userManagement.confirmPassword'
+                                  )}
                                   {...field}
                                 />
                                 <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                  type='button'
+                                  variant='ghost'
+                                  size='sm'
+                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                                  onClick={() =>
+                                    setShowConfirmPassword(!showConfirmPassword)
+                                  }
                                 >
                                   {showConfirmPassword ? (
-                                    <EyeOff className="h-4 w-4" />
+                                    <EyeOff className='h-4 w-4' />
                                   ) : (
-                                    <Eye className="h-4 w-4" />
+                                    <Eye className='h-4 w-4' />
                                   )}
                                 </Button>
                               </div>
@@ -611,21 +634,21 @@ export const UserAddEditPage: React.FC = () => {
 
                 <FormField
                   control={form.control}
-                  name="isActive"
+                  name='enabled'
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
+                      <div className='space-y-1 leading-none'>
                         <FormLabel>
-                          {t('userManagement.fields.activeUser')}
+                          {t('userManagement.fields.enabled')}
                         </FormLabel>
                         <FormDescription>
-                          {t('userManagement.activeUserDescription')}
+                          {t('userManagement.enabledUserDescription')}
                         </FormDescription>
                       </div>
                     </FormItem>
@@ -638,45 +661,47 @@ export const UserAddEditPage: React.FC = () => {
           {/* Role Assignment */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+              <CardTitle className='flex items-center gap-2'>
+                <Shield className='h-5 w-5' />
                 {t('userManagement.roleAssignment')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <FormField
                 control={form.control}
-                name="roles"
+                name='roles'
                 render={() => (
                   <FormItem>
                     <FormLabel>{t('userManagement.selectRoles')}</FormLabel>
                     <FormDescription>
                       {t('userManagement.selectRolesDescription')}
                     </FormDescription>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      {roleOptions.map((role) => (
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+                      {roleOptions.map(role => (
                         <FormField
                           key={role.value}
                           control={form.control}
-                          name="roles"
+                          name='roles'
                           render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 hover:bg-muted/50 transition-colors">
+                            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 hover:bg-muted/50 transition-colors'>
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(role.value)}
-                                  onCheckedChange={(checked) => {
+                                  onCheckedChange={checked => {
                                     const updatedRoles = checked
                                       ? [...(field.value || []), role.value]
-                                      : field.value?.filter((r: UserRole) => r !== role.value) || [];
+                                      : field.value?.filter(
+                                          (r: UserRole) => r !== role.value
+                                        ) || [];
                                     field.onChange(updatedRoles);
                                   }}
                                 />
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="font-medium">
+                              <div className='space-y-1 leading-none'>
+                                <FormLabel className='font-medium'>
                                   {role.label}
                                 </FormLabel>
-                                <FormDescription className="text-sm">
+                                <FormDescription className='text-sm'>
                                   {role.description}
                                 </FormDescription>
                               </div>
@@ -693,29 +718,28 @@ export const UserAddEditPage: React.FC = () => {
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3">
+          <div className='flex justify-end space-x-3'>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={handleCancel}
               disabled={isCreating || isUpdating}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              type="submit"
+              type='submit'
               disabled={isCreating || isUpdating}
-              className="gap-2"
+              className='gap-2'
             >
-              <Save className="h-4 w-4" />
+              <Save className='h-4 w-4' />
               {isCreating || isUpdating
                 ? isEditMode
                   ? t('common.updating')
                   : t('common.creating')
                 : isEditMode
-                ? t('common.update')
-                : t('common.create')
-              }
+                  ? t('common.update')
+                  : t('common.create')}
             </Button>
           </div>
         </form>

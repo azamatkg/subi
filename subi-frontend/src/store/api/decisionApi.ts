@@ -1,12 +1,12 @@
 import { baseApi } from './baseApi';
 import type {
-  DecisionResponseDto,
   CreateDecisionDto,
-  UpdateDecisionDto,
-  PageableResponse,
+  DecisionResponseDto,
   DecisionSearchAndFilterParams,
-  SearchParams,
+  PageableResponse,
   PaginationParams,
+  SearchParams,
+  UpdateDecisionDto,
 } from '@/types/decision';
 
 export const decisionApi = baseApi.injectEndpoints({
@@ -98,16 +98,24 @@ export const decisionApi = baseApi.injectEndpoints({
           size: size.toString(),
         });
 
-        if (searchTerm) params.append('searchTerm', searchTerm);
-        if (decisionMakingBodyId)
+        if (searchTerm) {
+          params.append('searchTerm', searchTerm);
+        }
+        if (decisionMakingBodyId) {
           params.append(
             'decisionMakingBodyId',
             decisionMakingBodyId.toString()
           );
-        if (decisionTypeId)
+        }
+        if (decisionTypeId) {
           params.append('decisionTypeId', decisionTypeId.toString());
-        if (status) params.append('status', status);
-        if (sort) params.append('sort', sort);
+        }
+        if (status) {
+          params.append('status', status);
+        }
+        if (sort) {
+          params.append('sort', sort);
+        }
 
         return `decisions/search-and-filter?${params.toString()}`;
       },

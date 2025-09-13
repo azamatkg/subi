@@ -6,9 +6,9 @@ import type {
 } from '@reduxjs/toolkit/query';
 import { API_BASE_URL } from '@/constants';
 import {
+  getStoredRefreshToken,
   getStoredToken,
   isTokenExpired,
-  getStoredRefreshToken,
 } from '@/utils/auth';
 import { authService } from '@/services/auth.service';
 
@@ -96,6 +96,8 @@ export const baseApi = createApi({
     'CreditPurpose',
     'DocumentType',
     'User',
+    'Role',
+    'Permission',
   ],
   endpoints: () => ({}),
 });

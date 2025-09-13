@@ -1,0 +1,567 @@
+openapi: 3.0.3
+info:
+  title: User Management API Contract
+  description: API contract for user management pages in ASUBK Financial Management System
+  version: 1.0.0
+  contact:
+    name: ASUBK Development Team
+    
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+paths:
+  /users:
+    get:
+      summary: Get paginated list of users
+      description: Retrieve paginated list of users with basic information for list/table view
+      operationId: getUsers
+      tags:
+        - users
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: "lastName,asc"
+      responses:
+        '200':
+          description: Successfully retrieved users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '403':
+          description: Access denied - ADMIN role required
+          
+    post:
+      summary: Create new user
+      description: Create a new user account with validation
+      operationId: createUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Validation error
+        '403':
+          description: Access denied
+        '409':
+          description: Username or email already exists
+
+  /users/search:
+    get:
+      summary: Search and filter users
+      description: Advanced search and filtering for users
+      operationId: searchAndFilterUsers
+      tags:
+        - users
+      parameters:
+        - name: search
+          in: query
+          description: Search across username, email, firstName, lastName
+          schema:
+            type: string
+        - name: roles
+          in: query
+          description: Filter by role names
+          schema:
+            type: array
+            items:
+              type: string
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserStatus'
+        - name: departments
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Get single user with full details including roles and permissions
+      operationId: getUserById
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+    put:
+      summary: Update user
+      description: Update user information with validation
+      operationId: updateUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDto'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Validation error
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete user
+      description: Delete user account permanently
+      operationId: deleteUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+        '409':
+          description: Cannot delete (e.g., last admin user)
+
+  /users/{id}/status:
+    patch:
+      summary: Update user status
+      description: Update user status (active/inactive/suspended)
+      operationId: updateUserStatus
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserStatusUpdateDto'
+      responses:
+        '200':
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /users/exists/username/{username}:
+    get:
+      summary: Check username availability
+      description: Check if username is available for registration
+      operationId: checkUsernameAvailability
+      tags:
+        - users
+        - validation
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Username availability status
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: true if username exists, false if available
+
+  /users/exists/email/{email}:
+    get:
+      summary: Check email availability
+      description: Check if email is available for registration
+      operationId: checkEmailAvailability
+      tags:
+        - users
+        - validation
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Email availability status
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: true if email exists, false if available
+
+  /users/{id}/activity-log:
+    get:
+      summary: Get user activity log
+      description: Retrieve paginated activity log for a user
+      operationId: getUserActivityLog
+      tags:
+        - users
+        - audit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: User activity log
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActivityLogResponse'
+
+components:
+  schemas:
+    UserCreateDto:
+      type: object
+      required:
+        - username
+        - email
+        - firstName
+        - lastName
+        - roleIds
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_]+$'
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        roleIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        password:
+          type: string
+          minLength: 8
+        sendWelcomeEmail:
+          type: boolean
+          default: true
+
+    UserUpdateDto:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - roleIds
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        roleIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+
+    UserStatusUpdateDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        reason:
+          type: string
+          description: Reason for status change (required for suspension)
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lastLogin:
+          type: string
+          format: date-time
+          nullable: true
+
+    UserListResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+
+    UserActivityLogResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserActivity'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+
+    UserActivity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        performedBy:
+          type: string
+        action:
+          $ref: '#/components/schemas/ActivityAction'
+        details:
+          type: object
+          additionalProperties: true
+        ipAddress:
+          type: string
+        userAgent:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          $ref: '#/components/schemas/RoleName'
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+
+    UserStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+        - SUSPENDED
+        - PENDING_ACTIVATION
+
+    RoleName:
+      type: string
+      enum:
+        - ADMIN
+        - CREDIT_MANAGER
+        - CREDIT_ANALYST
+        - DECISION_MAKER
+        - COMMISSION_MEMBER
+        - USER
+
+    ActivityAction:
+      type: string
+      enum:
+        - LOGIN
+        - LOGOUT
+        - PASSWORD_CHANGE
+        - PROFILE_UPDATE
+        - ROLE_CHANGE
+        - STATUS_CHANGE
+        - ACCOUNT_CREATED
+        - ACCOUNT_DELETED
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: users
+    description: User management operations
+  - name: validation
+    description: Real-time validation operations
+  - name: audit
+    description: Audit and activity logging

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,13 +26,13 @@ export function ThemeToggle({
   const getThemeIcon = (selectedTheme: Theme) => {
     switch (selectedTheme) {
       case 'light':
-        return <Sun className="h-4 w-4" aria-hidden="true" />;
+        return <Sun className='h-4 w-4' aria-hidden='true' />;
       case 'dark':
-        return <Moon className="h-4 w-4" aria-hidden="true" />;
+        return <Moon className='h-4 w-4' aria-hidden='true' />;
       case 'system':
-        return <Monitor className="h-4 w-4" aria-hidden="true" />;
+        return <Monitor className='h-4 w-4' aria-hidden='true' />;
       default:
-        return <Monitor className="h-4 w-4" aria-hidden="true" />;
+        return <Monitor className='h-4 w-4' aria-hidden='true' />;
     }
   };
 
@@ -59,44 +59,44 @@ export function ThemeToggle({
           aria-label={`Текущая тема: ${getThemeLabel(theme)}`}
         >
           {getThemeIcon(theme)}
-          <span className="sr-only">Переключить тему</span>
+          <span className='sr-only'>Переключить тему</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align="end"
-        className="min-w-[140px] bg-gray-800 border-gray-700"
+        align='end'
+        className='min-w-[140px] bg-gray-800 border-gray-700'
       >
         <DropdownMenuItem
           onClick={() => setTheme('light')}
-          className="gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white"
+          className='gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white'
           aria-selected={theme === 'light'}
         >
-          <Sun className="h-4 w-4" aria-hidden="true" />
+          <Sun className='h-4 w-4' aria-hidden='true' />
           <span>Светлая</span>
           {theme === 'light' && (
-            <span className="ml-auto text-xs text-muted-foreground">✓</span>
+            <span className='ml-auto text-xs text-muted-foreground'>✓</span>
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('dark')}
-          className="gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white"
+          className='gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white'
           aria-selected={theme === 'dark'}
         >
-          <Moon className="h-4 w-4" aria-hidden="true" />
+          <Moon className='h-4 w-4' aria-hidden='true' />
           <span>Темная</span>
           {theme === 'dark' && (
-            <span className="ml-auto text-xs text-muted-foreground">✓</span>
+            <span className='ml-auto text-xs text-muted-foreground'>✓</span>
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('system')}
-          className="gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white"
+          className='gap-2 cursor-pointer text-gray-200 focus:bg-gray-700 focus:text-white'
           aria-selected={theme === 'system'}
         >
-          <Monitor className="h-4 w-4" aria-hidden="true" />
+          <Monitor className='h-4 w-4' aria-hidden='true' />
           <span>Системная</span>
           {theme === 'system' && (
-            <span className="ml-auto text-xs text-muted-foreground">✓</span>
+            <span className='ml-auto text-xs text-muted-foreground'>✓</span>
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -119,16 +119,16 @@ export function SimpleThemeToggle({ className }: { className?: string }) {
 
   return (
     <Button
-      variant="ghost"
-      size="sm"
+      variant='ghost'
+      size='sm'
       onClick={cycleTheme}
       className={className}
       aria-label={`Текущая тема: ${theme}. Нажмите чтобы переключить`}
     >
-      {theme === 'light' && <Sun className="h-4 w-4" />}
-      {theme === 'dark' && <Moon className="h-4 w-4" />}
-      {theme === 'system' && <Monitor className="h-4 w-4" />}
-      <span className="sr-only">Переключить тему</span>
+      {theme === 'light' && <Sun className='h-4 w-4' />}
+      {theme === 'dark' && <Moon className='h-4 w-4' />}
+      {theme === 'system' && <Monitor className='h-4 w-4' />}
+      <span className='sr-only'>Переключить тему</span>
     </Button>
   );
 }

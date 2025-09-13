@@ -30,15 +30,15 @@ function CardSkeleton({
 }: CardSkeletonProps) {
   return (
     <div className={cn('p-6 border rounded-xl bg-card shadow-sm', className)}>
-      <div className="flex items-center justify-between mb-2">
-        <Skeleton className="h-4 w-24" />
-        {showIcon && <Skeleton className="h-5 w-5 rounded" />}
+      <div className='flex items-center justify-between mb-2'>
+        <Skeleton className='h-4 w-24' />
+        {showIcon && <Skeleton className='h-5 w-5 rounded' />}
       </div>
-      <Skeleton className="h-8 w-20 mb-1" />
+      <Skeleton className='h-8 w-20 mb-1' />
       {showTrend && (
-        <div className="flex items-center gap-1">
-          <Skeleton className="h-3 w-3 rounded" />
-          <Skeleton className="h-3 w-16" />
+        <div className='flex items-center gap-1'>
+          <Skeleton className='h-3 w-3 rounded' />
+          <Skeleton className='h-3 w-16' />
         </div>
       )}
     </div>
@@ -68,19 +68,19 @@ function ListItemSkeleton({
         className
       )}
     >
-      {showAvatar && <Skeleton className="h-12 w-12 rounded-full" />}
-      <div className="flex-1 space-y-2">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-4 w-32" />
-          {showBadge && <Skeleton className="h-5 w-16 rounded-full" />}
+      {showAvatar && <Skeleton className='h-12 w-12 rounded-full' />}
+      <div className='flex-1 space-y-2'>
+        <div className='flex items-center gap-3'>
+          <Skeleton className='h-4 w-32' />
+          {showBadge && <Skeleton className='h-5 w-16 rounded-full' />}
         </div>
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-3 w-28" />
+        <div className='flex items-center gap-4'>
+          <Skeleton className='h-3 w-24' />
+          <Skeleton className='h-3 w-20' />
+          <Skeleton className='h-3 w-28' />
         </div>
       </div>
-      {showActions && <Skeleton className="h-8 w-8 rounded" />}
+      {showActions && <Skeleton className='h-8 w-8 rounded' />}
     </div>
   );
 }
@@ -103,11 +103,11 @@ function TableSkeleton({
     <div className={cn('space-y-3', className)}>
       {/* Header */}
       <div
-        className="grid gap-4 pb-2 border-b"
+        className='grid gap-4 pb-2 border-b'
         style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
       >
         {Array.from({ length: columns }).map((_, i) => (
-          <Skeleton key={`header-${i}`} className="h-4 w-20" />
+          <Skeleton key={`header-${i}`} className='h-4 w-20' />
         ))}
       </div>
 
@@ -115,7 +115,7 @@ function TableSkeleton({
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div
           key={`row-${rowIndex}`}
-          className="grid gap-4 py-3"
+          className='grid gap-4 py-3'
           style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
         >
           {Array.from({ length: columns }).map((_, colIndex) => (
@@ -155,15 +155,15 @@ function PageSkeleton({
     <div className={cn('space-y-6', className)}>
       {/* Page Header */}
       {showHeader && (
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-96" />
+        <div className='space-y-2'>
+          <Skeleton className='h-8 w-64' />
+          <Skeleton className='h-4 w-96' />
         </div>
       )}
 
       {/* Cards Grid */}
       {showCards && (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
           {Array.from({ length: 4 }).map((_, i) => (
             <CardSkeleton key={`card-${i}`} showTrend={i < 2} />
           ))}
@@ -172,12 +172,12 @@ function PageSkeleton({
 
       {/* Content List */}
       {showList && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-9 w-24" />
+        <div className='space-y-4'>
+          <div className='flex items-center justify-between'>
+            <Skeleton className='h-6 w-32' />
+            <Skeleton className='h-9 w-24' />
           </div>
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {Array.from({ length: 3 }).map((_, i) => (
               <ListItemSkeleton key={`list-${i}`} showAvatar />
             ))}

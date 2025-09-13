@@ -3,7 +3,7 @@
  * Provides WCAG 2.1 AA compliant utilities and helpers
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Generate unique IDs for form elements and accessibility
@@ -105,7 +105,9 @@ export function useFocusTrap(isActive: boolean = true) {
   const containerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!isActive || !containerRef.current) return;
+    if (!isActive || !containerRef.current) {
+      return;
+    }
 
     const cleanup = FocusManager.trapFocus(containerRef.current);
     const firstFocusable = FocusManager.getFirstFocusableElement(
@@ -265,7 +267,9 @@ export const AriaHelpers = {
     context: string,
     locale: string = 'ru'
   ): string {
-    if (!isLoading) return '';
+    if (!isLoading) {
+      return '';
+    }
 
     const loadingLabels: Record<string, string> = {
       ru: `Загружаю ${context}...`,
@@ -325,7 +329,9 @@ export const BreakpointUtils = {
 
   // Media query hooks for responsive design
   useMediaQuery: (query: string): boolean => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') {
+      return false;
+    }
     return window.matchMedia(query).matches;
   },
 };

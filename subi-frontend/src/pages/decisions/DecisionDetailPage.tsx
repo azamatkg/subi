@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
-  Edit,
-  Trash,
-  FileText,
-  Calendar,
-  Hash,
   Building,
-  Tag,
-  StickyNote,
-  Loader2,
+  Calendar,
   CreditCard,
-  Plus,
+  Edit,
+  FileText,
   Grid,
+  Hash,
   List,
+  Loader2,
+  Plus,
+  StickyNote,
+  Tag,
+  Trash,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,26 +34,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import {
-  useGetDecisionByIdQuery,
   useDeleteDecisionMutation,
+  useGetDecisionByIdQuery,
 } from '@/store/api/decisionApi';
 import { CreateCreditProgramDto } from '@/types/creditProgram';
 import {
-  useSearchAndFilterCreditProgramsQuery,
+  useActivateCreditProgramMutation,
+  useCloseCreditProgramMutation,
   useCreateCreditProgramMutation,
   useDeleteCreditProgramMutation,
-  useActivateCreditProgramMutation,
+  useSearchAndFilterCreditProgramsQuery,
   useSuspendCreditProgramMutation,
-  useCloseCreditProgramMutation,
 } from '@/store/api/creditProgramApi';
 import type { DecisionStatus } from '@/types/decision';
 import { DecisionStatus as DecisionStatusEnum } from '@/types/decision';
 import type {
-  CreditProgramResponseDto,
   CreditProgramFilterState,
+  CreditProgramResponseDto,
   CreditProgramSearchAndFilterParams,
 } from '@/types/creditProgram';
-import { ROUTES, PAGINATION } from '@/constants';
+import { PAGINATION, ROUTES } from '@/constants';
 import { CreditProgramFilters } from '@/components/credit-programs/CreditProgramFilters';
 import { CreditProgramTable } from '@/components/credit-programs/CreditProgramTable';
 import { CreditProgramCard } from '@/components/credit-programs/CreditProgramCard';
@@ -169,7 +169,9 @@ export const DecisionDetailPage: React.FC = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
 
     try {
       await deleteDecision(id).unwrap();
@@ -251,7 +253,9 @@ export const DecisionDetailPage: React.FC = () => {
   };
 
   const handleDeleteProgramConfirm = async () => {
-    if (!selectedProgram) return;
+    if (!selectedProgram) {
+      return;
+    }
 
     try {
       await deleteProgram(selectedProgram.id).unwrap();
@@ -308,49 +312,51 @@ export const DecisionDetailPage: React.FC = () => {
 
   // Pagination handlers
   const PaginationControls: React.FC = () => {
-    if (!programsData) return null;
+    if (!programsData) {
+      return null;
+    }
 
     const totalPages = programsData.totalPages;
     const currentPage = programsData.number;
 
     return (
-      <div className="flex items-center justify-between">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className='flex items-center justify-between'>
+        <div className='flex-1 text-sm text-muted-foreground'>
           {t('common.showing')} {programsData.numberOfElements} {t('common.of')}{' '}
           {programsData.totalElements}{' '}
           {t('creditProgram.programs').toLowerCase()}
         </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">{t('common.rowsPerPage')}</p>
+        <div className='flex items-center space-x-6 lg:space-x-8'>
+          <div className='flex items-center space-x-2'>
+            <p className='text-sm font-medium'>{t('common.rowsPerPage')}</p>
             <Button
-              variant="outline"
-              size="sm"
+              variant='outline'
+              size='sm'
               onClick={() => setSize(size === 10 ? 20 : size === 20 ? 50 : 10)}
             >
               {size}
             </Button>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
             {t('common.page')} {currentPage + 1} {t('common.of')}{' '}
             {totalPages || 1}
           </div>
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(Math.max(0, currentPage - 1))}
               disabled={currentPage === 0}
             >
-              <span className="sr-only">{t('common.previous')}</span>«
+              <span className='sr-only'>{t('common.previous')}</span>«
             </Button>
             <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
+              variant='outline'
+              className='h-8 w-8 p-0'
               onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
               disabled={currentPage >= totalPages - 1}
             >
-              <span className="sr-only">{t('common.next')}</span>»
+              <span className='sr-only'>{t('common.next')}</span>»
             </Button>
           </div>
         </div>
@@ -389,8 +395,8 @@ export const DecisionDetailPage: React.FC = () => {
   if (!id) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">
+        <CardContent className='p-6'>
+          <p className='text-center text-muted-foreground'>
             {t('errors.notFound')}
           </p>
         </CardContent>
@@ -401,9 +407,9 @@ export const DecisionDetailPage: React.FC = () => {
   if (decisionLoading) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
+        <CardContent className='p-6'>
+          <div className='flex items-center justify-center space-x-2'>
+            <Loader2 className='h-4 w-4 animate-spin' />
             <span>{t('decision.messages.loadingDecisions')}</span>
           </div>
         </CardContent>
@@ -414,8 +420,8 @@ export const DecisionDetailPage: React.FC = () => {
   if (decisionError || !decision) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-destructive">
+        <CardContent className='p-6'>
+          <p className='text-center text-destructive'>
             {t('errors.serverError')}
           </p>
         </CardContent>
@@ -424,118 +430,118 @@ export const DecisionDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" onClick={handleBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center space-x-4'>
+          <Button variant='ghost' size='sm' onClick={handleBack}>
+            <ArrowLeft className='mr-2 h-4 w-4' />
             {t('common.back')}
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">{decision.nameEn}</h1>
-            <p className="text-muted-foreground">
+            <h1 className='text-2xl font-semibold'>{decision.nameEn}</h1>
+            <p className='text-muted-foreground'>
               {t('decision.decisionDetails')}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={handleEdit}>
-            <Edit className="mr-2 h-4 w-4" />
+        <div className='flex items-center space-x-2'>
+          <Button variant='outline' onClick={handleEdit}>
+            <Edit className='mr-2 h-4 w-4' />
             {t('common.edit')}
           </Button>
-          <Button variant="destructive" onClick={handleDeleteClick}>
-            <Trash className="mr-2 h-4 w-4" />
+          <Button variant='destructive' onClick={handleDeleteClick}>
+            <Trash className='mr-2 h-4 w-4' />
             {t('common.delete')}
           </Button>
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="main" className="space-y-6">
-        <TabsList className="inline-flex w-auto h-12 p-1">
+      <Tabs defaultValue='main' className='space-y-6'>
+        <TabsList className='inline-flex w-auto h-12 p-1'>
           <TabsTrigger
-            value="main"
-            className="px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            value='main'
+            className='px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md'
           >
             {t('common.main')}
           </TabsTrigger>
           <TabsTrigger
-            value="programs"
-            className="px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            value='programs'
+            className='px-4 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md'
           >
             {t('common.programs')}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="main" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <TabsContent value='main' className='space-y-6'>
+          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
             {/* Main Information */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className='lg:col-span-2 space-y-6'>
               {/* Basic Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="h-5 w-5" />
+                  <CardTitle className='flex items-center space-x-2'>
+                    <FileText className='h-5 w-5' />
                     <span>{t('decision.fields.nameEn')}</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
+                <CardContent className='space-y-4'>
+                  <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground'>
                         {t('decision.fields.nameEn')}
                       </p>
-                      <p className="font-medium">{decision.nameEn}</p>
+                      <p className='font-medium'>{decision.nameEn}</p>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground'>
                         {t('decision.fields.nameRu')}
                       </p>
-                      <p className="font-medium">{decision.nameRu}</p>
+                      <p className='font-medium'>{decision.nameRu}</p>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground'>
                         {t('decision.fields.nameKg')}
                       </p>
-                      <p className="font-medium">{decision.nameKg}</p>
+                      <p className='font-medium'>{decision.nameKg}</p>
                     </div>
                   </div>
 
                   <Separator />
 
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-                        <Calendar className="h-4 w-4" />
+                  <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground flex items-center space-x-2'>
+                        <Calendar className='h-4 w-4' />
                         <span>{t('decision.fields.date')}</span>
                       </p>
-                      <p className="font-medium">
+                      <p className='font-medium'>
                         {new Date(decision.date).toLocaleDateString()}
                       </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-                        <Hash className="h-4 w-4" />
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground flex items-center space-x-2'>
+                        <Hash className='h-4 w-4' />
                         <span>{t('decision.fields.number')}</span>
                       </p>
-                      <p className="font-medium font-mono">{decision.number}</p>
+                      <p className='font-medium font-mono'>{decision.number}</p>
                     </div>
                   </div>
 
                   {decision.note && (
                     <>
                       <Separator />
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-                          <StickyNote className="h-4 w-4" />
+                      <div className='space-y-2'>
+                        <p className='text-sm font-medium text-muted-foreground flex items-center space-x-2'>
+                          <StickyNote className='h-4 w-4' />
                           <span>{t('decision.fields.note')}</span>
                         </p>
-                        <p className="text-sm leading-relaxed bg-muted/50 p-3 rounded-lg">
+                        <p className='text-sm leading-relaxed bg-muted/50 p-3 rounded-lg'>
                           {decision.note}
                         </p>
                       </div>
@@ -547,46 +553,46 @@ export const DecisionDetailPage: React.FC = () => {
               {/* Classification Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Tag className="h-5 w-5" />
+                  <CardTitle className='flex items-center space-x-2'>
+                    <Tag className='h-5 w-5' />
                     <span>
                       {t('decision.decisionType')} &{' '}
                       {t('decision.decisionMakingBody')}
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
+                <CardContent className='space-y-4'>
+                  <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground'>
                         {t('decision.fields.decisionType')}
                       </p>
-                      <div className="space-y-1">
-                        <p className="font-medium">
+                      <div className='space-y-1'>
+                        <p className='font-medium'>
                           {decision.decisionTypeNameEn}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                           {decision.decisionTypeNameRu}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                           {decision.decisionTypeNameKg}
                         </p>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-                        <Building className="h-4 w-4" />
+                    <div className='space-y-2'>
+                      <p className='text-sm font-medium text-muted-foreground flex items-center space-x-2'>
+                        <Building className='h-4 w-4' />
                         <span>{t('decision.fields.decisionMakingBody')}</span>
                       </p>
-                      <div className="space-y-1">
-                        <p className="font-medium">
+                      <div className='space-y-1'>
+                        <p className='font-medium'>
                           {decision.decisionMakingBodyNameEn}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                           {decision.decisionMakingBodyNameRu}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                           {decision.decisionMakingBodyNameKg}
                         </p>
                       </div>
@@ -597,7 +603,7 @@ export const DecisionDetailPage: React.FC = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
+            <div className='space-y-6'>
               {/* Status Card */}
               <Card>
                 <CardHeader>
@@ -617,7 +623,7 @@ export const DecisionDetailPage: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm font-mono break-all bg-muted p-2 rounded">
+                    <p className='text-sm font-mono break-all bg-muted p-2 rounded'>
                       {decision.documentPackageId}
                     </p>
                   </CardContent>
@@ -627,7 +633,7 @@ export const DecisionDetailPage: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="programs" className="space-y-6">
+        <TabsContent value='programs' className='space-y-6'>
           {/* Programs Search and Filters */}
           <CreditProgramFilters
             filters={filters}
@@ -636,27 +642,27 @@ export const DecisionDetailPage: React.FC = () => {
           />
 
           {/* Programs Results Section */}
-          <div className="bg-transparent rounded-lg">
-            <div className="pb-3 border-b border-border/10">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="flex items-center gap-4 text-xl font-bold tracking-wide">
-                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg">
-                    <CreditCard className="h-6 w-6 text-primary-700" />
+          <div className='bg-transparent rounded-lg'>
+            <div className='pb-3 border-b border-border/10'>
+              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+                <h2 className='flex items-center gap-4 text-xl font-bold tracking-wide'>
+                  <div className='h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg'>
+                    <CreditCard className='h-6 w-6 text-primary-700' />
                   </div>
-                  <span className="text-foreground">
+                  <span className='text-foreground'>
                     {t('creditProgram.programs')}
                   </span>
                 </h2>
 
                 {/* View Toggle and Add Button */}
-                <div className="flex items-center gap-2">
+                <div className='flex items-center gap-2'>
                   <CreditProgramForm
                     decisionId={id!}
                     onSubmit={handleCreateProgram}
                     loading={isCreating}
                     trigger={
-                      <Button className="gap-2 shadow-md hover:shadow-lg transition-shadow">
-                        <Plus className="h-4 w-4" />
+                      <Button className='gap-2 shadow-md hover:shadow-lg transition-shadow'>
+                        <Plus className='h-4 w-4' />
                         {t('creditProgram.form.createTitle')}
                       </Button>
                     }
@@ -666,19 +672,19 @@ export const DecisionDetailPage: React.FC = () => {
                     <>
                       <Button
                         variant={viewMode === 'card' ? 'default' : 'outline'}
-                        size="sm"
+                        size='sm'
                         onClick={() => handleSetViewMode('card')}
                         aria-label={t('common.cardView')}
                       >
-                        <Grid className="h-4 w-4" />
+                        <Grid className='h-4 w-4' />
                       </Button>
                       <Button
                         variant={viewMode === 'table' ? 'default' : 'outline'}
-                        size="sm"
+                        size='sm'
                         onClick={() => handleSetViewMode('table')}
                         aria-label={t('common.tableView')}
                       >
-                        <List className="h-4 w-4" />
+                        <List className='h-4 w-4' />
                       </Button>
                     </>
                   )}
@@ -686,30 +692,30 @@ export const DecisionDetailPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4">
+            <div className='mt-4'>
               {programsError ? (
-                <div className="text-center py-12">
-                  <div className="space-y-3">
-                    <CreditCard className="h-12 w-12 text-destructive mx-auto opacity-50" />
+                <div className='text-center py-12'>
+                  <div className='space-y-3'>
+                    <CreditCard className='h-12 w-12 text-destructive mx-auto opacity-50' />
                     <div>
-                      <p className="text-lg font-medium text-destructive">
+                      <p className='text-lg font-medium text-destructive'>
                         {t('errors.loadingError')}
                       </p>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className='text-sm text-muted-foreground mt-1'>
                         {t('errors.tryRefresh')}
                       </p>
                     </div>
                   </div>
                 </div>
               ) : !programsData?.content.length ? (
-                <div className="text-center py-12">
-                  <div className="space-y-3">
-                    <CreditCard className="h-12 w-12 text-muted-foreground mx-auto opacity-50" />
+                <div className='text-center py-12'>
+                  <div className='space-y-3'>
+                    <CreditCard className='h-12 w-12 text-muted-foreground mx-auto opacity-50' />
                     <div>
-                      <p className="text-lg font-medium text-muted-foreground">
+                      <p className='text-lg font-medium text-muted-foreground'>
                         {t('creditProgram.messages.noPrograms')}
                       </p>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className='text-sm text-muted-foreground mt-1'>
                         {t('creditProgram.messages.noProgramsDescription')}
                       </p>
                     </div>
@@ -718,8 +724,8 @@ export const DecisionDetailPage: React.FC = () => {
                       onSubmit={handleCreateProgram}
                       loading={isCreating}
                       trigger={
-                        <Button className="gap-2 mt-4">
-                          <Plus className="h-4 w-4" />
+                        <Button className='gap-2 mt-4'>
+                          <Plus className='h-4 w-4' />
                           {t('creditProgram.form.createTitle')}
                         </Button>
                       }
@@ -727,10 +733,10 @@ export const DecisionDetailPage: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   {/* Card View (Mobile First) */}
                   {(viewMode === 'card' || isMobile) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
                       {programsData.content.map(program => (
                         <CreditProgramCard
                           key={program.id}
@@ -769,8 +775,8 @@ export const DecisionDetailPage: React.FC = () => {
                   {/* Pagination */}
                   {programsData.content.length > 0 && (
                     <>
-                      <Separator className="opacity-30" />
-                      <div className="bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm">
+                      <Separator className='opacity-30' />
+                      <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
                         <PaginationControls />
                       </div>
                     </>
@@ -798,16 +804,16 @@ export const DecisionDetailPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setProgramDeleteDialogOpen(false)}
               disabled={isDeletingProgram}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleDeleteProgramConfirm}
               disabled={isDeletingProgram}
             >
@@ -828,16 +834,16 @@ export const DecisionDetailPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setDeleteDialogOpen(false)}
               disabled={deleteLoading}
             >
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleDeleteConfirm}
               disabled={deleteLoading}
             >

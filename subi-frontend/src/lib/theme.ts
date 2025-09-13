@@ -22,7 +22,9 @@ export interface ThemeProviderState {
  * Get system theme preference
  */
 export function getSystemTheme(): 'light' | 'dark' {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') {
+    return 'light';
+  }
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
     : 'light';
@@ -62,7 +64,9 @@ export function applyTheme(theme: 'light' | 'dark') {
  * Get stored theme from localStorage
  */
 export function getStoredTheme(storageKey: string): Theme {
-  if (typeof window === 'undefined') return 'system';
+  if (typeof window === 'undefined') {
+    return 'system';
+  }
 
   try {
     const stored = localStorage.getItem(storageKey);
@@ -80,7 +84,9 @@ export function getStoredTheme(storageKey: string): Theme {
  * Store theme in localStorage
  */
 export function setStoredTheme(storageKey: string, theme: Theme) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    return;
+  }
 
   try {
     localStorage.setItem(storageKey, theme);

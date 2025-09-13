@@ -2,21 +2,21 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from './redux';
 import {
+  clearError,
   loginAsync,
   logoutAsync,
-  clearError,
   validateAuthAsync,
 } from '@/store/slices/authSlice';
 import { LoginCredentials } from '@/types/auth';
 import {
-  hasRole,
-  hasAnyRole,
-  isAdmin,
-  isCreditManager,
-  isCreditAnalyst,
-  isDecisionMaker,
-  isCommissionMember,
   getUserDisplayName,
+  hasAnyRole,
+  hasRole,
+  isAdmin,
+  isCommissionMember,
+  isCreditAnalyst,
+  isCreditManager,
+  isDecisionMaker,
 } from '@/utils/auth';
 import { ROUTES } from '@/constants';
 

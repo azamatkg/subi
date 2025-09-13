@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom';
 import { ROUTES } from '@/constants';
 
 // Layout components
@@ -8,13 +8,13 @@ import { AuthLayout } from '@/components/layouts/AuthLayout';
 
 // Route protection components
 import {
-  ProtectedRoute,
-  GuestRoute,
   AdminRoute,
-  CreditManagerRoute,
-  CreditAnalystRoute,
-  DecisionMakerRoute,
   CommissionMemberRoute,
+  CreditAnalystRoute,
+  CreditManagerRoute,
+  DecisionMakerRoute,
+  GuestRoute,
+  ProtectedRoute,
 } from '@/components/common/ProtectedRoute';
 
 // Page components (will be created later)
@@ -285,7 +285,7 @@ export const router = createBrowserRouter([
   // Legacy route redirects
   {
     path: '/login',
-    element: <Navigate to="/auth/login" replace />,
+    element: <Navigate to='/auth/login' replace />,
   },
 
   // Error pages

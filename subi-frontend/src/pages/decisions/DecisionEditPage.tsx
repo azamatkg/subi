@@ -34,7 +34,9 @@ export const DecisionEditPage: React.FC = () => {
     useUpdateDecisionMutation();
 
   const handleSubmit = async (data: UpdateDecisionDto) => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
 
     try {
       const result = await updateDecision({ id, data }).unwrap();
@@ -61,8 +63,8 @@ export const DecisionEditPage: React.FC = () => {
   if (!id) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">
+        <CardContent className='p-6'>
+          <p className='text-center text-muted-foreground'>
             {t('errors.notFound')}
           </p>
         </CardContent>
@@ -73,9 +75,9 @@ export const DecisionEditPage: React.FC = () => {
   if (decisionLoading) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
+        <CardContent className='p-6'>
+          <div className='flex items-center justify-center space-x-2'>
+            <Loader2 className='h-4 w-4 animate-spin' />
             <span>{t('decision.messages.loadingDecisions')}</span>
           </div>
         </CardContent>
@@ -86,8 +88,8 @@ export const DecisionEditPage: React.FC = () => {
   if (decisionError || !decision) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-destructive">
+        <CardContent className='p-6'>
+          <p className='text-center text-destructive'>
             {t('errors.serverError')}
           </p>
         </CardContent>
@@ -96,18 +98,18 @@ export const DecisionEditPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Page Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" onClick={handleCancel}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className='flex items-center space-x-4'>
+        <Button variant='ghost' size='sm' onClick={handleCancel}>
+          <ArrowLeft className='mr-2 h-4 w-4' />
           {t('common.back')}
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold">
+          <h1 className='text-2xl font-semibold'>
             {t('decision.editDecision')}
           </h1>
-          <p className="text-muted-foreground">{decision.nameEn}</p>
+          <p className='text-muted-foreground'>{decision.nameEn}</p>
         </div>
       </div>
 

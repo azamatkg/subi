@@ -36,7 +36,7 @@ const AuthEventListener: React.FC = () => {
 
 export const AuthLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className='min-h-screen bg-background'>
       {/* Auth event listener */}
       <AuthEventListener />
 

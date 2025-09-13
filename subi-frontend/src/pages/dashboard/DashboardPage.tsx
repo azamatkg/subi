@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
-  CreditCard,
-  FileText,
-  Users,
-  TrendingUp,
-  Clock,
-  CheckCircle,
   AlertCircle,
-  Calendar,
   ArrowUpRight,
   BarChart3,
-  Zap,
+  Calendar,
+  CheckCircle,
+  Clock,
+  CreditCard,
   Eye,
+  FileText,
   RefreshCw,
+  TrendingUp,
+  Users,
+  Zap,
 } from 'lucide-react';
 import {
   AccessibleAmount,
@@ -221,9 +221,9 @@ export const DashboardPage: React.FC = () => {
             : undefined
         }
       >
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
+        <CardHeader className='pb-3'>
+          <div className='flex items-center justify-between'>
+            <CardTitle className='text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors'>
               {title}
             </CardTitle>
             <div
@@ -233,18 +233,18 @@ export const DashboardPage: React.FC = () => {
                 `bg-gradient-to-br ${colorStyles[color].split(' ')[0]} ${colorStyles[color].split(' ')[1]}`
               )}
             >
-              <Icon className="h-5 w-5" aria-hidden="true" />
+              <Icon className='h-5 w-5' aria-hidden='true' />
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-2">
-            <div className="text-3xl font-bold tracking-tight text-foreground">
+        <CardContent className='pt-0'>
+          <div className='space-y-2'>
+            <div className='text-3xl font-bold tracking-tight text-foreground'>
               {typeof value === 'number' ? formatNumber(value) : value}
             </div>
 
             {trend !== undefined && (
-              <div className="flex items-center gap-1">
+              <div className='flex items-center gap-1'>
                 <div
                   className={cn(
                     'flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5',
@@ -257,18 +257,18 @@ export const DashboardPage: React.FC = () => {
                 >
                   <TrendingUp
                     className={cn('h-3 w-3', trend < 0 && 'rotate-180')}
-                    aria-hidden="true"
+                    aria-hidden='true'
                   />
                   <span>{Math.abs(trend)}%</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className='text-xs text-muted-foreground'>
                   от прошлого месяца
                 </span>
               </div>
             )}
 
             {description && (
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className='text-xs text-muted-foreground leading-relaxed'>
                 {description}
               </p>
             )}
@@ -276,41 +276,41 @@ export const DashboardPage: React.FC = () => {
         </CardContent>
 
         {/* Hover effect gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+        <div className='absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700' />
       </Card>
     );
   };
 
   return (
-    <Landmark role="main" aria-labelledby="dashboard-title">
+    <Landmark role='main' aria-labelledby='dashboard-title'>
       {/* Live region for announcements */}
       <LiveRegion>{isLoading && 'Загружаются данные дашборда'}</LiveRegion>
 
-      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className='space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto'>
         {/* Enhanced Header Section */}
-        <header className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+        <header className='space-y-4'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+            <div className='space-y-2'>
+              <p className='text-muted-foreground text-base sm:text-lg leading-relaxed'>
                 Добро пожаловать,{' '}
-                <span className="font-semibold text-foreground">
+                <span className='font-semibold text-foreground'>
                   {userDisplayName}
                 </span>
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" aria-hidden="true" />
-                <AccessibleDate date={lastUpdated} format="short" />
+            <div className='flex items-center gap-3'>
+              <div className='hidden sm:flex items-center gap-2 text-sm text-muted-foreground'>
+                <Clock className='h-4 w-4' aria-hidden='true' />
+                <AccessibleDate date={lastUpdated} format='short' />
               </div>
               <Button
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 onClick={refreshData}
                 disabled={isLoading}
-                className="group"
-                aria-label="Обновить данные"
+                className='group'
+                aria-label='Обновить данные'
               >
                 <RefreshCw
                   className={cn(
@@ -318,99 +318,99 @@ export const DashboardPage: React.FC = () => {
                     isLoading && 'animate-spin',
                     'group-hover:rotate-180'
                   )}
-                  aria-hidden="true"
+                  aria-hidden='true'
                 />
-                <span className="hidden sm:inline ml-2">Обновить</span>
+                <span className='hidden sm:inline ml-2'>Обновить</span>
               </Button>
             </div>
           </div>
         </header>
 
         {/* Enhanced Stats Cards Grid */}
-        <section aria-labelledby="stats-title">
-          <AccessibleHeading level={2} id="stats-title" className="sr-only">
+        <section aria-labelledby='stats-title'>
+          <AccessibleHeading level={2} id='stats-title' className='sr-only'>
             Статистика заявок
           </AccessibleHeading>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
             <StatCard
-              title="Всего заявок"
+              title='Всего заявок'
               value={dashboardStats.totalApplications}
               icon={FileText}
               trend={dashboardStats.growthRate}
-              color="blue"
+              color='blue'
               loading={isLoading}
               onClick={() => announce('Переход к списку всех заявок')}
-              description="Общее количество заявок в системе"
+              description='Общее количество заявок в системе'
             />
             <StatCard
-              title="На рассмотрении"
+              title='На рассмотрении'
               value={dashboardStats.pendingApplications}
               icon={Clock}
-              color="amber"
+              color='amber'
               loading={isLoading}
               onClick={() => announce('Переход к заявкам на рассмотрении')}
-              description="Заявки ожидающие решения"
+              description='Заявки ожидающие решения'
             />
             <StatCard
-              title="Одобрено"
+              title='Одобрено'
               value={dashboardStats.approvedApplications}
               icon={CheckCircle}
               trend={8.5}
-              color="emerald"
+              color='emerald'
               loading={isLoading}
               onClick={() => announce('Переход к одобренным заявкам')}
-              description="Успешно одобренные заявки"
+              description='Успешно одобренные заявки'
             />
             <StatCard
-              title="Общая сумма"
+              title='Общая сумма'
               value={formatCurrency(dashboardStats.totalAmount)}
               icon={CreditCard}
               trend={23.2}
-              color="purple"
+              color='purple'
               loading={isLoading}
               onClick={() => announce('Просмотр финансовой аналитики')}
-              description="Общий объем одобренных кредитов"
+              description='Общий объем одобренных кредитов'
             />
           </div>
         </section>
 
         {/* Main Content Grid - Enhanced for Mobile */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
+        <div className='grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8'>
           {/* Recent Applications - Full width on mobile, 2/3 on desktop */}
-          <Card className="xl:col-span-8 border-0 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+          <Card className='xl:col-span-8 border-0 shadow-lg'>
+            <CardHeader className='flex flex-row items-center justify-between pb-4'>
+              <div className='flex items-center gap-3'>
+                <div className='h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center'>
                   <FileText
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
+                    className='h-5 w-5 text-primary'
+                    aria-hidden='true'
                   />
                 </div>
                 <div>
-                  <CardTitle className="text-xl font-semibold">
+                  <CardTitle className='text-xl font-semibold'>
                     Последние заявки
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground">
+                  <p className='text-sm text-muted-foreground'>
                     Недавно поданные заявки
                   </p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <Eye className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Все заявки</span>
-                <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+              <Button variant='ghost' size='sm' className='gap-2'>
+                <Eye className='h-4 w-4' aria-hidden='true' />
+                <span className='hidden sm:inline'>Все заявки</span>
+                <ArrowUpRight className='h-3 w-3' aria-hidden='true' />
               </Button>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="space-y-3">
+                <div className='space-y-3'>
                   {Array.from({ length: 3 }).map((_, i) => (
                     <ListItemSkeleton key={i} showAvatar />
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   {recentApplications.map(app => (
                     <div
                       key={app.id}
@@ -425,31 +425,31 @@ export const DashboardPage: React.FC = () => {
                           'ring-1 ring-red-200 dark:ring-red-800'
                       )}
                       tabIndex={0}
-                      role="button"
+                      role='button'
                       aria-label={`Заявка ${app.applicantName}, сумма ${formatCurrency(app.amount)}`}
                     >
                       {/* Mobile: Stacked layout */}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between">
+                      <div className='flex-1 space-y-2'>
+                        <div className='flex items-start justify-between'>
                           <div>
-                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                            <h3 className='font-semibold text-foreground group-hover:text-primary transition-colors'>
                               {app.applicantName}
                             </h3>
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-sm text-muted-foreground'>
                               {app.programName}
                             </p>
                           </div>
                           <AccessibleStatusBadge status={app.status} showIcon />
                         </div>
-                        <div className="flex items-center justify-between text-sm">
+                        <div className='flex items-center justify-between text-sm'>
                           <AccessibleAmount
                             amount={app.amount}
-                            className="font-semibold text-lg"
+                            className='font-semibold text-lg'
                           />
                           <AccessibleDate
                             date={app.createdAt}
-                            format="short"
-                            className="text-muted-foreground"
+                            format='short'
+                            className='text-muted-foreground'
                           />
                         </div>
                       </div>
@@ -461,25 +461,25 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           {/* Quick Actions & Notifications Sidebar */}
-          <div className="xl:col-span-4 space-y-6">
+          <div className='xl:col-span-4 space-y-6'>
             {/* Quick Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center">
+            <Card className='border-0 shadow-lg'>
+              <CardHeader className='pb-4'>
+                <div className='flex items-center gap-3'>
+                  <div className='h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center'>
                     <Zap
-                      className="h-5 w-5 text-emerald-600"
-                      aria-hidden="true"
+                      className='h-5 w-5 text-emerald-600'
+                      aria-hidden='true'
                     />
                   </div>
-                  <CardTitle className="text-xl">Быстрые действия</CardTitle>
+                  <CardTitle className='text-xl'>Быстрые действия</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className='space-y-3'>
                 {quickActions.map(action => (
                   <Button
                     key={action.id}
-                    variant="outline"
+                    variant='outline'
                     className={cn(
                       'w-full justify-start gap-3 p-4 h-auto border-0',
                       'bg-gradient-to-r from-muted/30 to-muted/20',
@@ -506,18 +506,18 @@ export const DashboardPage: React.FC = () => {
                           action.color === 'emerald' && 'text-emerald-600',
                           action.color === 'orange' && 'text-orange-600'
                         )}
-                        aria-hidden="true"
+                        aria-hidden='true'
                       />
                     </div>
-                    <div className="text-left">
-                      <div className="font-medium">{action.title}</div>
-                      <div className="text-xs text-muted-foreground">
+                    <div className='text-left'>
+                      <div className='font-medium'>{action.title}</div>
+                      <div className='text-xs text-muted-foreground'>
                         {action.description}
                       </div>
                     </div>
                     <ArrowUpRight
-                      className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-hidden="true"
+                      className='h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity'
+                      aria-hidden='true'
                     />
                   </Button>
                 ))}
@@ -525,25 +525,25 @@ export const DashboardPage: React.FC = () => {
             </Card>
 
             {/* Enhanced Notifications */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center">
+            <Card className='border-0 shadow-lg'>
+              <CardHeader className='pb-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <div className='h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center'>
                       <AlertCircle
-                        className="h-5 w-5 text-amber-600"
-                        aria-hidden="true"
+                        className='h-5 w-5 text-amber-600'
+                        aria-hidden='true'
                       />
                     </div>
-                    <CardTitle className="text-xl">Уведомления</CardTitle>
+                    <CardTitle className='text-xl'>Уведомления</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant='secondary' className='text-xs'>
                     2
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   <div
                     className={cn(
                       'p-4 rounded-xl transition-all duration-200 hover:shadow-md',
@@ -552,16 +552,16 @@ export const DashboardPage: React.FC = () => {
                       'border border-amber-200/50 dark:border-amber-800/50'
                     )}
                   >
-                    <div className="flex gap-3">
+                    <div className='flex gap-3'>
                       <AlertCircle
-                        className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
+                        className='h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5'
+                        aria-hidden='true'
                       />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                      <div className='space-y-1'>
+                        <p className='text-sm font-semibold text-amber-900 dark:text-amber-100'>
                           Требуется внимание
                         </p>
-                        <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                        <p className='text-xs text-amber-700 dark:text-amber-300 leading-relaxed'>
                           5 заявок ожидают документы более 3 дней
                         </p>
                       </div>
@@ -576,16 +576,16 @@ export const DashboardPage: React.FC = () => {
                       'border border-blue-200/50 dark:border-blue-800/50'
                     )}
                   >
-                    <div className="flex gap-3">
+                    <div className='flex gap-3'>
                       <Calendar
-                        className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
+                        className='h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5'
+                        aria-hidden='true'
                       />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                      <div className='space-y-1'>
+                        <p className='text-sm font-semibold text-blue-900 dark:text-blue-100'>
                           Заседание комиссии
                         </p>
-                        <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                        <p className='text-xs text-blue-700 dark:text-blue-300 leading-relaxed'>
                           Запланировано на завтра в 14:00
                         </p>
                       </div>

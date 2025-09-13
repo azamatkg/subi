@@ -28,15 +28,15 @@ import { useGetActiveDecisionMakingBodiesQuery } from '@/store/api/decisionMakin
 
 import type {
   CreateDecisionDto,
-  UpdateDecisionDto,
   DecisionResponseDto,
+  UpdateDecisionDto,
 } from '@/types/decision';
 import { DecisionStatus } from '@/types/decision';
 import {
-  createDecisionSchema,
-  updateDecisionSchema,
   CreateDecisionFormData,
   UpdateDecisionFormData,
+  createDecisionSchema,
+  updateDecisionSchema,
 } from '@/schemas/decision';
 
 interface DecisionFormProps {
@@ -203,16 +203,16 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
         {/* Card 1: Multilingual Names */}
         <Card>
           <CardHeader>
             <CardTitle>{t('decision.fields.names')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className='space-y-4'>
             <FormField
               control={form.control}
-              name="nameRu"
+              name='nameRu'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('decision.fields.nameRu')}</FormLabel>
@@ -226,7 +226,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
             <FormField
               control={form.control}
-              name="nameKg"
+              name='nameKg'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('decision.fields.nameKg')}</FormLabel>
@@ -240,7 +240,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
             <FormField
               control={form.control}
-              name="nameEn"
+              name='nameEn'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('decision.fields.nameEn')}</FormLabel>
@@ -259,15 +259,15 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
           <CardHeader>
             <CardTitle>{t('decision.fields.dateAndNumber')}</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <CardContent className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <FormField
               control={form.control}
-              name="date"
+              name='date'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('decision.fields.date')}</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type='date' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -276,7 +276,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
             <FormField
               control={form.control}
-              name="number"
+              name='number'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('decision.fields.number')}</FormLabel>
@@ -295,10 +295,10 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
           <CardHeader>
             <CardTitle>{t('decision.fields.typeAndBody')}</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <CardContent className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <FormField
               control={form.control}
-              name="decisionTypeId"
+              name='decisionTypeId'
               render={({ field }) => {
                 console.log(
                   'DecisionType Select render - field.value:',
@@ -338,9 +338,9 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                               key={type.id}
                               value={type.id.toString()}
                             >
-                              <div className="space-y-1">
-                                <p className="font-medium">{type.nameEn}</p>
-                                <p className="text-sm text-muted-foreground">
+                              <div className='space-y-1'>
+                                <p className='font-medium'>{type.nameEn}</p>
+                                <p className='text-sm text-muted-foreground'>
                                   {type.nameRu}
                                 </p>
                               </div>
@@ -358,7 +358,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
 
             <FormField
               control={form.control}
-              name="decisionMakingBodyId"
+              name='decisionMakingBodyId'
               render={({ field }) => {
                 console.log(
                   'DecisionMakingBody Select render - field.value:',
@@ -402,9 +402,9 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
                               key={body.id}
                               value={body.id.toString()}
                             >
-                              <div className="space-y-1">
-                                <p className="font-medium">{body.nameEn}</p>
-                                <p className="text-sm text-muted-foreground">
+                              <div className='space-y-1'>
+                                <p className='font-medium'>{body.nameEn}</p>
+                                <p className='text-sm text-muted-foreground'>
                                   {body.nameRu}
                                 </p>
                               </div>
@@ -429,7 +429,7 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
           <CardContent>
             <FormField
               control={form.control}
-              name="note"
+              name='note'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -450,16 +450,16 @@ export const DecisionForm: React.FC<DecisionFormProps> = ({
         </Card>
 
         {/* Actions */}
-        <div className="flex justify-end space-x-4">
+        <div className='flex justify-end space-x-4'>
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={onCancel}
             disabled={isSubmitting}
           >
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type='submit' disabled={isSubmitting}>
             {isSubmitting
               ? (isEdit ? t('common.updating') : t('common.creating')) + '...'
               : isEdit

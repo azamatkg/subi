@@ -1,11 +1,11 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertCircle,
   CheckCircle,
   Clock,
-  XCircle,
-  AlertCircle,
   FileText,
+  XCircle,
 } from 'lucide-react';
 import { AriaHelpers } from '@/lib/accessibility';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,7 @@ export function AccessibleStatusBadge({
         return (
           <CheckCircle
             className={cn(iconClass, 'text-success-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'REJECTED':
@@ -52,7 +52,7 @@ export function AccessibleStatusBadge({
         return (
           <XCircle
             className={cn(iconClass, 'text-destructive-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'PENDING_CONFIRMATION':
@@ -61,28 +61,28 @@ export function AccessibleStatusBadge({
         return (
           <AlertCircle
             className={cn(iconClass, 'text-warning-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'SUBMITTED':
         return (
           <Clock
             className={cn(iconClass, 'text-info-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'DRAFT':
         return (
           <FileText
             className={cn(iconClass, 'text-neutral-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       default:
         return (
           <Clock
             className={cn(iconClass, 'text-neutral-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
     }
@@ -125,12 +125,12 @@ export function AccessibleStatusBadge({
         className
       )}
       // ARIA attributes for accessibility
-      role="status"
+      role='status'
       aria-label={`Статус: ${statusLabel}`}
       title={statusLabel}
     >
       {showIcon && getStatusIcon(safeStatus)}
-      <span className="truncate">{statusLabel}</span>
+      <span className='truncate'>{statusLabel}</span>
     </Badge>
   );
 }
@@ -240,8 +240,8 @@ export function AccessibleLoading({
   return (
     <div
       className={cn('flex items-center justify-center gap-3', className)}
-      role="status"
-      aria-live="polite"
+      role='status'
+      aria-live='polite'
       aria-label={loadingMessage}
     >
       <div
@@ -249,9 +249,9 @@ export function AccessibleLoading({
           'animate-spin rounded-full border-2 border-current border-t-transparent opacity-60',
           spinnerSize
         )}
-        aria-hidden="true"
+        aria-hidden='true'
       />
-      <span className="text-sm font-medium text-muted-foreground">
+      <span className='text-sm font-medium text-muted-foreground'>
         {loadingMessage}
       </span>
     </div>

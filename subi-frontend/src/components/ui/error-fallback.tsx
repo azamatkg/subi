@@ -4,13 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   AlertTriangle,
-  RefreshCw,
-  WifiOff,
-  Server,
-  Shield,
+  ArrowLeft,
   Clock,
   Home,
-  ArrowLeft,
+  RefreshCw,
+  Server,
+  Shield,
+  WifiOff,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
@@ -120,7 +120,7 @@ export function ErrorFallback({
     <Card className={cn('w-full max-w-md mx-auto', config.bgColor, className)}>
       <CardContent className={cn('text-center', sizeClasses[size])}>
         {/* Error Icon */}
-        <div className="flex justify-center">
+        <div className='flex justify-center'>
           <div
             className={cn(
               'rounded-full p-3',
@@ -132,7 +132,7 @@ export function ErrorFallback({
         </div>
 
         {/* Error Message */}
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <h3
             className={cn(
               'font-semibold text-foreground',
@@ -157,8 +157,8 @@ export function ErrorFallback({
 
         {/* Error Details (Development) */}
         {error && process.env.NODE_ENV === 'development' && (
-          <Alert className="text-left text-xs">
-            <AlertTriangle className="h-3 w-3" />
+          <Alert className='text-left text-xs'>
+            <AlertTriangle className='h-3 w-3' />
             <AlertDescription>
               <strong>Dev Error:</strong> {error.message}
             </AlertDescription>
@@ -166,14 +166,14 @@ export function ErrorFallback({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+        <div className='flex flex-col sm:flex-row gap-2 justify-center'>
           {showRetry && (
             <Button
               onClick={handleRetry}
-              className="gap-2"
+              className='gap-2'
               size={size === 'sm' ? 'sm' : 'default'}
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className='w-4 h-4' />
               Попробовать снова
             </Button>
           )}
@@ -181,11 +181,11 @@ export function ErrorFallback({
           {showBack && (
             <Button
               onClick={handleBack}
-              variant="outline"
-              className="gap-2"
+              variant='outline'
+              className='gap-2'
               size={size === 'sm' ? 'sm' : 'default'}
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className='w-4 h-4' />
               Назад
             </Button>
           )}
@@ -193,11 +193,11 @@ export function ErrorFallback({
           {showHome && (
             <Button
               onClick={handleHome}
-              variant="outline"
-              className="gap-2"
+              variant='outline'
+              className='gap-2'
               size={size === 'sm' ? 'sm' : 'default'}
             >
-              <Home className="w-4 h-4" />
+              <Home className='w-4 h-4' />
               На главную
             </Button>
           )}
@@ -205,9 +205,9 @@ export function ErrorFallback({
 
         {/* Network Status Indicator */}
         {type === 'network' && (
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+          <div className='flex items-center justify-center gap-2 text-xs text-muted-foreground'>
+            <div className='flex items-center gap-1'>
+              <div className='w-2 h-2 rounded-full bg-red-400 animate-pulse' />
               <span>Нет соединения</span>
             </div>
           </div>
@@ -221,21 +221,21 @@ export function ErrorFallback({
  * Specific error fallback components
  */
 export function NetworkErrorFallback(props: Omit<ErrorFallbackProps, 'type'>) {
-  return <ErrorFallback {...props} type="network" />;
+  return <ErrorFallback {...props} type='network' />;
 }
 
 export function ServerErrorFallback(props: Omit<ErrorFallbackProps, 'type'>) {
-  return <ErrorFallback {...props} type="server" />;
+  return <ErrorFallback {...props} type='server' />;
 }
 
 export function PermissionErrorFallback(
   props: Omit<ErrorFallbackProps, 'type'>
 ) {
-  return <ErrorFallback {...props} type="permission" showBack showHome />;
+  return <ErrorFallback {...props} type='permission' showBack showHome />;
 }
 
 export function TimeoutErrorFallback(props: Omit<ErrorFallbackProps, 'type'>) {
-  return <ErrorFallback {...props} type="timeout" />;
+  return <ErrorFallback {...props} type='timeout' />;
 }
 
 /**
@@ -251,15 +251,15 @@ export function PageErrorFallback({
   type?: ErrorFallbackProps['type'];
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/20">
+    <div className='min-h-screen flex items-center justify-center p-4 bg-muted/20'>
       <ErrorFallback
         error={error}
         resetError={resetError}
         type={type}
-        size="lg"
+        size='lg'
         showRetry
         showHome
-        className="max-w-lg"
+        className='max-w-lg'
       />
     </div>
   );

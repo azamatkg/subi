@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
   Select,
@@ -20,19 +20,19 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import {
-  Plus,
-  Search,
-  FileText,
-  MoreHorizontal,
-  Eye,
+  Calendar,
+  Download,
   Edit,
-  SlidersHorizontal,
+  Eye,
+  FileText,
   Grid3x3,
   List,
-  RefreshCw,
-  Download,
-  Calendar,
   MapPin,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Search,
+  SlidersHorizontal,
 } from 'lucide-react';
 import {
   AccessibleAmount,
@@ -269,34 +269,34 @@ export const ApplicationListPage: React.FC = () => {
   };
 
   return (
-    <Landmark role="main" aria-labelledby="applications-title">
+    <Landmark role='main' aria-labelledby='applications-title'>
       <LiveRegion>{isLoading && 'Загружается список заявок'}</LiveRegion>
 
-      <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className='space-y-6 p-4 sm:p-6 max-w-7xl mx-auto'>
         {/* Enhanced Header */}
-        <header className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-2">
+        <header className='space-y-4'>
+          <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
+            <div className='space-y-2'>
               <AccessibleHeading
                 level={1}
-                id="applications-title"
-                className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
+                id='applications-title'
+                className='text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent'
               >
                 Заявки на кредит
               </AccessibleHeading>
-              <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+              <p className='text-muted-foreground text-base sm:text-lg leading-relaxed'>
                 Управление и отслеживание кредитных заявок
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className='flex items-center gap-3'>
               <Button
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="gap-2"
-                aria-label="Обновить список"
+                className='gap-2'
+                aria-label='Обновить список'
               >
                 <RefreshCw
                   className={cn(
@@ -304,37 +304,37 @@ export const ApplicationListPage: React.FC = () => {
                     isLoading && 'animate-spin'
                   )}
                 />
-                <span className="hidden sm:inline">Обновить</span>
+                <span className='hidden sm:inline'>Обновить</span>
               </Button>
 
-              <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Новая заявка</span>
-                <span className="sm:hidden">Создать</span>
+              <Button className='gap-2 shadow-lg hover:shadow-xl transition-shadow'>
+                <Plus className='h-4 w-4' />
+                <span className='hidden sm:inline'>Новая заявка</span>
+                <span className='sm:hidden'>Создать</span>
               </Button>
             </div>
           </div>
         </header>
 
         {/* Enhanced Search and Filters */}
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-4 sm:p-6 space-y-4">
+        <Card className='border-0 shadow-lg'>
+          <CardContent className='p-4 sm:p-6 space-y-4'>
             {/* Main Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className='flex flex-col sm:flex-row gap-3'>
+              <div className='flex-1 relative'>
+                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
                 <Input
-                  placeholder="Поиск по имени, ИНН, программе..."
+                  placeholder='Поиск по имени, ИНН, программе...'
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 h-11 transition-all duration-200 border-2 focus:border-primary"
-                  aria-label="Поиск заявок"
+                  className='pl-10 h-11 transition-all duration-200 border-2 focus:border-primary'
+                  aria-label='Поиск заявок'
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className={cn(
                     'gap-2 transition-all duration-200',
@@ -342,26 +342,26 @@ export const ApplicationListPage: React.FC = () => {
                   )}
                   aria-expanded={isFilterOpen}
                 >
-                  <SlidersHorizontal className="h-4 w-4" />
-                  <span className="hidden sm:inline">Фильтры</span>
+                  <SlidersHorizontal className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Фильтры</span>
                 </Button>
 
-                <div className="hidden sm:flex border-l border-border pl-2 gap-1">
+                <div className='hidden sm:flex border-l border-border pl-2 gap-1'>
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
+                    size='sm'
                     onClick={() => setViewMode('grid')}
-                    aria-label="Режим сетки"
+                    aria-label='Режим сетки'
                   >
-                    <Grid3x3 className="h-4 w-4" />
+                    <Grid3x3 className='h-4 w-4' />
                   </Button>
                   <Button
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
+                    size='sm'
                     onClick={() => setViewMode('list')}
-                    aria-label="Режим списка"
+                    aria-label='Режим списка'
                   >
-                    <List className="h-4 w-4" />
+                    <List className='h-4 w-4' />
                   </Button>
                 </div>
               </div>
@@ -369,15 +369,15 @@ export const ApplicationListPage: React.FC = () => {
 
             {/* Collapsible Filters */}
             {isFilterOpen && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-xl">
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Статус</Label>
+              <div className='grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-xl'>
+                <div className='space-y-2'>
+                  <Label className='text-sm font-semibold'>Статус</Label>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className='h-9'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Все статусы</SelectItem>
+                      <SelectItem value='all'>Все статусы</SelectItem>
                       {statusOptions.map(status => (
                         <SelectItem key={status.value} value={status.value}>
                           {status.label}
@@ -387,17 +387,17 @@ export const ApplicationListPage: React.FC = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Программа</Label>
+                <div className='space-y-2'>
+                  <Label className='text-sm font-semibold'>Программа</Label>
                   <Select
                     value={programFilter}
                     onValueChange={setProgramFilter}
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className='h-9'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Все программы</SelectItem>
+                      <SelectItem value='all'>Все программы</SelectItem>
                       {programs.map(program => (
                         <SelectItem key={program} value={program}>
                           {program}
@@ -407,32 +407,32 @@ export const ApplicationListPage: React.FC = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Сортировка</Label>
+                <div className='space-y-2'>
+                  <Label className='text-sm font-semibold'>Сортировка</Label>
                   <Select
                     value={sortBy}
                     onValueChange={value => setSortBy(value as SortOption)}
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className='h-9'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="date-desc">Дата ↓</SelectItem>
-                      <SelectItem value="date-asc">Дата ↑</SelectItem>
-                      <SelectItem value="amount-desc">Сумма ↓</SelectItem>
-                      <SelectItem value="amount-asc">Сумма ↑</SelectItem>
-                      <SelectItem value="name-asc">Имя ↑</SelectItem>
-                      <SelectItem value="name-desc">Имя ↓</SelectItem>
+                      <SelectItem value='date-desc'>Дата ↓</SelectItem>
+                      <SelectItem value='date-asc'>Дата ↑</SelectItem>
+                      <SelectItem value='amount-desc'>Сумма ↓</SelectItem>
+                      <SelectItem value='amount-asc'>Сумма ↑</SelectItem>
+                      <SelectItem value='name-asc'>Имя ↑</SelectItem>
+                      <SelectItem value='name-desc'>Имя ↓</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="flex items-end">
+                <div className='flex items-end'>
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant='outline'
+                    size='sm'
                     onClick={handleClearFilters}
-                    className="w-full h-9"
+                    className='w-full h-9'
                   >
                     Сбросить
                   </Button>
@@ -443,21 +443,21 @@ export const ApplicationListPage: React.FC = () => {
         </Card>
 
         {/* Results Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold">Результаты</h2>
-              <Badge variant="outline" className="text-sm">
+        <div className='space-y-4'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
+              <h2 className='text-xl font-semibold'>Результаты</h2>
+              <Badge variant='outline' className='text-sm'>
                 {filteredAndSortedApplications.length} из{' '}
                 {mockApplications.length}
               </Badge>
             </div>
 
             {filteredAndSortedApplications.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <Download className="h-4 w-4" />
-                  <span className="hidden sm:inline">Экспорт</span>
+              <div className='flex items-center gap-2'>
+                <Button variant='ghost' size='sm' className='gap-2'>
+                  <Download className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Экспорт</span>
                 </Button>
               </div>
             )}
@@ -465,23 +465,23 @@ export const ApplicationListPage: React.FC = () => {
 
           {/* Applications Grid/List */}
           {isLoading ? (
-            <div className="space-y-4">
+            <div className='space-y-4'>
               {Array.from({ length: 3 }).map((_, i) => (
                 <ListItemSkeleton key={i} showAvatar showBadge />
               ))}
             </div>
           ) : filteredAndSortedApplications.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="text-center py-12">
-                <div className="space-y-4">
-                  <FileText className="mx-auto h-16 w-16 text-muted-foreground/50" />
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">Заявки не найдены</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto">
+            <Card className='border-0 shadow-sm'>
+              <CardContent className='text-center py-12'>
+                <div className='space-y-4'>
+                  <FileText className='mx-auto h-16 w-16 text-muted-foreground/50' />
+                  <div className='space-y-2'>
+                    <h3 className='text-lg font-semibold'>Заявки не найдены</h3>
+                    <p className='text-muted-foreground max-w-md mx-auto'>
                       Попробуйте изменить критерии поиска или очистить фильтры
                     </p>
                   </div>
-                  <Button onClick={handleClearFilters} variant="outline">
+                  <Button onClick={handleClearFilters} variant='outline'>
                     Сбросить фильтры
                   </Button>
                 </div>
@@ -506,29 +506,29 @@ export const ApplicationListPage: React.FC = () => {
                     viewMode === 'list' && 'hover:-translate-y-0.5'
                   )}
                   tabIndex={0}
-                  role="button"
+                  role='button'
                   aria-label={`Заявка ${application.applicantName}`}
                 >
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="space-y-4">
+                  <CardContent className='p-4 sm:p-6'>
+                    <div className='space-y-4'>
                       {/* Header with Avatar and Actions */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
+                      <div className='flex items-start justify-between'>
+                        <div className='flex items-center gap-3'>
                           <Avatar
                             className={cn(
                               'transition-transform group-hover:scale-110',
                               viewMode === 'grid' ? 'h-12 w-12' : 'h-10 w-10'
                             )}
                           >
-                            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                            <AvatarFallback className='bg-primary/10 text-primary font-semibold'>
                               {getInitials(application.applicantName)}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="space-y-1">
-                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          <div className='space-y-1'>
+                            <h3 className='font-semibold text-foreground group-hover:text-primary transition-colors'>
                               {application.applicantName}
                             </h3>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                               <span
                                 className={cn(
                                   'font-medium',
@@ -549,25 +549,25 @@ export const ApplicationListPage: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              variant='ghost'
+                              size='sm'
+                              className='h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity'
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal className='h-4 w-4' />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align='end'>
                             <DropdownMenuItem>
-                              <Eye className="mr-2 h-4 w-4" />
+                              <Eye className='mr-2 h-4 w-4' />
                               Просмотр
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                              <Edit className="mr-2 h-4 w-4" />
+                              <Edit className='mr-2 h-4 w-4' />
                               Редактировать
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                              <Download className="mr-2 h-4 w-4" />
+                              <Download className='mr-2 h-4 w-4' />
                               Документы
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -575,33 +575,33 @@ export const ApplicationListPage: React.FC = () => {
                       </div>
 
                       {/* Status and Amount */}
-                      <div className="flex items-center justify-between">
+                      <div className='flex items-center justify-between'>
                         <AccessibleStatusBadge status={application.status} />
                         <AccessibleAmount
                           amount={application.amount}
-                          className="text-lg font-bold"
+                          className='text-lg font-bold'
                         />
                       </div>
 
                       {/* Details */}
-                      <div className="space-y-3 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <MapPin className="h-3 w-3" />
+                      <div className='space-y-3 text-sm'>
+                        <div className='flex items-center gap-2 text-muted-foreground'>
+                          <MapPin className='h-3 w-3' />
                           <span>{application.location}</span>
                           <span>•</span>
                           <span>{application.programName}</span>
                         </div>
 
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                        <div className='flex items-center justify-between text-xs'>
+                          <div className='flex items-center gap-2'>
+                            <Calendar className='h-3 w-3 text-muted-foreground' />
                             <AccessibleDate
                               date={application.createdAt}
-                              format="short"
+                              format='short'
                             />
                           </div>
 
-                          <div className="flex items-center gap-4">
+                          <div className='flex items-center gap-4'>
                             <span
                               className={cn(
                                 'font-medium',

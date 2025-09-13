@@ -38,18 +38,18 @@ export const DecisionCreatePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Page Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" onClick={handleCancel}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className='flex items-center space-x-4'>
+        <Button variant='ghost' size='sm' onClick={handleCancel}>
+          <ArrowLeft className='mr-2 h-4 w-4' />
           {t('common.back')}
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold">
+          <h1 className='text-2xl font-semibold'>
             {t('decision.newDecision')}
           </h1>
-          <p className="text-muted-foreground">
+          <p className='text-muted-foreground'>
             {t('common.create')} {t('decision.title').toLowerCase()}
           </p>
         </div>
