@@ -8,7 +8,6 @@ import type {
   UserActivityLogResponse,
   UserCreateDto,
   UserListResponse,
-  UserListResponseDto,
   UserResponseDto,
   UserRoleHistory,
   UserSearchAndFilterParams,

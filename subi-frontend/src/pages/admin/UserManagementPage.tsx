@@ -15,6 +15,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ui/error-fallback';
 import { showWarningMessage } from '@/utils/errorHandling';
+import { useGetUserStatisticsQuery } from '@/store/api/userApi';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -37,6 +39,13 @@ interface NavigationCard {
 
 export const UserManagementPage: React.FC = () => {
   const { t } = useTranslation();
+
+  // Fetch user statistics
+  const {
+    data: statistics,
+    isLoading: statsLoading,
+    error: statsError,
+  } = useGetUserStatisticsQuery();
 
   // Error boundary fallback
   const handleError = (error: Error, errorInfo: { componentStack: string }) => {
@@ -204,7 +213,15 @@ export const UserManagementPage: React.FC = () => {
             <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-900">-</div>
+            <div className="text-2xl font-bold text-blue-900">
+              {statsLoading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : statsError ? (
+                '-'
+              ) : (
+                statistics?.data?.totalUsers || 0
+              )}
+            </div>
             <p className="text-xs text-blue-600 mt-1">
               {t('userManagement.overview.totalUsersDesc')}
             </p>
@@ -219,7 +236,15 @@ export const UserManagementPage: React.FC = () => {
             <Activity className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-900">-</div>
+            <div className="text-2xl font-bold text-green-900">
+              {statsLoading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : statsError ? (
+                '-'
+              ) : (
+                statistics?.data?.activeUsers || 0
+              )}
+            </div>
             <p className="text-xs text-green-600 mt-1">
               {t('userManagement.overview.activeUsersDesc')}
             </p>
@@ -234,7 +259,15 @@ export const UserManagementPage: React.FC = () => {
             <Shield className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-900">-</div>
+            <div className="text-2xl font-bold text-purple-900">
+              {statsLoading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : statsError ? (
+                '-'
+              ) : (
+                statistics?.data?.adminUsers || 0
+              )}
+            </div>
             <p className="text-xs text-purple-600 mt-1">
               {t('userManagement.overview.adminUsersDesc')}
             </p>
