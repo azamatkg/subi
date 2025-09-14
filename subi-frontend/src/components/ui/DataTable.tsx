@@ -39,6 +39,9 @@ import {
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KeyboardNavigation, announceToScreenReader } from '@/lib/accessibility';
+import {
+  QuickTooltip
+} from '@/components/ui/enhanced-tooltip';
 
 // Types
 export interface DataTableColumn<T> {
@@ -739,14 +742,18 @@ export function DataTable<T extends { id: string }>({
             <TableRow>
               {selection && (
                 <TableHead className="w-[50px]">
-                  <Checkbox
-                    checked={allSelected}
-                    ref={(el) => {
-                      if (el) {el.indeterminate = someSelected;}
-                    }}
-                    onCheckedChange={handleSelectAll}
-                    aria-label={t('common.selectAll')}
-                  />
+                  <QuickTooltip
+                    content={t('userManagement.tooltips.dataTable.selection.header')}
+                  >
+                    <Checkbox
+                      checked={allSelected}
+                      ref={(el) => {
+                        if (el) {el.indeterminate = someSelected;}
+                      }}
+                      onCheckedChange={handleSelectAll}
+                      aria-label={t('common.selectAll')}
+                    />
+                  </QuickTooltip>
                 </TableHead>
               )}
               {columns.map((column, _colIndex) => (
@@ -762,25 +769,31 @@ export function DataTable<T extends { id: string }>({
                   }
                 >
                   {column.sortable ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="-ml-3 h-8 data-[state=open]:bg-accent"
-                      onClick={() => handleSort(column.id)}
-                      onKeyDown={(e) => {
-                        if (KeyboardNavigation.isActionKey(e.key)) {
-                          e.preventDefault();
-                          handleSort(column.id);
-                        }
-                      }}
-                      aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
-                        (sorting.direction === 'asc' ? 'ascending' : 'descending') :
-                        'none'}`}
-                      tabIndex={0}
+                    <QuickTooltip
+                      content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
+                        `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
+                        ''}`}
                     >
-                      <span>{column.label}</span>
-                      {getSortIcon(column.id)}
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="-ml-3 h-8 data-[state=open]:bg-accent"
+                        onClick={() => handleSort(column.id)}
+                        onKeyDown={(e) => {
+                          if (KeyboardNavigation.isActionKey(e.key)) {
+                            e.preventDefault();
+                            handleSort(column.id);
+                          }
+                        }}
+                        aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
+                          (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                          'none'}`}
+                        tabIndex={0}
+                      >
+                        <span>{column.label}</span>
+                        {getSortIcon(column.id)}
+                      </Button>
+                    </QuickTooltip>
                   ) : (
                     <span role="presentation">{column.label}</span>
                   )}
@@ -834,14 +847,16 @@ export function DataTable<T extends { id: string }>({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={t('common.actions', { item: item.id })}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <QuickTooltip content={t('common.actions')}>
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={t('common.actions', { item: item.id })}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </QuickTooltip>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem

@@ -40,6 +40,10 @@ import {
   ButtonLoadingState,
   FormFieldLoadingState
 } from '@/components/ui/loading-transitions';
+import {
+  HelpTooltip,
+  InfoTooltip
+} from '@/components/ui/enhanced-tooltip';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
@@ -542,7 +546,14 @@ export const UserAddEditPage: React.FC = () => {
     return (
       <div className='space-y-2'>
         <div className='flex items-center justify-between'>
-          <span className='text-sm font-medium'>Password Strength</span>
+          <div className='flex items-center gap-2'>
+            <span className='text-sm font-medium'>Password Strength</span>
+            <HelpTooltip
+              title={t('userManagement.tooltips.passwordStrength.title')}
+              description={t('userManagement.tooltips.passwordStrength.description')}
+              iconSize={14}
+            />
+          </div>
           <Badge variant={strength.level === 'strong' ? 'default' : 'secondary'}>
             {getStrengthText(strength.level)}
           </Badge>
@@ -745,9 +756,16 @@ export const UserAddEditPage: React.FC = () => {
                   name='email'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='text-sm font-medium'>
-                        {t('userManagement.fields.email')} <span className="text-destructive" aria-label="required">*</span>
-                      </FormLabel>
+                      <div className='flex items-center gap-2'>
+                        <FormLabel className='text-sm font-medium'>
+                          {t('userManagement.fields.email')} <span className="text-destructive" aria-label="required">*</span>
+                        </FormLabel>
+                        <InfoTooltip
+                          title={t('userManagement.tooltips.realTimeValidation.title')}
+                          description={t('userManagement.tooltips.realTimeValidation.emailCheck')}
+                          iconSize={14}
+                        />
+                      </div>
                       <FormControl>
                         <div className='relative'>
                           <Mail className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' aria-hidden="true" />
@@ -846,9 +864,16 @@ export const UserAddEditPage: React.FC = () => {
                       name='username'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-sm font-medium'>
-                            {t('userManagement.fields.username')}
-                          </FormLabel>
+                          <div className='flex items-center gap-2'>
+                            <FormLabel className='text-sm font-medium'>
+                              {t('userManagement.fields.username')}
+                            </FormLabel>
+                            <InfoTooltip
+                              title={t('userManagement.tooltips.realTimeValidation.title')}
+                              description={t('userManagement.tooltips.realTimeValidation.usernameCheck')}
+                              iconSize={14}
+                            />
+                          </div>
                           <FormControl>
                             <div className='relative'>
                               <span className='absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>
@@ -1006,9 +1031,16 @@ export const UserAddEditPage: React.FC = () => {
                         />
                       </FormControl>
                       <div className='space-y-1 leading-none'>
-                        <FormLabel>
-                          {t('userManagement.fields.enabled')}
-                        </FormLabel>
+                        <div className='flex items-center gap-2'>
+                          <FormLabel>
+                            {t('userManagement.fields.enabled')}
+                          </FormLabel>
+                          <InfoTooltip
+                            title={t('userManagement.tooltips.userStatus.title')}
+                            description={t('userManagement.tooltips.userStatus.active')}
+                            iconSize={14}
+                          />
+                        </div>
                         <FormDescription>
                           {t('userManagement.enabledUserDescription')}
                         </FormDescription>
@@ -1026,6 +1058,11 @@ export const UserAddEditPage: React.FC = () => {
               <CardTitle className='flex items-center gap-2 text-lg sm:text-xl'>
                 <Shield className='h-4 w-4 sm:h-5 sm:w-5' />
                 <span className='truncate'>{t('userManagement.roleAssignment')}</span>
+                <HelpTooltip
+                  title={t('userManagement.tooltips.roleAssignment.title')}
+                  description={t('userManagement.tooltips.roleAssignment.description')}
+                  iconSize={16}
+                />
               </CardTitle>
             </CardHeader>
             <CardContent className='p-4 sm:p-6'>
@@ -1060,10 +1097,17 @@ export const UserAddEditPage: React.FC = () => {
                                   }}
                                 />
                               </FormControl>
-                              <div className='space-y-1 leading-none'>
-                                <FormLabel className='font-medium'>
-                                  {role.label}
-                                </FormLabel>
+                              <div className='space-y-1 leading-none flex-1'>
+                                <div className='flex items-center gap-2'>
+                                  <FormLabel className='font-medium'>
+                                    {role.label}
+                                  </FormLabel>
+                                  <InfoTooltip
+                                    title={role.label}
+                                    description={t(`userManagement.tooltips.roleAssignment.roleDescriptions.${role.value.toLowerCase()}`)}
+                                    iconSize={14}
+                                  />
+                                </div>
                                 <FormDescription className='text-sm'>
                                   {role.description}
                                 </FormDescription>

@@ -39,6 +39,10 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  EnhancedTooltip,
+  QuickTooltip
+} from '@/components/ui/enhanced-tooltip';
 import type { BulkOperationProgress, UserListResponseDto, UserStatus } from '@/types/user';
 import type { RoleResponseDto } from '@/types/role';
 import { UserStatus as UserStatusEnum } from '@/types/user';
@@ -230,66 +234,100 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
 
   const renderStatusButtons = () => (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleStatusChange(UserStatusEnum.ACTIVE)}
-        disabled={isLoading}
-        aria-label={t('userManagement.bulkActions.activate')}
+      <EnhancedTooltip
+        content={t('userManagement.bulkActions.activate')}
+        shortcut="Ctrl+A"
+        title={t('userManagement.tooltips.bulkActions.title')}
+        description={t('userManagement.tooltips.userStatus.active')}
       >
-        <UserPlus className="h-4 w-4 mr-2" />
-        {t('userManagement.bulkActions.activate')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleStatusChange(UserStatusEnum.INACTIVE)}
-        disabled={isLoading}
-        aria-label={t('userManagement.bulkActions.deactivate')}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleStatusChange(UserStatusEnum.ACTIVE)}
+          disabled={isLoading}
+          aria-label={t('userManagement.bulkActions.activate')}
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          {t('userManagement.bulkActions.activate')}
+        </Button>
+      </EnhancedTooltip>
+      <EnhancedTooltip
+        content={t('userManagement.bulkActions.deactivate')}
+        shortcut="Ctrl+I"
+        title={t('userManagement.tooltips.bulkActions.title')}
+        description={t('userManagement.tooltips.userStatus.inactive')}
       >
-        <UserMinus className="h-4 w-4 mr-2" />
-        {t('userManagement.bulkActions.deactivate')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleStatusChange(UserStatusEnum.SUSPENDED)}
-        disabled={isLoading}
-        aria-label={t('userManagement.bulkActions.suspend')}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleStatusChange(UserStatusEnum.INACTIVE)}
+          disabled={isLoading}
+          aria-label={t('userManagement.bulkActions.deactivate')}
+        >
+          <UserMinus className="h-4 w-4 mr-2" />
+          {t('userManagement.bulkActions.deactivate')}
+        </Button>
+      </EnhancedTooltip>
+      <EnhancedTooltip
+        content={t('userManagement.bulkActions.suspend')}
+        title={t('userManagement.tooltips.bulkActions.title')}
+        description={t('userManagement.tooltips.userStatus.suspended')}
       >
-        <ShieldAlert className="h-4 w-4 mr-2" />
-        {t('userManagement.bulkActions.suspend')}
-      </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleStatusChange(UserStatusEnum.SUSPENDED)}
+          disabled={isLoading}
+          aria-label={t('userManagement.bulkActions.suspend')}
+        >
+          <ShieldAlert className="h-4 w-4 mr-2" />
+          {t('userManagement.bulkActions.suspend')}
+        </Button>
+      </EnhancedTooltip>
     </>
   );
 
   const renderDeleteButton = () => (
-    <Button
-      variant="destructive"
-      size="sm"
-      onClick={handleDelete}
-      disabled={isLoading}
-      aria-label={t('userManagement.bulkActions.delete')}
-      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+    <EnhancedTooltip
+      content={t('userManagement.bulkActions.delete')}
+      shortcut="Ctrl+D"
+      title={t('userManagement.tooltips.bulkActions.title')}
+      description="Permanently remove selected users from the system. This action cannot be undone."
+      variant="warning"
     >
-      <Trash2 className="h-4 w-4 mr-2" />
-      {t('userManagement.bulkActions.delete')}
-    </Button>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={handleDelete}
+        disabled={isLoading}
+        aria-label={t('userManagement.bulkActions.delete')}
+        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+      >
+        <Trash2 className="h-4 w-4 mr-2" />
+        {t('userManagement.bulkActions.delete')}
+      </Button>
+    </EnhancedTooltip>
   );
 
   const renderRoleAssignmentButton = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isLoading}
-          aria-label={t('userManagement.bulkActions.assignRole')}
+        <EnhancedTooltip
+          content={t('userManagement.bulkActions.assignRole')}
+          title={t('userManagement.tooltips.roleAssignment.title')}
+          description="Assign roles to multiple users at once to manage their permissions efficiently"
         >
-          <Shield className="h-4 w-4 mr-2" />
-          {t('userManagement.bulkActions.assignRole')}
-          <ChevronDown className="h-4 w-4 ml-2" />
-        </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isLoading}
+            aria-label={t('userManagement.bulkActions.assignRole')}
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            {t('userManagement.bulkActions.assignRole')}
+            <ChevronDown className="h-4 w-4 ml-2" />
+          </Button>
+        </EnhancedTooltip>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>{t('common.selectRole')}</DropdownMenuLabel>
@@ -395,16 +433,20 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
               </>
             )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearSelection}
-              disabled={isLoading}
-              aria-label={t('userManagement.bulkActions.clearSelection')}
+            <QuickTooltip
+              content={`${t('userManagement.bulkActions.clearSelection')} (Esc)`}
             >
-              <X className="h-4 w-4 mr-2" />
-              {t('userManagement.bulkActions.clearSelection')}
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClearSelection}
+                disabled={isLoading}
+                aria-label={t('userManagement.bulkActions.clearSelection')}
+              >
+                <X className="h-4 w-4 mr-2" />
+                {t('userManagement.bulkActions.clearSelection')}
+              </Button>
+            </QuickTooltip>
           </div>
         </div>
 
@@ -486,18 +528,22 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
             {progress?.errorDetails && progress.errorDetails.length > 0 && (
               <Collapsible open={showProgressDetails} onOpenChange={setShowProgressDetails}>
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal">
-                    <div className="flex items-center gap-2 text-sm">
-                      {showProgressDetails ? (
-                        <EyeOff className="h-3 w-3" />
-                      ) : (
-                        <Eye className="h-3 w-3" />
-                      )}
-                      <span>
-                        {t('bulkOperations.showDetails')} ({progress.errorDetails.length} {t('bulkOperations.errors')})
-                      </span>
-                    </div>
-                  </Button>
+                  <QuickTooltip
+                    content="View detailed error information for failed operations"
+                  >
+                    <Button variant="ghost" size="sm" className="p-0 h-auto font-normal">
+                      <div className="flex items-center gap-2 text-sm">
+                        {showProgressDetails ? (
+                          <EyeOff className="h-3 w-3" />
+                        ) : (
+                          <Eye className="h-3 w-3" />
+                        )}
+                        <span>
+                          {t('bulkOperations.showDetails')} ({progress.errorDetails.length} {t('bulkOperations.errors')})
+                        </span>
+                      </div>
+                    </Button>
+                  </QuickTooltip>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-1">
                   {progress.errorDetails.slice(0, 5).map((errorDetail, index) => (

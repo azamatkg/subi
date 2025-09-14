@@ -24,6 +24,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  EnhancedTooltip,
+  HelpTooltip,
+  InfoTooltip
+} from '@/components/ui/enhanced-tooltip';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import type {
@@ -184,11 +189,24 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
           <div className='flex-1'>
             <div className='relative'>
               <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+              <div className='absolute right-3 top-1/2 -translate-y-1/2'>
+                <HelpTooltip
+                  title={t('userManagement.tooltips.searchFilters.searchSyntax.title')}
+                  description={
+                    <div className='space-y-2'>
+                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.wildcard')}</div>
+                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.exact')}</div>
+                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.multiple')}</div>
+                    </div>
+                  }
+                  iconSize={14}
+                />
+              </div>
               <Input
                 placeholder={getSearchPlaceholder()}
                 value={filters.searchTerm}
                 onChange={e => handleSearchChange(e.target.value)}
-                className='pl-10 touch-manipulation min-h-[44px] text-base sm:text-sm'
+                className='pl-10 pr-10 touch-manipulation min-h-[44px] text-base sm:text-sm'
                 aria-label={`${getSearchPlaceholder()}. ${filtersApplied > 0 ? `${filtersApplied} filters applied.` : 'No filters applied.'}`}
                 aria-describedby="search-status"
                 disabled={isLoading}
@@ -213,34 +231,40 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
           <div className='flex flex-wrap gap-2 sm:flex-nowrap'>
             <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <CollapsibleTrigger asChild>
-                <Button
-                  variant='outline'
-                  className={cn(
-                    'relative gap-2 transition-all duration-200 touch-manipulation min-h-[44px] flex-1 sm:flex-none',
-                    isFilterOpen && 'bg-primary text-primary-foreground'
-                  )}
-                  aria-expanded={isFilterOpen}
-                  aria-controls="advanced-filters"
-                  aria-label={`${isFilterOpen ? 'Hide' : 'Show'} advanced filters. ${filtersApplied} filters applied.`}
-                  disabled={isLoading}
+                <EnhancedTooltip
+                  title={t('userManagement.tooltips.searchFilters.advancedFilters.title')}
+                  description={t('userManagement.tooltips.searchFilters.advancedFilters.combination')}
+                  content={isFilterOpen ? 'Hide filters' : `Show filters (${filtersApplied} active)`}
                 >
-                  <Filter className='h-4 w-4' />
-                  <span className='hidden sm:inline'>{t('userManagement.advancedFilters')}</span>
-                  <span className='sm:hidden'>Filters</span>
-                  {filtersApplied > 0 && (
-                    <Badge
-                      variant={isFilterOpen ? 'secondary' : 'destructive'}
-                      className='ml-2 px-1.5 py-0.5 text-xs -mr-1'
-                    >
-                      {filtersApplied}
-                    </Badge>
-                  )}
-                  {isFilterOpen ? (
-                    <ChevronUp className='h-4 w-4' aria-hidden="true" />
-                  ) : (
-                    <ChevronDown className='h-4 w-4' aria-hidden="true" />
-                  )}
-                </Button>
+                  <Button
+                    variant='outline'
+                    className={cn(
+                      'relative gap-2 transition-all duration-200 touch-manipulation min-h-[44px] flex-1 sm:flex-none',
+                      isFilterOpen && 'bg-primary text-primary-foreground'
+                    )}
+                    aria-expanded={isFilterOpen}
+                    aria-controls="advanced-filters"
+                    aria-label={`${isFilterOpen ? 'Hide' : 'Show'} advanced filters. ${filtersApplied} filters applied.`}
+                    disabled={isLoading}
+                  >
+                    <Filter className='h-4 w-4' />
+                    <span className='hidden sm:inline'>{t('userManagement.advancedFilters')}</span>
+                    <span className='sm:hidden'>Filters</span>
+                    {filtersApplied > 0 && (
+                      <Badge
+                        variant={isFilterOpen ? 'secondary' : 'destructive'}
+                        className='ml-2 px-1.5 py-0.5 text-xs -mr-1'
+                      >
+                        {filtersApplied}
+                      </Badge>
+                    )}
+                    {isFilterOpen ? (
+                      <ChevronUp className='h-4 w-4' aria-hidden="true" />
+                    ) : (
+                      <ChevronDown className='h-4 w-4' aria-hidden="true" />
+                    )}
+                  </Button>
+                </EnhancedTooltip>
               </CollapsibleTrigger>
 
               {/* Clear Filters Button - Mobile optimized */}
@@ -390,10 +414,17 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                   {showDateFilters && (
                     <>
                       <div className='space-y-2'>
-                        <Label htmlFor='created-from-filter' className='text-sm font-medium'>
-                          <span className='hidden sm:inline'>{t('userManagement.fields.createdFrom')}</span>
-                          <span className='sm:hidden'>From</span>
-                        </Label>
+                        <div className='flex items-center gap-2'>
+                          <Label htmlFor='created-from-filter' className='text-sm font-medium'>
+                            <span className='hidden sm:inline'>{t('userManagement.fields.createdFrom')}</span>
+                            <span className='sm:hidden'>From</span>
+                          </Label>
+                          <InfoTooltip
+                            title="Date Range Filtering"
+                            description={t('userManagement.tooltips.searchFilters.advancedFilters.dateRange')}
+                            iconSize={14}
+                          />
+                        </div>
                         <Input
                           id='created-from-filter'
                           type='date'

@@ -71,6 +71,7 @@
     "actions": "Actions",
     "more": "More",
     "retry": "Retry",
+    "shortcut": "Shortcut",
     "selectRole": "Select Role",
     "selectStatus": "Select Status",
     "created": "Created",
@@ -495,6 +496,117 @@
       "description": "Manage system users, roles, and permissions",
       "manageUsers": "Create, edit, and manage user accounts",
       "configureRoles": "Configure user roles and access permissions"
+    },
+    "tooltips": {
+      "passwordStrength": {
+        "title": "Password Strength",
+        "description": "Strong passwords help protect user accounts from unauthorized access",
+        "requirements": {
+          "length": "At least 8 characters long",
+          "lowercase": "Contains lowercase letters (a-z)",
+          "uppercase": "Contains uppercase letters (A-Z)",
+          "number": "Contains numbers (0-9)",
+          "special": "Contains special characters (!@#$%^&*)"
+        }
+      },
+      "roleAssignment": {
+        "title": "Role Assignment",
+        "description": "Roles determine what features and data users can access in the system",
+        "multipleRoles": "Users can have multiple roles to combine different permissions",
+        "roleDescriptions": {
+          "admin": "Complete system control including user management, system settings, and all features",
+          "creditManager": "Manage credit programs, oversee credit operations, and handle bulk operations",
+          "creditAnalyst": "Process applications, review documents, and make initial assessments",
+          "decisionMaker": "Make final credit approval decisions and authorize credit issuance",
+          "commissionMember": "Participate in commission reviews and collaborative decision-making",
+          "user": "Submit applications, track status, and view personal credit information"
+        }
+      },
+      "realTimeValidation": {
+        "title": "Real-time Validation",
+        "description": "Fields are validated as you type to provide immediate feedback",
+        "usernameCheck": "Username availability is checked against existing users",
+        "emailCheck": "Email availability is verified in real-time",
+        "debounced": "Validation occurs after a short delay to avoid excessive server requests"
+      },
+      "bulkActions": {
+        "title": "Bulk Actions",
+        "description": "Perform actions on multiple users at once to save time",
+        "selection": "Use checkboxes to select users, or use Ctrl+A to select all visible users",
+        "keyboardShortcuts": {
+          "title": "Keyboard Shortcuts",
+          "escape": "Press Esc to clear selection",
+          "ctrlA": "Ctrl+A to activate selected users",
+          "ctrlI": "Ctrl+I to deactivate selected users",
+          "ctrlD": "Ctrl+D to delete selected users"
+        },
+        "progress": "Progress indicators show the status of bulk operations",
+        "cancellation": "Long-running operations can be cancelled if needed"
+      },
+      "searchFilters": {
+        "title": "Search and Filters",
+        "description": "Find users quickly using search and filter options",
+        "searchSyntax": {
+          "title": "Search Tips",
+          "wildcard": "Use * for wildcard matching (e.g., 'john*' finds all names starting with john)",
+          "exact": "Use quotes for exact matches (e.g., '\"john doe\"')",
+          "multiple": "Use spaces to search multiple terms (e.g., 'john manager')"
+        },
+        "advancedFilters": {
+          "title": "Advanced Filters",
+          "combination": "Combine multiple filters for precise results",
+          "dateRange": "Use date ranges to find users created or logged in within specific periods",
+          "status": "Filter by user status (active, inactive, suspended)",
+          "roles": "Filter by assigned roles to find users with specific permissions"
+        }
+      },
+      "dataTable": {
+        "title": "Data Table Features",
+        "description": "Efficiently browse and manage large lists of users",
+        "sorting": {
+          "title": "Column Sorting",
+          "description": "Click column headers to sort data",
+          "multiple": "Hold Shift and click to sort by multiple columns"
+        },
+        "pagination": {
+          "title": "Pagination Controls",
+          "description": "Navigate through large datasets efficiently",
+          "pageSize": "Adjust rows per page based on your preference and screen size"
+        },
+        "selection": {
+          "title": "Row Selection",
+          "description": "Select individual rows or use bulk selection",
+          "header": "Use the header checkbox to select all visible rows"
+        }
+      },
+      "userStatus": {
+        "title": "User Status Management",
+        "description": "Control user access to the system",
+        "active": "Active users can log in and access all assigned features",
+        "inactive": "Inactive users cannot log in but their data is preserved",
+        "suspended": "Suspended users are temporarily blocked, usually for security reasons"
+      },
+      "formValidation": {
+        "title": "Form Validation",
+        "description": "Real-time validation helps prevent errors and ensures data quality",
+        "required": "Required fields are marked with a red asterisk (*)",
+        "format": "Format validation ensures data meets system requirements",
+        "uniqueness": "Username and email must be unique across all users"
+      },
+      "accessibility": {
+        "title": "Accessibility Features",
+        "description": "The interface supports keyboard navigation and screen readers",
+        "keyboard": "Use Tab to navigate, Enter to activate, and Escape to cancel",
+        "screenReader": "All form elements have proper labels and descriptions",
+        "contrast": "High contrast mode is available in user preferences"
+      },
+      "security": {
+        "title": "Security Features",
+        "description": "Multiple security measures protect user accounts and data",
+        "passwordPolicy": "Strong password requirements help prevent unauthorized access",
+        "sessionTimeout": "Sessions expire automatically for security",
+        "auditLog": "All user management actions are logged for security auditing"
+      }
     },
     "overview": {
       "totalUsers": "Total Users",
