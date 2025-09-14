@@ -17,14 +17,6 @@ import { ErrorFallback } from '@/components/ui/error-fallback';
 import { showWarningMessage } from '@/utils/errorHandling';
 import { useGetUserStatisticsQuery } from '@/store/api/userApi';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { ROUTES } from '@/constants';
 
 interface NavigationCard {
@@ -95,19 +87,6 @@ export const UserManagementPage: React.FC = () => {
     },
   ];
 
-  const quickActions = [
-    {
-      label: t('userManagement.quickActions.viewAllUsers'),
-      href: `${ROUTES.ADMIN}/users`,
-      variant: 'default' as const,
-    },
-    {
-      label: t('userManagement.quickActions.addNewUser'),
-      href: `${ROUTES.ADMIN}/users/new`,
-      variant: 'outline' as const,
-    },
-  ];
-
   return (
     <ErrorBoundary
       FallbackComponent={({ error, resetErrorBoundary }) => (
@@ -121,27 +100,6 @@ export const UserManagementPage: React.FC = () => {
       onError={handleError}
     >
       <div className="space-y-6">
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href={ROUTES.DASHBOARD}>
-              {t('common.dashboard')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={ROUTES.ADMIN}>
-              {t('common.admin')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{t('userManagement.title')}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -156,17 +114,7 @@ export const UserManagementPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-3">
-          {quickActions.map((action, index) => (
-            <Button key={index} variant={action.variant} asChild>
-              <Link to={action.href}>
-                {action.label}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-            </Button>
-          ))}
-        </div>
+        
       </div>
 
       {/* Navigation Cards */}
