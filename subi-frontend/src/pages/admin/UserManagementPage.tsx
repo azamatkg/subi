@@ -4,19 +4,14 @@ import { useTranslation } from 'react-i18next';
 import {
   Activity,
   ArrowRight,
-  Settings,
   Shield,
-  UserPlus,
   Users,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ui/error-fallback';
 import { showWarningMessage } from '@/utils/errorHandling';
-import { useGetUserStatisticsQuery } from '@/store/api/userApi';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
@@ -33,13 +28,6 @@ interface NavigationCard {
 export const UserManagementPage: React.FC = () => {
   const { t } = useTranslation();
   useSetPageTitle(t('userManagement.title'));
-
-  // Fetch user statistics
-  const {
-    data: statistics,
-    isLoading: statsLoading,
-    error: statsError,
-  } = useGetUserStatisticsQuery();
 
   // Error boundary fallback
   const handleError = (error: Error, errorInfo: { componentStack: string }) => {
@@ -59,15 +47,6 @@ export const UserManagementPage: React.FC = () => {
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
-    },
-    {
-      title: t('userManagement.navigation.createUser.title'),
-      description: t('userManagement.navigation.createUser.description'),
-      href: `${ROUTES.ADMIN}/users/new`,
-      icon: UserPlus,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
     },
     {
       title: t('userManagement.navigation.roles.title'),
@@ -111,16 +90,13 @@ export const UserManagementPage: React.FC = () => {
             </div>
             {t('userManagement.title')}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            {t('userManagement.subtitle')}
-          </p>
         </div>
 
         
       </div>
 
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {navigationCards.map((card, index) => {
           const IconComponent = card.icon;
           return (
@@ -152,105 +128,6 @@ export const UserManagementPage: React.FC = () => {
           );
         })}
       </div>
-
-      {/* System Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-50/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-700">
-              {t('userManagement.overview.totalUsers')}
-            </CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-900">
-              {statsLoading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : statsError ? (
-                '-'
-              ) : (
-                statistics?.data?.totalUsers || 0
-              )}
-            </div>
-            <p className="text-xs text-blue-600 mt-1">
-              {t('userManagement.overview.totalUsersDesc')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-green-50/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">
-              {t('userManagement.overview.activeUsers')}
-            </CardTitle>
-            <Activity className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-900">
-              {statsLoading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : statsError ? (
-                '-'
-              ) : (
-                statistics?.data?.activeUsers || 0
-              )}
-            </div>
-            <p className="text-xs text-green-600 mt-1">
-              {t('userManagement.overview.activeUsersDesc')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-50/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-700">
-              {t('userManagement.overview.adminUsers')}
-            </CardTitle>
-            <Shield className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-900">
-              {statsLoading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : statsError ? (
-                '-'
-              ) : (
-                statistics?.data?.adminUsers || 0
-              )}
-            </div>
-            <p className="text-xs text-purple-600 mt-1">
-              {t('userManagement.overview.adminUsersDesc')}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Help Section */}
-      <Card className="border-2 border-muted bg-gradient-to-r from-muted/20 to-accent/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-foreground">
-            <Settings className="h-6 w-6 text-primary" />
-            {t('userManagement.help.title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-muted-foreground">
-            {t('userManagement.help.description')}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`${ROUTES.ADMIN}/users`}>
-                {t('userManagement.help.manageUsers')}
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`${ROUTES.ADMIN}/reference-data`}>
-                {t('userManagement.help.configureRoles')}
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
       </div>
     </ErrorBoundary>
   );
