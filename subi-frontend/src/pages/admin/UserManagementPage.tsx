@@ -18,6 +18,7 @@ import { showWarningMessage } from '@/utils/errorHandling';
 import { useGetUserStatisticsQuery } from '@/store/api/userApi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
 interface NavigationCard {
   title: string;
@@ -31,6 +32,7 @@ interface NavigationCard {
 
 export const UserManagementPage: React.FC = () => {
   const { t } = useTranslation();
+  useSetPageTitle(t('userManagement.title'));
 
   // Fetch user statistics
   const {
