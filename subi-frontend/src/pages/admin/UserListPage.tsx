@@ -58,8 +58,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { useProgressiveLoading, useSmartLoading } from '@/hooks/useSmartLoading';
-import { LoadingOverlay, SkeletonToContentTransition } from '@/components/ui/loading-transitions';
+import { useProgressiveLoading, useSmartLoading, useStaggeredLoading } from '@/hooks/useSmartLoading';
+import {
+  ButtonLoadingState,
+  LoadingOverlay,
+  SkeletonToContentTransition
+} from '@/components/ui/loading-transitions';
 import {
   useBulkUpdateUserRolesMutation,
   useBulkUpdateUserStatusMutation,
@@ -214,6 +218,13 @@ export const UserListPage: React.FC = () => {
     finalData,
     finalLoading,
     { minDelay: 200, minDuration: 300 }
+  );
+
+  // Staggered loading for card view
+  const visibleItemCount = useStaggeredLoading(
+    finalData?.users,
+    finalLoading,
+    80 // Stagger delay in ms
   );
 
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
@@ -1221,8 +1232,15 @@ export const UserListPage: React.FC = () => {
                           'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 transition-opacity duration-300',
                           smartLoading && finalData && 'opacity-60'
                         )}>
-                          {finalData?.content.map(user => (
-                            <UserCard key={user.id} user={user} />
+                          {finalData?.content.slice(0, visibleItemCount).map((user, index) => (
+                            <UserCard
+                              key={user.id}
+                              user={user}
+                              style={{
+                                animationDelay: `${index * 80}ms`,
+                              }}
+                              className="animate-in slide-in-from-left-2 duration-300 fill-mode-both"
+                            />
                           ))}
                         </div>
                       </div>
@@ -1342,7 +1360,12 @@ export const UserListPage: React.FC = () => {
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
             >
-              {isDeleting ? t('common.deleting') : t('common.delete')}
+              <ButtonLoadingState
+                loading={isDeleting}
+                loadingText={t('common.deleting')}
+              >
+                {t('common.delete')}
+              </ButtonLoadingState>
             </Button>
           </div>
         </DialogContent>

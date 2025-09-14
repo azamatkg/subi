@@ -6,7 +6,42 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { UserListPage } from '../UserListPage';
 import type { UserListResponseDto } from '@/types/user';
+import type { PermissionResponseDto, RoleResponseDto } from '@/types/role';
 import { UserStatus } from '@/types/user';
+
+// Helper to create mock permissions
+const createMockPermission = (id: string, name: string, description: string): PermissionResponseDto => ({
+  id,
+  name,
+  description,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+});
+
+// Helper to create mock roles
+const createMockRole = (id: string, name: string, description: string, permissions: PermissionResponseDto[] = []): RoleResponseDto => ({
+  id,
+  name,
+  description,
+  permissions,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+});
+
+// Mock roles
+const mockUserRole = createMockRole('role-user', 'USER', 'Standard user role', [
+  createMockPermission('perm-1', 'READ_PROFILE', 'Can read own profile'),
+]);
+
+const mockAdminRole = createMockRole('role-admin', 'ADMIN', 'Administrator role', [
+  createMockPermission('perm-1', 'READ_PROFILE', 'Can read own profile'),
+  createMockPermission('perm-2', 'MANAGE_USERS', 'Can manage users'),
+]);
+
+const mockCreditManagerRole = createMockRole('role-credit-manager', 'CREDIT_MANAGER', 'Credit manager role', [
+  createMockPermission('perm-1', 'READ_PROFILE', 'Can read own profile'),
+  createMockPermission('perm-3', 'MANAGE_CREDIT', 'Can manage credit applications'),
+]);
 
 // Test data
 const mockUsers: UserListResponseDto[] = [
@@ -17,13 +52,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'John',
     lastName: 'Doe',
     fullName: 'John Doe',
-    roles: ['USER'],
+    roles: [mockUserRole],
     status: UserStatus.ACTIVE,
     enabled: true,
     isActive: true,
     department: 'IT',
     lastLoginAt: '2024-01-15T10:30:00Z',
     createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
   },
   {
     id: 'user-2',
@@ -32,13 +68,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'Alice',
     lastName: 'Smith',
     fullName: 'Alice Smith',
-    roles: ['ADMIN', 'CREDIT_MANAGER'],
+    roles: [mockAdminRole, mockCreditManagerRole],
     status: UserStatus.ACTIVE,
     enabled: true,
     isActive: true,
     department: 'Finance',
     lastLoginAt: '2024-01-16T14:20:00Z',
     createdAt: '2024-01-02T00:00:00Z',
+    updatedAt: '2024-01-02T00:00:00Z',
   },
   {
     id: 'user-3',
@@ -47,13 +84,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'Bob',
     lastName: 'Johnson',
     fullName: 'Bob Johnson',
-    roles: ['USER'],
+    roles: [mockUserRole],
     status: UserStatus.SUSPENDED,
     enabled: false,
     isActive: false,
     department: 'Operations',
-    lastLoginAt: null,
+    lastLoginAt: undefined,
     createdAt: '2024-01-03T00:00:00Z',
+    updatedAt: '2024-01-03T00:00:00Z',
   },
 ];
 

@@ -19,6 +19,7 @@ import { HttpResponse, http } from 'msw';
 import { UserListPage } from '../UserListPage';
 import { userApi } from '@/store/api/userApi';
 import type { UserListResponse, UserListResponseDto } from '@/types/user';
+import type { PermissionResponseDto, RoleResponseDto } from '@/types/role';
 import { UserStatus } from '@/types/user';
 
 // Mock hooks
@@ -75,6 +76,30 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Helper to create mock permissions
+const createMockPermission = (id: string, name: string, description: string): PermissionResponseDto => ({
+  id,
+  name,
+  description,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+});
+
+// Helper to create mock roles
+const createMockRole = (id: string, name: string, description: string, permissions: PermissionResponseDto[] = []): RoleResponseDto => ({
+  id,
+  name,
+  description,
+  permissions,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
+});
+
+// Mock roles
+const mockUserRole = createMockRole('role-user', 'USER', 'Standard user role', [
+  createMockPermission('perm-1', 'READ_PROFILE', 'Can read own profile'),
+]);
+
 // Test data
 const mockUsers: UserListResponseDto[] = [
   {
@@ -84,13 +109,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'John',
     lastName: 'Doe',
     fullName: 'John Doe',
-    roles: ['USER'],
+    roles: [mockUserRole],
     status: UserStatus.ACTIVE,
     enabled: true,
     isActive: true,
     department: 'IT',
     lastLoginAt: '2024-01-15T10:30:00Z',
     createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
   },
 ];
 
@@ -127,7 +153,7 @@ const server = setupServer(
 const createTestStore = () => {
   return configureStore({
     reducer: {
-      userApi: userApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
     },
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({

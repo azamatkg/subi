@@ -303,16 +303,19 @@ export interface UserSearchFilters {
 // Bulk Operations Progress
 export interface BulkOperationProgress {
   operationId: string;
-  type: 'STATUS_UPDATE' | 'ROLE_UPDATE' | 'DELETE' | 'PASSWORD_RESET';
-  total: number;
-  completed: number;
-  failed: number;
-  inProgress: boolean;
-  errors: Array<{
-    userId: string;
-    username: string;
-    error: string;
-  }>;
+  operationType: 'status-change' | 'role-assignment' | 'delete';
+  totalItems: number;
+  processedItems: number;
+  successfulItems: number;
+  failedItems: number;
+  percentage: number;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled' | 'failed';
+  startTime: Date;
+  endTime?: Date;
+  estimatedTimeRemaining?: number;
+  currentItem?: string; // ID or name of current item being processed
+  errorDetails: BulkOperationError[];
+  canCancel: boolean;
 }
 
 // Activity Action Types (matches data model specification)
@@ -450,23 +453,7 @@ export { UserRole } from '@/types';
 // Re-export base User interface for consistency
 export type { User } from '@/types';
 
-// Enhanced Bulk Operations Progress Types
-export interface BulkOperationProgress {
-  operationId: string;
-  operationType: 'status-change' | 'role-assignment' | 'delete';
-  totalItems: number;
-  processedItems: number;
-  successfulItems: number;
-  failedItems: number;
-  percentage: number;
-  status: 'pending' | 'processing' | 'completed' | 'cancelled' | 'failed';
-  startTime: Date;
-  endTime?: Date;
-  estimatedTimeRemaining?: number;
-  currentItem?: string; // ID or name of current item being processed
-  errorDetails: BulkOperationError[];
-  canCancel: boolean;
-}
+// Enhanced Bulk Operations Progress Types (replacing the duplicate)
 
 export interface BulkOperationError {
   itemId: string;

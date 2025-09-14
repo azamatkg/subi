@@ -12,6 +12,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -245,7 +246,7 @@ const server = setupServer(
 const createTestStore = () => {
   return configureStore({
     reducer: {
-      userApi: userApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(userApi.middleware),

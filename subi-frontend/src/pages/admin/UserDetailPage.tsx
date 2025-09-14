@@ -44,10 +44,15 @@ import { UserProfileSkeleton } from '@/components/ui/skeleton';
 import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
 import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import {
+  ButtonLoadingState,
+  TabLoadingState
+} from '@/components/ui/loading-transitions';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { useProgressiveLoading } from '@/hooks/useSmartLoading';
 import {
   handleApiError,
   showSuccessMessage,
@@ -105,6 +110,21 @@ export const UserDetailPage: React.FC = () => {
     isLoading: activitiesLoading,
     error: activitiesError,
   } = useGetUserActivityLogQuery(id!, { skip: !id });
+
+  // Progressive loading for smooth transitions
+  const {
+    showLoading: showUserLoading,
+  } = useProgressiveLoading(userResponse, isLoading, {
+    minDelay: 150,
+    minDuration: 400,
+  });
+
+  const {
+    showLoading: showActivitiesLoading,
+  } = useProgressiveLoading(activitiesResponse, activitiesLoading, {
+    minDelay: 100,
+    minDuration: 300,
+  });
 
   // Debug logging for API query state
   useEffect(() => {
@@ -343,7 +363,7 @@ export const UserDetailPage: React.FC = () => {
 
   const canModifyUser = hasAnyRole(['ADMIN']);
 
-  if (isLoading) {
+  if (showUserLoading) {
     return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
@@ -358,8 +378,7 @@ export const UserDetailPage: React.FC = () => {
   }
 
   if (!user && !isLoading) {
-    // No user data and not loading - showing loading state instead of redirecting
-    // Instead of returning null and redirecting, show a proper loading/error state
+    // No user data and not loading - show proper loading state
     return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
@@ -707,25 +726,42 @@ export const UserDetailPage: React.FC = () => {
               </CardContent>
             </Card>
           ) : (
-            <ErrorBoundary
-              level='component'
-              title='Ошибка истории активности'
-              description='Не удается отобразить историю активности пользователя.'
-              fallback={
-                <ServerErrorFallback
-                  title='Ошибка истории активности'
-                  description='Не удается загрузить историю активности пользователя.'
-                  showRetry
-                />
+            <TabLoadingState
+              loading={showActivitiesLoading}
+              skeleton={
+                <div className="space-y-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex gap-4 p-4 border rounded-lg">
+                      <div className="h-10 w-10 bg-muted/60 animate-pulse rounded-full" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 w-48 bg-muted/60 animate-pulse rounded" />
+                        <div className="h-3 w-32 bg-muted/60 animate-pulse rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               }
             >
-              <UserActivityTimeline
-                activities={activities}
-                isLoading={activitiesLoading}
-                maxItems={20}
-                showPerformedBy={true}
-              />
-            </ErrorBoundary>
+              <ErrorBoundary
+                level='component'
+                title='Ошибка истории активности'
+                description='Не удается отобразить историю активности пользователя.'
+                fallback={
+                  <ServerErrorFallback
+                    title='Ошибка истории активности'
+                    description='Не удается загрузить историю активности пользователя.'
+                    showRetry
+                  />
+                }
+              >
+                <UserActivityTimeline
+                  activities={activities}
+                  isLoading={false}
+                  maxItems={20}
+                  showPerformedBy={true}
+                />
+              </ErrorBoundary>
+            </TabLoadingState>
           )}
         </TabsContent>
 
@@ -775,7 +811,12 @@ export const UserDetailPage: React.FC = () => {
               onClick={handleDelete}
               disabled={isDeleting || operationLoading === 'delete'}
             >
-              {(isDeleting || operationLoading === 'delete') ? t('common.deleting') : t('common.delete')}
+              <ButtonLoadingState
+                loading={isDeleting || operationLoading === 'delete'}
+                loadingText={t('common.deleting')}
+              >
+                {t('common.delete')}
+              </ButtonLoadingState>
             </Button>
           </div>
         </DialogContent>
@@ -882,9 +923,12 @@ export const UserDetailPage: React.FC = () => {
               {t('common.cancel')}
             </Button>
             <Button onClick={handleResetPassword} disabled={isResetting}>
-              {isResetting
-                ? t('userManagement.resetting')
-                : t('userManagement.actions.resetPassword')}
+              <ButtonLoadingState
+                loading={isResetting}
+                loadingText={t('userManagement.resetting')}
+              >
+                {t('userManagement.actions.resetPassword')}
+              </ButtonLoadingState>
             </Button>
           </div>
         </DialogContent>

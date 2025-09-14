@@ -109,13 +109,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'John',
     lastName: 'Doe',
     fullName: 'John Doe',
-    roles: ['USER'],
+    roles: [{ id: 'role-2', name: 'USER', description: 'Regular User', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }],
     status: UserStatus.ACTIVE,
     enabled: true,
     isActive: true,
     department: 'IT',
     lastLoginAt: '2024-01-15T10:30:00Z',
     createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
   },
   {
     id: 'user-2',
@@ -124,13 +125,14 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'Alice',
     lastName: 'Smith',
     fullName: 'Alice Smith',
-    roles: ['ADMIN', 'CREDIT_MANAGER'],
+    roles: [{ id: 'role-1', name: 'ADMIN', description: 'Administrator', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }, { id: 'role-3', name: 'CREDIT_MANAGER', description: 'Credit Manager', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }],
     status: UserStatus.ACTIVE,
     enabled: true,
     isActive: true,
     department: 'Finance',
     lastLoginAt: '2024-01-16T14:20:00Z',
     createdAt: '2024-01-02T00:00:00Z',
+    updatedAt: '2024-01-02T00:00:00Z',
   },
   {
     id: 'user-3',
@@ -139,20 +141,21 @@ const mockUsers: UserListResponseDto[] = [
     firstName: 'Bob',
     lastName: 'Johnson',
     fullName: 'Bob Johnson',
-    roles: ['USER'],
+    roles: [{ id: 'role-2', name: 'USER', description: 'Regular User', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' }],
     status: UserStatus.SUSPENDED,
     enabled: false,
     isActive: false,
     department: 'Operations',
-    lastLoginAt: null,
+    lastLoginAt: undefined,
     createdAt: '2024-01-03T00:00:00Z',
+    updatedAt: '2024-01-03T00:00:00Z',
   },
 ];
 
 const mockRoles = [
-  { id: 'role-1', name: 'ADMIN', description: 'Administrator' },
-  { id: 'role-2', name: 'USER', description: 'Regular User' },
-  { id: 'role-3', name: 'CREDIT_MANAGER', description: 'Credit Manager' },
+  { id: 'role-1', name: 'ADMIN', description: 'Administrator', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 'role-2', name: 'USER', description: 'Regular User', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
+  { id: 'role-3', name: 'CREDIT_MANAGER', description: 'Credit Manager', permissions: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
 ];
 
 // MSW server setup
@@ -162,7 +165,7 @@ const server = setupServer();
 const createTestStore = () => {
   return configureStore({
     reducer: {
-      userApi: userApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
     },
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({

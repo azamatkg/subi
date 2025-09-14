@@ -36,12 +36,16 @@ import {
 import { UserFormSkeleton } from '@/components/ui/skeleton';
 import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  ButtonLoadingState,
+  FormFieldLoadingState
+} from '@/components/ui/loading-transitions';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useProgressiveLoading } from '@/hooks/useSmartLoading';
 import {
   useCheckEmailAvailabilityQuery,
   useCheckUsernameAvailabilityQuery,
@@ -241,6 +245,14 @@ export const UserAddEditPage: React.FC = () => {
     isLoading: userLoading,
     error: userError,
   } = useGetUserByIdQuery(id!, { skip: !isEditMode });
+
+  // Progressive loading for smooth transitions
+  const {
+    showLoading: showUserLoading,
+  } = useProgressiveLoading(userResponse, userLoading, {
+    minDelay: 150,
+    minDuration: 400,
+  });
 
   // const { data: departmentsResponse } = useGetUserDepartmentsQuery();
 
@@ -486,8 +498,8 @@ export const UserAddEditPage: React.FC = () => {
     }
   };
 
-  // Handle loading states with appropriate skeleton
-  if (translationLoading || userLoading || (isEditMode && !user)) {
+  // Handle loading states with appropriate skeleton - show for new users or when user data is loading
+  if (translationLoading || (!isEditMode && false) || (isEditMode && showUserLoading)) {
     return (
       <div className='space-y-6'>
         <div className='flex items-center gap-2'>
@@ -728,42 +740,13 @@ export const UserAddEditPage: React.FC = () => {
                             {...field}
                             aria-describedby={`email-status-${field.name}`}
                           />
-                          <div className='absolute right-3 top-3'>
-                            {emailChecking && (
-                              <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
-                            )}
-                            {!emailChecking && debouncedEmail && z.string().email().safeParse(debouncedEmail).success && (
-                              emailExists ? (
-                                <AlertCircle className='h-4 w-4 text-red-500' />
-                              ) : debouncedEmail.length > 0 && !skipEmailCheck ? (
-                                <CheckCircle2 className='h-4 w-4 text-green-500' />
-                              ) : null
-                            )}
-                          </div>
                         </div>
                       </FormControl>
-                      <div id={`email-status-${field.name}`}>
-                        {emailChecking && (
-                          <FormDescription className='flex items-center gap-2'>
-                            <Loader2 className='h-3 w-3 animate-spin' />
-                            {t('userManagement.checkingEmailAvailability')}
-                          </FormDescription>
-                        )}
-                        {!emailChecking && emailExists && (
-                          <Alert variant='destructive'>
-                            <AlertCircle className='h-4 w-4' />
-                            <AlertDescription>
-                              {t('userManagement.emailNotAvailable')}
-                            </AlertDescription>
-                          </Alert>
-                        )}
-                        {!emailChecking && debouncedEmail && !emailExists && !skipEmailCheck && z.string().email().safeParse(debouncedEmail).success && (
-                          <FormDescription className='flex items-center gap-2 text-green-600'>
-                            <CheckCircle2 className='h-3 w-3' />
-                            Email is available
-                          </FormDescription>
-                        )}
-                      </div>
+                      <FormFieldLoadingState
+                        loading={emailChecking}
+                        error={emailExists ? t('userManagement.emailNotAvailable') : undefined}
+                        success={debouncedEmail && !emailExists && !skipEmailCheck && z.string().email().safeParse(debouncedEmail).success}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -863,28 +846,11 @@ export const UserAddEditPage: React.FC = () => {
                               </div>
                             </div>
                           </FormControl>
-                          <div id={`username-status-${field.name}`}>
-                            {usernameChecking && (
-                              <FormDescription className='flex items-center gap-2'>
-                                <Loader2 className='h-3 w-3 animate-spin' />
-                                {t('userManagement.checkingUsernameAvailability')}
-                              </FormDescription>
-                            )}
-                            {!usernameChecking && usernameExists && (
-                              <Alert variant='destructive'>
-                                <AlertCircle className='h-4 w-4' />
-                                <AlertDescription>
-                                  {t('userManagement.usernameNotAvailable')}
-                                </AlertDescription>
-                              </Alert>
-                            )}
-                            {!usernameChecking && debouncedUsername && !usernameExists && debouncedUsername.length >= 3 && (
-                              <FormDescription className='flex items-center gap-2 text-green-600'>
-                                <CheckCircle2 className='h-3 w-3' />
-                                Username is available
-                              </FormDescription>
-                            )}
-                          </div>
+                          <FormFieldLoadingState
+                            loading={usernameChecking}
+                            error={usernameExists ? t('userManagement.usernameNotAvailable') : undefined}
+                            success={debouncedUsername && !usernameExists && debouncedUsername.length >= 3}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1092,16 +1058,16 @@ export const UserAddEditPage: React.FC = () => {
             <Button
               type='submit'
               disabled={isCreating || isUpdating}
-              className='gap-2'
             >
-              <Save className='h-4 w-4' />
-              {isCreating || isUpdating
-                ? isEditMode
-                  ? t('common.updating')
-                  : t('common.creating')
-                : isEditMode
-                  ? t('common.update')
-                  : t('common.create')}
+              <ButtonLoadingState
+                loading={isCreating || isUpdating}
+                loadingText={isEditMode ? t('common.updating') : t('common.creating')}
+              >
+                <div className="flex items-center gap-2">
+                  <Save className='h-4 w-4' />
+                  {isEditMode ? t('common.update') : t('common.create')}
+                </div>
+              </ButtonLoadingState>
             </Button>
           </div>
           </form>

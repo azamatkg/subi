@@ -16,7 +16,8 @@ export function useErrorContext() {
  * Hook for handling errors in components
  */
 export function useErrorHandler(componentId: string) {
-  const { addError, clearError, incrementRetry, resetRetry, getRetryCount, canRetry, hasError, getError } = useErrorContext();
+  const context = useErrorContext();
+  const { addError, clearError, incrementRetry, resetRetry, getRetryCount, canRetry, hasError, getError } = context;
 
   const handleError = React.useCallback((error: Error) => {
     console.error(`Error in component ${componentId}:`, error);

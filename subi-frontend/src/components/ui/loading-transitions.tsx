@@ -142,3 +142,138 @@ export function LoadingOverlay({
     </div>
   );
 }
+
+/**
+ * Inline loading spinner for small operations
+ */
+interface InlineLoadingSpinnerProps {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+export function InlineLoadingSpinner({
+  size = 'sm',
+  className
+}: InlineLoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: 'h-3 w-3 border',
+    md: 'h-4 w-4 border-2',
+    lg: 'h-5 w-5 border-2'
+  };
+
+  return (
+    <div
+      className={cn(
+        'animate-spin rounded-full border-primary border-t-transparent',
+        sizeClasses[size],
+        className
+      )}
+      role="status"
+      aria-label="Loading"
+    />
+  );
+}
+
+/**
+ * Button loading state component
+ */
+interface ButtonLoadingStateProps {
+  loading: boolean;
+  children: React.ReactNode;
+  loadingText?: string;
+  className?: string;
+}
+
+export function ButtonLoadingState({
+  loading,
+  children,
+  loadingText,
+  className
+}: ButtonLoadingStateProps) {
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      {loading && <InlineLoadingSpinner size="sm" />}
+      <span>
+        {loading && loadingText ? loadingText : children}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Form field loading state for real-time validation
+ */
+interface FormFieldLoadingStateProps {
+  loading: boolean;
+  error?: string;
+  success?: boolean;
+  className?: string;
+}
+
+export function FormFieldLoadingState({
+  loading,
+  error,
+  success,
+  className
+}: FormFieldLoadingStateProps) {
+  if (!loading && !error && !success) {
+    return null;
+  }
+
+  return (
+    <div className={cn('flex items-center gap-1 mt-1', className)}>
+      {loading && (
+        <>
+          <InlineLoadingSpinner size="sm" />
+          <span className="text-xs text-muted-foreground">Checking...</span>
+        </>
+      )}
+      {error && (
+        <>
+          <div className="h-3 w-3 rounded-full bg-destructive" />
+          <span className="text-xs text-destructive">{error}</span>
+        </>
+      )}
+      {success && !loading && !error && (
+        <>
+          <div className="h-3 w-3 rounded-full bg-success" />
+          <span className="text-xs text-success">Available</span>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Tab content loading state
+ */
+interface TabLoadingStateProps {
+  loading: boolean;
+  skeleton: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function TabLoadingState({
+  loading,
+  skeleton,
+  children,
+  className
+}: TabLoadingStateProps) {
+  return (
+    <div className={cn('min-h-[200px] relative', className)}>
+      <FadeTransition show={loading}>
+        <div className="p-6">
+          {skeleton}
+        </div>
+      </FadeTransition>
+
+      <FadeTransition
+        show={!loading}
+        className={loading ? 'absolute inset-0' : undefined}
+      >
+        {children}
+      </FadeTransition>
+    </div>
+  );
+}
