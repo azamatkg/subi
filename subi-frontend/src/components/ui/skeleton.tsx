@@ -189,7 +189,7 @@ function PageSkeleton({
 }
 
 /**
- * User card skeleton that matches UserCard component layout
+ * User card skeleton that matches UserCard component layout - Updated
  */
 interface UserCardSkeletonProps {
   count?: number;
@@ -207,25 +207,24 @@ function UserCardSkeleton({
   const cards = Array.from({ length: count });
 
   return (
-    <div className={cn('grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4', className)}>
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3', className)}>
       {cards.map((_, index) => (
         <div
           key={`user-card-skeleton-${index}`}
           className={cn(
             'border border-card-elevated-border bg-card shadow-md rounded-lg',
-            staggered && 'animate-pulse',
+            staggered && 'animate-in fade-in-0 slide-in-from-left-2 duration-300 fill-mode-both'
           )}
           style={
             staggered
               ? {
-                  animationDelay: `${index * 100}ms`,
-                  animationDuration: '1.5s',
+                  animationDelay: `${index * 80}ms`,
                 }
               : undefined
           }
         >
-          <div className={cn('p-7', compact && 'p-4')}>
-            <div className='space-y-4'>
+          <div className={cn('p-4', compact && 'p-3')}>
+            <div className='space-y-3'>
               {/* Header with avatar, username, and status */}
               <div className='flex items-start justify-between gap-4'>
                 <div className='min-w-0 flex-1'>
@@ -243,7 +242,7 @@ function UserCardSkeleton({
               </div>
 
               {/* Details section */}
-              <div className='space-y-3'>
+              <div className='space-y-2'>
                 <div className='flex items-center gap-3'>
                   <Skeleton className='h-5 w-5' />
                   <Skeleton className='h-4 w-24' />

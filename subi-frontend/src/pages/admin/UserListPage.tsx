@@ -47,7 +47,7 @@ import {
   UserCardSkeleton
 } from '@/components/ui/skeleton';
 import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
-import { LiveRegion } from '@/components/ui/focus-trap';
+import { Landmark, LiveRegion, SkipLink } from '@/components/ui/focus-trap';
 import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { DataTable, DataTableColumn } from '@/components/ui/DataTable';
@@ -145,20 +145,29 @@ export const UserListPage: React.FC = () => {
     setStoredViewMode(mode);
   };
 
-  // Mobile detection
+  // Enhanced mobile detection with improved breakpoints
   useEffect(() => {
     const checkMobile = () => {
       const isMobileView = window.innerWidth < 768;
+      const isSmallMobile = window.innerWidth < 480;
       setIsMobile(isMobileView);
+
+      // Force card view on mobile for better usability
       if (isMobileView && viewMode === 'table') {
         setViewMode('card');
+        setStoredViewMode('card');
+      }
+
+      // Adjust page size for small mobile screens
+      if (isSmallMobile && size > 10) {
+        setSize(10);
       }
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, [viewMode]);
+  }, [viewMode, size]);
 
 
   // Build query parameters
@@ -222,7 +231,7 @@ export const UserListPage: React.FC = () => {
 
   // Staggered loading for card view
   const visibleItemCount = useStaggeredLoading(
-    finalData?.users,
+    finalData?.content,
     finalLoading,
     80 // Stagger delay in ms
   );
@@ -713,52 +722,59 @@ export const UserListPage: React.FC = () => {
     },
   ];
 
-  // Enhanced mobile-first card component
-  const UserCard: React.FC<{ user: UserListResponseDto }> = ({ user }) => (
+  // Enhanced mobile-first card component with improved touch targets
+  const UserCard: React.FC<{ user: UserListResponseDto; style?: React.CSSProperties; className?: string }> = ({ user, style, className }) => (
     <div
-      className='group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg'
+      className={cn(
+        'group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg',
+        // Mobile-specific improvements
+        'active:scale-[0.98] active:shadow-lg', // Touch feedback
+        'min-h-[140px] sm:min-h-[160px]', // Consistent card heights
+        className
+      )}
+      style={style}
       role='article'
       aria-labelledby={`user-title-${user.id}`}
     >
-      <div className='p-7'>
-        <div className='space-y-4'>
-          {/* Header with status and actions */}
-          <div className='flex items-start justify-between gap-4'>
+      <div className='p-3 sm:p-4 lg:p-5'>
+        <div className='space-y-2 sm:space-y-3'>
+          {/* Header with status and actions - Mobile optimized */}
+          <div className='flex items-start justify-between gap-3 sm:gap-4'>
             <div className='min-w-0 flex-1'>
-              <div className='flex items-center gap-3 mb-3'>
-                <div className='flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm'>
-                  <User className='h-5 w-5 text-primary-700 shrink-0' />
+              <div className='flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3'>
+                <div className='flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm shrink-0'>
+                  <User className='h-4 w-4 sm:h-5 sm:w-5 text-primary-700' />
                 </div>
-                <span className='text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide'>
+                <span className='text-xs sm:text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide truncate'>
                   @{user.username}
                 </span>
               </div>
               <button
                 onClick={() => handleView(user.id)}
-                className='text-left w-full'
+                className='text-left w-full touch-manipulation' // Added touch-manipulation for better mobile performance
               >
                 <h3
                   id={`user-title-${user.id}`}
-                  className='text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide'
+                  className='text-lg sm:text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide line-clamp-2'
                 >
                   {user.fullName}
                 </h3>
               </button>
-              <p className='text-sm text-muted-foreground mt-2 font-medium'>
+              <p className='text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 font-medium truncate'>
                 {user.email}
               </p>
             </div>
-            <div className='flex items-center gap-2 shrink-0'>
+            <div className='flex items-center gap-1 sm:gap-2 shrink-0'>
               <AccessibleStatusBadge
                 status={user.status}
-                className='shrink-0 shadow-sm'
+                className='shrink-0 shadow-sm text-xs sm:text-sm'
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant='ghost'
                     size='sm'
-                    className='h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg'
+                    className='h-9 w-9 sm:h-8 sm:w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg touch-manipulation' // Larger touch target on mobile
                     aria-label={t('common.actions', { item: user.fullName })}
                   >
                     <MoreHorizontal className='h-4 w-4' />
@@ -801,39 +817,39 @@ export const UserListPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Details grid */}
-          <div className='space-y-3 text-sm'>
-            <div className='flex items-center gap-3'>
-              <Shield className='h-5 w-5 text-muted-foreground shrink-0' />
-              <div>
-                <span className='font-medium'>
+          {/* Details grid - Mobile optimized */}
+          <div className='space-y-1 sm:space-y-2 text-xs sm:text-sm'>
+            <div className='flex items-start gap-2 sm:gap-3'>
+              <Shield className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+              <div className='min-w-0 flex-1'>
+                <span className='font-medium block sm:inline'>
                   {t('userManagement.fields.roles')}:
                 </span>
-                <span className='ml-2 font-semibold'>
+                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>
                   {formatRoles(user.roles)}
                 </span>
               </div>
             </div>
 
             {user.department && (
-              <div className='flex items-center gap-3'>
-                <Users className='h-5 w-5 text-muted-foreground shrink-0' />
-                <div>
-                  <span className='font-medium'>
+              <div className='flex items-start gap-2 sm:gap-3'>
+                <Users className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+                <div className='min-w-0 flex-1'>
+                  <span className='font-medium block sm:inline'>
                     {t('userManagement.fields.department')}:
                   </span>
-                  <span className='ml-2 font-semibold'>{user.department}</span>
+                  <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>{user.department}</span>
                 </div>
               </div>
             )}
 
-            <div className='flex items-center gap-3'>
-              <Clock className='h-5 w-5 text-muted-foreground shrink-0' />
-              <div>
-                <span className='font-medium'>
+            <div className='flex items-start gap-2 sm:gap-3'>
+              <Clock className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+              <div className='min-w-0 flex-1'>
+                <span className='font-medium block sm:inline'>
                   {t('userManagement.fields.lastLogin')}:
                 </span>
-                <span className='ml-2 font-semibold'>
+                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>
                   {user.lastLoginAt
                     ? new Date(user.lastLoginAt).toLocaleDateString()
                     : t('userManagement.never')}
@@ -847,7 +863,7 @@ export const UserListPage: React.FC = () => {
   );
 
 
-  // Pagination component
+  // Enhanced pagination component with mobile optimizations
   const PaginationControls: React.FC = () => {
     if (!finalData) {
       return null;
@@ -857,14 +873,15 @@ export const UserListPage: React.FC = () => {
     const currentPage = finalData.number;
 
     return (
-      <div className='flex items-center justify-between'>
-        <div className='flex-1 text-sm text-muted-foreground'>
+      <div className='flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0'>
+        <div className='flex-1 text-xs sm:text-sm text-muted-foreground text-center sm:text-left'>
           {t('common.showing')} {finalData.numberOfElements} {t('common.of')}{' '}
           {finalData.totalElements} {t('userManagement.users').toLowerCase()}
         </div>
-        <div className='flex items-center space-x-6 lg:space-x-8'>
-          <div className='flex items-center space-x-2'>
-            <p className='text-sm font-medium'>{t('common.rowsPerPage')}</p>
+        <div className='flex flex-col sm:flex-row items-center gap-4 sm:gap-6 lg:gap-8'>
+          <div className='flex items-center gap-2 sm:gap-2'>
+            <p className='text-xs sm:text-sm font-medium hidden sm:block'>{t('common.rowsPerPage')}</p>
+            <p className='text-xs font-medium sm:hidden'>Per page:</p>
             <Select
               value={size.toString()}
               onValueChange={value => {
@@ -872,11 +889,14 @@ export const UserListPage: React.FC = () => {
                 setPage(0);
               }}
             >
-              <SelectTrigger className='h-8 w-[70px]'>
+              <SelectTrigger className='h-8 w-[60px] sm:w-[70px] touch-manipulation'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PAGINATION.PAGE_SIZE_OPTIONS.map(pageSize => (
+                {PAGINATION.PAGE_SIZE_OPTIONS.filter(pageSize =>
+                  // Filter page size options for mobile
+                  isMobile ? pageSize <= 20 : true
+                ).map(pageSize => (
                   <SelectItem key={pageSize} value={pageSize.toString()}>
                     {pageSize}
                   </SelectItem>
@@ -884,14 +904,15 @@ export const UserListPage: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
-            {t('common.page')} {currentPage + 1} {t('common.of')}{' '}
-            {totalPages || 1}
+          <div className='flex w-[100px] sm:w-[100px] items-center justify-center text-xs sm:text-sm font-medium'>
+            <span className='hidden sm:inline'>{t('common.page')} </span>
+            {currentPage + 1} {t('common.of')} {totalPages || 1}
           </div>
-          <div className='flex items-center space-x-2'>
+          <div className='flex items-center gap-1 sm:gap-2'>
+            {/* Hide first/last buttons on small screens */}
             <Button
               variant='outline'
-              className='h-8 w-8 p-0'
+              className='hidden sm:flex h-8 w-8 p-0 touch-manipulation'
               onClick={() => setPage(0)}
               disabled={currentPage === 0}
             >
@@ -900,7 +921,7 @@ export const UserListPage: React.FC = () => {
             </Button>
             <Button
               variant='outline'
-              className='h-8 w-8 p-0'
+              className='h-9 w-9 sm:h-8 sm:w-8 p-0 touch-manipulation'
               onClick={() => setPage(Math.max(0, currentPage - 1))}
               disabled={currentPage === 0}
             >
@@ -908,7 +929,7 @@ export const UserListPage: React.FC = () => {
             </Button>
             <Button
               variant='outline'
-              className='h-8 w-8 p-0'
+              className='h-9 w-9 sm:h-8 sm:w-8 p-0 touch-manipulation'
               onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
               disabled={currentPage >= totalPages - 1}
             >
@@ -916,7 +937,7 @@ export const UserListPage: React.FC = () => {
             </Button>
             <Button
               variant='outline'
-              className='h-8 w-8 p-0'
+              className='hidden sm:flex h-8 w-8 p-0 touch-manipulation'
               onClick={() => setPage(totalPages - 1)}
               disabled={currentPage >= totalPages - 1}
             >
@@ -932,7 +953,7 @@ export const UserListPage: React.FC = () => {
   // Handle loading states with smart detection
   if (showLoading) {
     return (
-      <div className='space-y-3 sm:space-y-4'>
+      <div className='space-y-2 sm:space-y-3'>
         {/* Search and Filter Loading */}
         <SearchFilterSkeleton
           showDateFilters={true}
@@ -1000,10 +1021,17 @@ export const UserListPage: React.FC = () => {
   }
 
   return (
-    <div className='space-y-3 sm:space-y-4'>
+    <div className='space-y-1 sm:space-y-2'>
+      {/* Skip Links for accessibility */}
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+      <SkipLink href="#search-filters">Skip to search and filters</SkipLink>
+      <SkipLink href="#user-results">Skip to user results</SkipLink>
+
       <LiveRegion />
 
       {/* Enhanced Search and Filter Panel with Error Boundary */}
+      <Landmark role="search" aria-labelledby="search-title" id="search-filters">
+      <h2 id="search-title" className="sr-only">{t('userManagement.searchAndFilters', 'Search and Filter Users')}</h2>
       <ErrorBoundary
         level='component'
         title='Ошибка поиска и фильтрации'
@@ -1016,10 +1044,10 @@ export const UserListPage: React.FC = () => {
           />
         }
       >
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="flex flex-col gap-2 sm:gap-3">
           <div className="flex-1">
             <SkeletonToContentTransition
-              loading={showLoading && !finalData}
+              loading={showLoading}
               skeleton={
                 <SearchFilterSkeleton
                   showDateFilters={true}
@@ -1040,18 +1068,20 @@ export const UserListPage: React.FC = () => {
           </div>
 
           {hasAnyRole(['ADMIN']) && (
-            <div className="flex items-start pt-3 sm:pt-4">
+            <div className="flex items-center justify-center sm:justify-start sm:pt-0">
               <Button
                 onClick={handleCreate}
-                className='add-new-user-button shadow-md hover:shadow-lg transition-shadow relative group'
+                className='add-new-user-button shadow-md hover:shadow-lg transition-shadow relative group w-full sm:w-auto touch-manipulation min-h-[44px]' // Better mobile touch target
+                size={isMobile ? 'lg' : 'default'}
               >
                 <Plus className='h-4 w-4 mr-2' />
-                {t('userManagement.createUser')}
+                <span className='font-medium'>{t('userManagement.createUser')}</span>
               </Button>
             </div>
           )}
         </div>
       </ErrorBoundary>
+      </Landmark>
 
       {/* Bulk Actions Toolbar with Error Boundary */}
       {selectedUserIds.length > 0 && (
@@ -1084,10 +1114,11 @@ export const UserListPage: React.FC = () => {
       )}
 
       {/* Results Section */}
-      <div className='bg-transparent rounded-lg'>
-        <div className='pb-3 border-b border-border/10'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-            <h2 className='flex items-center gap-4 text-xl font-bold tracking-wide'>
+      <Landmark role="main" aria-labelledby="main-content-title" id="main-content">
+      <div className='bg-transparent rounded-lg pt-2' id="user-results">
+        <div className='pb-2 border-b border-border/10'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+            <h2 id="main-content-title" className='flex items-center gap-4 text-xl font-bold tracking-wide'>
               <div className='h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg'>
                 <Users className='h-6 w-6 text-primary-700' />
               </div>
@@ -1158,7 +1189,6 @@ export const UserListPage: React.FC = () => {
             </div>
           </div>
         </div>
-
         {/* Data Display Section with Error Boundary */}
         <ErrorBoundary
           level='section'
@@ -1173,7 +1203,7 @@ export const UserListPage: React.FC = () => {
             />
           }
         >
-          <div>
+          <div className='pt-3'>
             {!finalData?.content.length ? (
               <div className='text-center py-12'>
                 <div className='space-y-3'>
@@ -1201,7 +1231,7 @@ export const UserListPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className='space-y-4'>
+              <div className='space-y-2'>
                 {/* Card View with Error Boundary */}
                 {(viewMode === 'card' || isMobile) && (
                   <ErrorBoundary
@@ -1229,7 +1259,8 @@ export const UserListPage: React.FC = () => {
                           message='Updating...'
                         />
                         <div className={cn(
-                          'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 transition-opacity duration-300',
+                          'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 transition-opacity duration-300',
+                          // Responsive grid: 1 col on mobile, 2 cols on tablet, 3 cols on desktop
                           smartLoading && finalData && 'opacity-60'
                         )}>
                           {finalData?.content.slice(0, visibleItemCount).map((user, index) => (
@@ -1322,11 +1353,11 @@ export const UserListPage: React.FC = () => {
               </div>
             )}
 
-            {/* Pagination for Card View Only */}
+            {/* Enhanced Pagination for Card View with mobile optimization */}
             {(viewMode === 'card' || isMobile) && finalData?.content.length > 0 && (
               <>
                 <Separator className='opacity-30' />
-                <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
+                <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-3 py-4 sm:px-6 sm:py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
                   <PaginationControls />
                 </div>
               </>
@@ -1334,6 +1365,7 @@ export const UserListPage: React.FC = () => {
           </div>
         </ErrorBoundary>
       </div>
+      </Landmark>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

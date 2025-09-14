@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   AlertCircle,
   Check,
@@ -45,6 +45,7 @@ import { UserStatus as UserStatusEnum } from '@/types/user';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { announceToScreenReader } from '@/lib/accessibility';
 
 export interface BulkActionsToolbarProps {
   selectedUserIds: string[];
@@ -91,21 +92,63 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
     variant: 'default',
   });
 
+  // Keyboard shortcuts
+  const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
+    // Only handle shortcuts when bulk actions are visible
+    if (selectedUserIds.length === 0) {return;}
+
+    // Handle escape to clear selection
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClearSelection();
+      announceToScreenReader('Selection cleared', 'polite');
+      return;
+    }
+
+    // Handle shortcuts with modifier keys
+    if (e.ctrlKey || e.metaKey) {
+      switch (e.key) {
+        case 'd':
+        case 'D':
+          e.preventDefault();
+          if (hasAnyRole(['ADMIN'])) {
+            handleDelete();
+          }
+          break;
+        case 'a':
+        case 'A':
+          e.preventDefault();
+          if (hasAnyRole(['ADMIN'])) {
+            handleStatusChange(UserStatusEnum.ACTIVE);
+          }
+          break;
+        case 'i':
+        case 'I':
+          e.preventDefault();
+          if (hasAnyRole(['ADMIN'])) {
+            handleStatusChange(UserStatusEnum.INACTIVE);
+          }
+          break;
+      }
+    }
+  }, [selectedUserIds.length, onClearSelection, hasAnyRole, handleDelete, handleStatusChange]);
+
   React.useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener('keydown', handleKeyboardShortcuts);
 
-  // Don't render if no users selected
-  if (selectedUserIds.length === 0) {
-    return null;
-  }
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKeyboardShortcuts);
+    };
+  }, [handleKeyboardShortcuts]);
 
-  const handleStatusChange = (status: UserStatus) => {
+  // Define handlers with useCallback
+  const handleStatusChange = useCallback((status: UserStatus) => {
     const statusLabel = t(`userManagement.status.${status.toLowerCase()}`);
     setConfirmDialog({
       open: true,
@@ -120,9 +163,9 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
       },
       variant: 'default',
     });
-  };
+  }, [t, selectedUserIds.length, onBulkOperation]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     setConfirmDialog({
       open: true,
       title: t('userManagement.bulkActions.confirmDelete', { count: selectedUserIds.length }),
@@ -133,7 +176,12 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
       },
       variant: 'destructive',
     });
-  };
+  }, [t, selectedUserIds.length, onBulkOperation]);
+
+  // Don't render if no users selected
+  if (selectedUserIds.length === 0) {
+    return null;
+  }
 
   const handleRoleAssignment = (roleId: string) => {
     onBulkOperation('role-assignment', { roleId });

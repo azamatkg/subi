@@ -610,30 +610,30 @@ export const UserAddEditPage: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
+      {/* Header - Mobile optimized */}
+      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0'>
+        <div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
           <Button
             variant='ghost'
             size='sm'
             onClick={handleCancel}
-            className='gap-2'
+            className='gap-2 self-start touch-manipulation min-h-[44px] sm:min-h-auto'
           >
             <ArrowLeft className='h-4 w-4' />
             {t('common.back')}
           </Button>
-          <Separator orientation='vertical' className='h-6' />
-          <div className='flex items-center gap-3'>
-            <div className='h-10 w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center'>
-              <User className='h-5 w-5 text-primary-700' />
+          <Separator orientation='vertical' className='hidden sm:block h-6' />
+          <div className='flex items-center gap-3 sm:gap-3'>
+            <div className='h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shrink-0'>
+              <User className='h-4 w-4 sm:h-5 sm:w-5 text-primary-700' />
             </div>
-            <div>
-              <h1 className='text-2xl font-bold text-foreground'>
+            <div className='min-w-0 flex-1'>
+              <h1 className='text-xl sm:text-2xl font-bold text-foreground line-clamp-2'>
                 {isEditMode
                   ? t('userManagement.editUser')
                   : t('userManagement.createUser')}
               </h1>
-              <p className='text-muted-foreground'>
+              <p className='text-sm text-muted-foreground line-clamp-2'>
                 {isEditMode
                   ? t('userManagement.editUserDescription')
                   : t('userManagement.createUserDescription')}
@@ -658,31 +658,42 @@ export const UserAddEditPage: React.FC = () => {
         }
       >
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-            {/* Personal Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <User className='h-5 w-5' />
-                  {t('userManagement.personalInformation')}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='space-y-4 sm:space-y-6'
+            aria-label={isEditMode ? t('userManagement.editUser') : t('userManagement.createUser')}
+            role="form"
+            noValidate
+          >
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6'>
+            {/* Personal Information - Mobile optimized */}
+            <Card role="group" aria-labelledby="personal-info-title">
+              <CardHeader className='pb-4 sm:pb-6'>
+                <CardTitle id="personal-info-title" className='flex items-center gap-2 text-lg sm:text-xl'>
+                  <User className='h-4 w-4 sm:h-5 sm:w-5' aria-hidden="true" />
+                  <span className='truncate'>{t('userManagement.personalInformation')}</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className='space-y-4'>
-                <div className='grid grid-cols-2 gap-4'>
+              <CardContent className='space-y-3 sm:space-y-4 p-4 sm:p-6'>
+                {/* Name fields - responsive grid */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
                   <FormField
                     control={form.control}
                     name='firstName'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {t('userManagement.fields.firstName')}
+                        <FormLabel className='text-sm font-medium'>
+                          {t('userManagement.fields.firstName')} <span className="text-destructive" aria-label="required">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t('userManagement.enterFirstName')}
                             {...field}
                             maxLength={50}
+                            className='touch-manipulation min-h-[44px]'
+                            required
+                            aria-required="true"
+                            aria-describedby={form.formState.errors.firstName ? 'firstName-error' : undefined}
                             onChange={e => {
                               const sanitized = InputSanitizer.sanitizeText(e.target.value);
                               field.onChange(sanitized);
@@ -701,7 +712,7 @@ export const UserAddEditPage: React.FC = () => {
                             }}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage id="firstName-error" />
                       </FormItem>
                     )}
                   />
@@ -710,16 +721,20 @@ export const UserAddEditPage: React.FC = () => {
                     name='lastName'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {t('userManagement.fields.lastName')}
+                        <FormLabel className='text-sm font-medium'>
+                          {t('userManagement.fields.lastName')} <span className="text-destructive" aria-label="required">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t('userManagement.enterLastName')}
                             {...field}
+                            className='touch-manipulation min-h-[44px]'
+                            required
+                            aria-required="true"
+                            aria-describedby={form.formState.errors.lastName ? 'lastName-error' : undefined}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage id="lastName-error" />
                       </FormItem>
                     )}
                   />
@@ -730,15 +745,25 @@ export const UserAddEditPage: React.FC = () => {
                   name='email'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('userManagement.fields.email')}</FormLabel>
+                      <FormLabel className='text-sm font-medium'>
+                        {t('userManagement.fields.email')} <span className="text-destructive" aria-label="required">*</span>
+                      </FormLabel>
                       <FormControl>
                         <div className='relative'>
-                          <Mail className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                          <Mail className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' aria-hidden="true" />
                           <Input
-                            className='pl-10 pr-10'
+                            className='pl-10 pr-10 touch-manipulation min-h-[44px]'
                             placeholder={t('userManagement.enterEmail')}
                             {...field}
-                            aria-describedby={`email-status-${field.name}`}
+                            aria-describedby={[
+                              `email-status-${field.name}`,
+                              form.formState.errors.email ? 'email-error' : null
+                            ].filter(Boolean).join(' ')}
+                            type='email'
+                            autoComplete='email'
+                            required
+                            aria-required="true"
+                            aria-invalid={!!form.formState.errors.email}
                           />
                         </div>
                       </FormControl>
@@ -747,7 +772,7 @@ export const UserAddEditPage: React.FC = () => {
                         error={emailExists ? t('userManagement.emailNotAvailable') : undefined}
                         success={debouncedEmail && !emailExists && !skipEmailCheck && z.string().email().safeParse(debouncedEmail).success}
                       />
-                      <FormMessage />
+                      <FormMessage id="email-error" />
                     </FormItem>
                   )}
                 />
@@ -757,17 +782,19 @@ export const UserAddEditPage: React.FC = () => {
                   name='phone'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
+                      <FormLabel className='text-sm font-medium'>
                         {t('userManagement.fields.phone')}{' '}
-                        {t('common.optional')}
+                        <span className='text-xs text-muted-foreground'>({t('common.optional')})</span>
                       </FormLabel>
                       <FormControl>
                         <div className='relative'>
-                          <Phone className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                          <Phone className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className='pl-10'
+                            className='pl-10 touch-manipulation min-h-[44px]'
                             placeholder={t('userManagement.enterPhone')}
                             {...field}
+                            type='tel' // Better mobile keyboard
+                            autoComplete='tel'
                           />
                         </div>
                       </FormControl>
@@ -781,17 +808,18 @@ export const UserAddEditPage: React.FC = () => {
                   name='department'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
+                      <FormLabel className='text-sm font-medium'>
                         {t('userManagement.fields.department')}{' '}
-                        {t('common.optional')}
+                        <span className='text-xs text-muted-foreground'>({t('common.optional')})</span>
                       </FormLabel>
                       <FormControl>
                         <div className='relative'>
-                          <Users className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                          <Users className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
                           <Input
-                            className='pl-10'
+                            className='pl-10 touch-manipulation min-h-[44px]'
                             placeholder={t('userManagement.enterDepartment')}
                             {...field}
+                            autoComplete='organization'
                           />
                         </div>
                       </FormControl>
@@ -802,15 +830,15 @@ export const UserAddEditPage: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* System Access */}
+            {/* System Access - Mobile optimized */}
             <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <Shield className='h-5 w-5' />
-                  {t('userManagement.systemAccess')}
+              <CardHeader className='pb-4 sm:pb-6'>
+                <CardTitle className='flex items-center gap-2 text-lg sm:text-xl'>
+                  <Shield className='h-4 w-4 sm:h-5 sm:w-5' />
+                  <span className='truncate'>{t('userManagement.systemAccess')}</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className='space-y-4'>
+              <CardContent className='space-y-3 sm:space-y-4 p-4 sm:p-6'>
                 {!isEditMode && (
                   <>
                     <FormField
@@ -818,21 +846,22 @@ export const UserAddEditPage: React.FC = () => {
                       name='username'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
+                          <FormLabel className='text-sm font-medium'>
                             {t('userManagement.fields.username')}
                           </FormLabel>
                           <FormControl>
                             <div className='relative'>
-                              <span className='absolute left-3 top-3 text-sm text-muted-foreground'>
+                              <span className='absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>
                                 @
                               </span>
                               <Input
-                                className='pl-8 pr-10'
+                                className='pl-8 pr-10 touch-manipulation min-h-[44px]'
                                 placeholder={t('userManagement.enterUsername')}
                                 {...field}
                                 aria-describedby={`username-status-${field.name}`}
+                                autoComplete='username'
                               />
-                              <div className='absolute right-3 top-3'>
+                              <div className='absolute right-3 top-1/2 -translate-y-1/2'>
                                 {usernameChecking && (
                                   <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
                                 )}
@@ -856,7 +885,8 @@ export const UserAddEditPage: React.FC = () => {
                       )}
                     />
 
-                    <div className='grid grid-cols-2 gap-4'>
+                    {/* Password fields - responsive grid */}
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
                       <FormField
                         control={form.control}
                         name='password'
@@ -873,12 +903,14 @@ export const UserAddEditPage: React.FC = () => {
                                     'userManagement.enterPassword'
                                   )}
                                   {...field}
+                                  className='touch-manipulation min-h-[44px] pr-10'
+                                  autoComplete='new-password'
                                 />
                                 <Button
                                   type='button'
                                   variant='ghost'
                                   size='sm'
-                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent touch-manipulation'
                                   onClick={() => setShowPassword(!showPassword)}
                                 >
                                   {showPassword ? (
@@ -918,12 +950,14 @@ export const UserAddEditPage: React.FC = () => {
                                     'userManagement.confirmPassword'
                                   )}
                                   {...field}
+                                  className='touch-manipulation min-h-[44px] pr-10'
+                                  autoComplete='new-password'
                                 />
                                 <Button
                                   type='button'
                                   variant='ghost'
                                   size='sm'
-                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                                  className='absolute right-0 top-0 h-full px-3 hover:bg-transparent touch-manipulation'
                                   onClick={() =>
                                     setShowConfirmPassword(!showConfirmPassword)
                                   }
@@ -986,15 +1020,15 @@ export const UserAddEditPage: React.FC = () => {
             </Card>
           </div>
 
-          {/* Role Assignment */}
+          {/* Role Assignment - Mobile optimized */}
           <Card>
-            <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Shield className='h-5 w-5' />
-                {t('userManagement.roleAssignment')}
+            <CardHeader className='pb-4 sm:pb-6'>
+              <CardTitle className='flex items-center gap-2 text-lg sm:text-xl'>
+                <Shield className='h-4 w-4 sm:h-5 sm:w-5' />
+                <span className='truncate'>{t('userManagement.roleAssignment')}</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className='p-4 sm:p-6'>
               <FormField
                 control={form.control}
                 name='roles'
@@ -1004,14 +1038,15 @@ export const UserAddEditPage: React.FC = () => {
                     <FormDescription>
                       {t('userManagement.selectRolesDescription')}
                     </FormDescription>
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+                    {/* Responsive role grid - single column on mobile */}
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4'>
                       {roleOptions.map(role => (
                         <FormField
                           key={role.value}
                           control={form.control}
                           name='roles'
                           render={({ field }) => (
-                            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 hover:bg-muted/50 transition-colors'>
+                            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3 sm:p-4 hover:bg-muted/50 transition-colors touch-manipulation'>
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(role.value)}
@@ -1045,19 +1080,21 @@ export const UserAddEditPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Form Actions */}
-          <div className='flex justify-end space-x-3'>
+          {/* Form Actions - Mobile optimized */}
+          <div className='flex flex-col sm:flex-row justify-end gap-3 sm:gap-3 pt-2'>
             <Button
               type='button'
               variant='outline'
               onClick={handleCancel}
               disabled={isCreating || isUpdating}
+              className='w-full sm:w-auto touch-manipulation min-h-[44px] order-2 sm:order-1'
             >
               {t('common.cancel')}
             </Button>
             <Button
               type='submit'
               disabled={isCreating || isUpdating}
+              className='w-full sm:w-auto touch-manipulation min-h-[44px] order-1 sm:order-2'
             >
               <ButtonLoadingState
                 loading={isCreating || isUpdating}
@@ -1065,7 +1102,7 @@ export const UserAddEditPage: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Save className='h-4 w-4' />
-                  {isEditMode ? t('common.update') : t('common.create')}
+                  <span className='font-medium'>{isEditMode ? t('common.update') : t('common.create')}</span>
                 </div>
               </ButtonLoadingState>
             </Button>

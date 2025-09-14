@@ -3,8 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 import { UserListPage } from '../UserListPage';
+import { userApi } from '@/store/api/userApi';
 import type { UserListResponseDto } from '@/types/user';
 import type { PermissionResponseDto, RoleResponseDto } from '@/types/role';
 import { UserStatus } from '@/types/user';
@@ -240,9 +243,31 @@ const mockApiHooks = {
   }),
 };
 
+// Create test store
+const createTestStore = () => {
+  return configureStore({
+    reducer: {
+      [userApi.reducerPath]: userApi.reducer,
+    },
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['persist/PERSIST'],
+          ignoredPaths: ['register'],
+        },
+      }).concat(userApi.middleware),
+  });
+};
+
 // Test wrapper
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <BrowserRouter>{children}</BrowserRouter>;
+  const store = createTestStore();
+
+  return (
+    <Provider store={store}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </Provider>
+  );
 };
 
 describe('UserListPage Component Tests', () => {

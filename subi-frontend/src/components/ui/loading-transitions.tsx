@@ -55,13 +55,16 @@ export function SkeletonToContentTransition({
 }: SkeletonToContentTransitionProps) {
   return (
     <div className={cn('relative', className)}>
-      <FadeTransition show={loading}>
+      <FadeTransition
+        show={loading}
+        className={!loading ? 'absolute inset-0 pointer-events-none' : undefined}
+      >
         {skeleton}
       </FadeTransition>
 
       <FadeTransition
         show={!loading}
-        className={loading ? 'absolute inset-0' : undefined}
+        className={loading ? 'absolute inset-0 pointer-events-none' : undefined}
       >
         {children}
       </FadeTransition>

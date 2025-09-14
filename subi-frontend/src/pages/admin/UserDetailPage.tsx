@@ -168,7 +168,7 @@ export const UserDetailPage: React.FC = () => {
 
 
   useSetPageTitle(
-    user
+    user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
       : t('userManagement.userDetails')
   );
@@ -363,7 +363,7 @@ export const UserDetailPage: React.FC = () => {
 
   const canModifyUser = hasAnyRole(['ADMIN']);
 
-  if (showUserLoading) {
+  if (showUserLoading || !user) {
     return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
@@ -375,11 +375,6 @@ export const UserDetailPage: React.FC = () => {
       return null;
     }
     return <ErrorFallback error={error as Error} type='network' />;
-  }
-
-  if (!user && !isLoading) {
-    // No user data and not loading - show proper loading state
-    return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
   return (
@@ -795,7 +790,7 @@ export const UserDetailPage: React.FC = () => {
             <DialogTitle>{t('userManagement.confirmDeleteTitle')}</DialogTitle>
             <DialogDescription>
               {t('userManagement.messages.confirmDelete', {
-                item: `"${user.firstName} ${user.lastName}"`,
+                item: `"${user?.firstName} ${user?.lastName}"`,
               })}
             </DialogDescription>
           </DialogHeader>
@@ -829,7 +824,7 @@ export const UserDetailPage: React.FC = () => {
             <DialogTitle>{t('userManagement.confirmSuspendTitle')}</DialogTitle>
             <DialogDescription>
               {t('userManagement.messages.confirmSuspend', {
-                item: `"${user.firstName} ${user.lastName}"`,
+                item: `"${user?.firstName} ${user?.lastName}"`,
               })}
             </DialogDescription>
           </DialogHeader>
