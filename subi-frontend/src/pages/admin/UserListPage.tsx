@@ -41,10 +41,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { PageSkeleton } from '@/components/ui/skeleton';
+import {
+  SearchFilterSkeleton,
+  TableSkeleton,
+  UserCardSkeleton
+} from '@/components/ui/skeleton';
 import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
 import { LiveRegion } from '@/components/ui/focus-trap';
-import { ErrorFallback } from '@/components/ui/error-fallback';
+import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { DataTable, DataTableColumn } from '@/components/ui/DataTable';
 import { BulkActionsToolbar } from '@/components/admin/BulkActionsToolbar';
 import { SearchAndFilterPanel } from '@/components/admin/SearchAndFilterPanel';
@@ -52,6 +57,9 @@ import { SearchAndFilterPanel } from '@/components/admin/SearchAndFilterPanel';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
+import { useProgressiveLoading, useSmartLoading } from '@/hooks/useSmartLoading';
+import { LoadingOverlay, SkeletonToContentTransition } from '@/components/ui/loading-transitions';
 import {
   useBulkUpdateUserRolesMutation,
   useBulkUpdateUserStatusMutation,
@@ -199,6 +207,14 @@ export const UserListPage: React.FC = () => {
   const finalData = hasFilters ? searchData : listData;
   const finalLoading = hasFilters ? searchLoading : listLoading;
   const finalError = hasFilters ? searchError : listError;
+
+  // Smart loading with smooth transitions
+  const smartLoading = useSmartLoading(finalLoading);
+  const { showLoading, shouldShowContent } = useProgressiveLoading(
+    finalData,
+    finalLoading,
+    { minDelay: 200, minDuration: 300 }
+  );
 
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [bulkUpdateUserStatus] = useBulkUpdateUserStatusMutation();
@@ -902,9 +918,45 @@ export const UserListPage: React.FC = () => {
     );
   };
 
-  // Handle loading states
-  if (finalLoading) {
-    return <PageSkeleton />;
+  // Handle loading states with smart detection
+  if (showLoading) {
+    return (
+      <div className='space-y-3 sm:space-y-4'>
+        {/* Search and Filter Loading */}
+        <SearchFilterSkeleton
+          showDateFilters={true}
+          showRoleFilters={false}
+        />
+
+        {/* Header Loading */}
+        <div className='bg-transparent rounded-lg'>
+          <div className='pb-3 border-b border-border/10'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+              <div className='flex items-center gap-4'>
+                <div className='h-11 w-11 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 flex items-center justify-center shadow-lg'>
+                  <Users className='h-6 w-6 text-primary-700' />
+                </div>
+                <div className='h-6 w-32 bg-muted/60 animate-pulse rounded' />
+              </div>
+              <div className='flex items-center gap-2'>
+                <div className='h-8 w-8 bg-muted/60 animate-pulse rounded' />
+                <div className='h-8 w-8 bg-muted/60 animate-pulse rounded' />
+                <div className='h-8 w-24 bg-muted/60 animate-pulse rounded' />
+              </div>
+            </div>
+          </div>
+
+          <div className='pt-4'>
+            {/* Content loading based on view mode */}
+            {(viewMode === 'card' || isMobile) ? (
+              <UserCardSkeleton count={6} staggered />
+            ) : (
+              <TableSkeleton rows={8} columns={6} />
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Enhanced error handling with recovery options
@@ -940,47 +992,84 @@ export const UserListPage: React.FC = () => {
     <div className='space-y-3 sm:space-y-4'>
       <LiveRegion />
 
-      {/* Enhanced Search and Filter Panel */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <div className="flex-1">
-          <SearchAndFilterPanel
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={clearFilters}
-            isLoading={finalLoading}
-            onRefresh={() => window.location.reload()}
-            showDateFilters={true}
-            showRoleFilters={false}
+      {/* Enhanced Search and Filter Panel with Error Boundary */}
+      <ErrorBoundary
+        level='component'
+        title='Ошибка поиска и фильтрации'
+        description='Панель поиска и фильтрации временно недоступна.'
+        fallback={
+          <ServerErrorFallback
+            title='Ошибка поиска'
+            description='Панель поиска и фильтрации временно недоступна.'
+            showRetry
           />
-        </div>
-
-        {hasAnyRole(['ADMIN']) && (
-          <div className="flex items-start pt-3 sm:pt-4">
-            <Button
-              onClick={handleCreate}
-              className='add-new-user-button shadow-md hover:shadow-lg transition-shadow relative group'
+        }
+      >
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex-1">
+            <SkeletonToContentTransition
+              loading={showLoading && !finalData}
+              skeleton={
+                <SearchFilterSkeleton
+                  showDateFilters={true}
+                  showRoleFilters={false}
+                />
+              }
             >
-              <Plus className='h-4 w-4 mr-2' />
-              {t('userManagement.createUser')}
-            </Button>
+              <SearchAndFilterPanel
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClearFilters={clearFilters}
+                isLoading={smartLoading}
+                onRefresh={() => window.location.reload()}
+                showDateFilters={true}
+                showRoleFilters={false}
+              />
+            </SkeletonToContentTransition>
           </div>
-        )}
-      </div>
 
-      {/* Bulk Actions Toolbar */}
+          {hasAnyRole(['ADMIN']) && (
+            <div className="flex items-start pt-3 sm:pt-4">
+              <Button
+                onClick={handleCreate}
+                className='add-new-user-button shadow-md hover:shadow-lg transition-shadow relative group'
+              >
+                <Plus className='h-4 w-4 mr-2' />
+                {t('userManagement.createUser')}
+              </Button>
+            </div>
+          )}
+        </div>
+      </ErrorBoundary>
+
+      {/* Bulk Actions Toolbar with Error Boundary */}
       {selectedUserIds.length > 0 && (
-        <BulkActionsToolbar
-          selectedUserIds={selectedUserIds}
-          selectedUsers={finalData?.content.filter(user => selectedUserIds.includes(user.id)) || []}
-          onClearSelection={handleClearSelection}
-          onBulkOperation={handleBulkOperation}
-          onCancelOperation={handleCancelOperation}
-          availableRoles={rolesData?.content || []}
-          isLoading={bulkOperationLoading}
-          progressMessage={bulkProgressMessage || undefined}
-          error={bulkOperationError || undefined}
-          progress={bulkProgress || undefined}
-        />
+        <ErrorBoundary
+          level='component'
+          title='Ошибка массовых операций'
+          description='Панель массовых операций временно недоступна.'
+          fallback={
+            <ServerErrorFallback
+              title='Ошибка массовых операций'
+              description='Панель массовых операций временно недоступна. Попробуйте обновить страницу.'
+              showRetry
+              showBack
+            />
+          }
+        >
+          <BulkActionsToolbar
+            selectedUserIds={selectedUserIds}
+            selectedUsers={finalData?.content.filter(user => selectedUserIds.includes(user.id)) || []}
+            onClearSelection={handleClearSelection}
+            onBulkOperation={handleBulkOperation}
+            onCancelOperation={handleCancelOperation}
+            availableRoles={rolesData?.content || []}
+            isLoading={bulkOperationLoading}
+            progressMessage={bulkProgressMessage || undefined}
+            error={bulkOperationError || undefined}
+            progress={bulkProgress || undefined}
+          />
+        </ErrorBoundary>
       )}
 
       {/* Results Section */}
@@ -1059,107 +1148,173 @@ export const UserListPage: React.FC = () => {
           </div>
         </div>
 
-        <div>
-          {!finalData?.content.length ? (
-            <div className='text-center py-12'>
-              <div className='space-y-3'>
-                <Users className='h-12 w-12 text-muted-foreground mx-auto opacity-50' />
-                <div>
-                  <p className='text-lg font-medium text-muted-foreground'>
-                    {t('userManagement.messages.noResults')}
-                  </p>
-                  <p className='text-sm text-muted-foreground mt-1'>
-                    {hasFilters
-                      ? t('common.tryAdjustingFilters')
-                      : t('userManagement.messages.noUsersYet')}
-                  </p>
+        {/* Data Display Section with Error Boundary */}
+        <ErrorBoundary
+          level='section'
+          title='Ошибка отображения данных'
+          description='Не удается отобразить список пользователей.'
+          fallback={
+            <ServerErrorFallback
+              title='Ошибка отображения данных'
+              description='Не удается отобразить список пользователей. Попробуйте обновить страницу.'
+              showRetry
+              showBack
+            />
+          }
+        >
+          <div>
+            {!finalData?.content.length ? (
+              <div className='text-center py-12'>
+                <div className='space-y-3'>
+                  <Users className='h-12 w-12 text-muted-foreground mx-auto opacity-50' />
+                  <div>
+                    <p className='text-lg font-medium text-muted-foreground'>
+                      {t('userManagement.messages.noResults')}
+                    </p>
+                    <p className='text-sm text-muted-foreground mt-1'>
+                      {hasFilters
+                        ? t('common.tryAdjustingFilters')
+                        : t('userManagement.messages.noUsersYet')}
+                    </p>
+                  </div>
+                  {hasFilters && (
+                    <Button
+                      variant='outline'
+                      onClick={clearFilters}
+                      className='mt-4'
+                    >
+                      <X className='mr-2 h-4 w-4' />
+                      {t('common.clearFilters')}
+                    </Button>
+                  )}
                 </div>
-                {hasFilters && (
-                  <Button
-                    variant='outline'
-                    onClick={clearFilters}
-                    className='mt-4'
+              </div>
+            ) : (
+              <div className='space-y-4'>
+                {/* Card View with Error Boundary */}
+                {(viewMode === 'card' || isMobile) && (
+                  <ErrorBoundary
+                    level='component'
+                    title='Ошибка карточного представления'
+                    description='Не удается отобразить пользователей в виде карточек.'
+                    fallback={
+                      <div className='text-center py-8'>
+                        <ErrorFallback
+                          type='generic'
+                          title='Ошибка отображения карточек'
+                          description='Не удается отобразить пользователей в виде карточек.'
+                          showRetry
+                        />
+                      </div>
+                    }
                   >
-                    <X className='mr-2 h-4 w-4' />
-                    {t('common.clearFilters')}
-                  </Button>
+                    <SkeletonToContentTransition
+                      loading={!shouldShowContent}
+                      skeleton={<UserCardSkeleton count={6} staggered />}
+                    >
+                      <div className='relative'>
+                        <LoadingOverlay
+                          show={smartLoading && Boolean(finalData)}
+                          message='Updating...'
+                        />
+                        <div className={cn(
+                          'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 transition-opacity duration-300',
+                          smartLoading && finalData && 'opacity-60'
+                        )}>
+                          {finalData?.content.map(user => (
+                            <UserCard key={user.id} user={user} />
+                          ))}
+                        </div>
+                      </div>
+                    </SkeletonToContentTransition>
+                  </ErrorBoundary>
+                )}
+
+                {/* Enhanced Table View with Error Boundary */}
+                {viewMode === 'table' && !isMobile && (
+                  <ErrorBoundary
+                    level='component'
+                    title='Ошибка табличного представления'
+                    description='Не удается отобразить таблицу пользователей.'
+                    fallback={
+                      <div className='text-center py-8'>
+                        <ErrorFallback
+                          type='generic'
+                          title='Ошибка отображения таблицы'
+                          description='Не удается отобразить таблицу пользователей.'
+                          showRetry
+                        />
+                      </div>
+                    }
+                  >
+                    <SkeletonToContentTransition
+                      loading={!shouldShowContent}
+                      skeleton={<TableSkeleton rows={8} columns={6} />}
+                    >
+                      <DataTable
+                        data={finalData?.content || []}
+                        columns={columns}
+                        loading={smartLoading}
+                        pagination={finalData ? {
+                          page: finalData.number,
+                          size: finalData.size,
+                          totalElements: finalData.totalElements,
+                          totalPages: finalData.totalPages,
+                          onPageChange: setPage,
+                          onPageSizeChange: (newSize) => {
+                            setSize(newSize);
+                            setPage(0);
+                          },
+                        } : undefined}
+                        sorting={{
+                          field: sortField,
+                          direction: sortDirection,
+                          onSortChange: (field, direction) => {
+                            setSortField(field as SortField);
+                            setSortDirection(direction);
+                            setPage(0);
+                          },
+                        }}
+                        selection={{
+                          selectedIds: selectedUserIds,
+                          onSelectionChange: setSelectedUserIds,
+                        }}
+                        onRowClick={(user) => handleView(user.id)}
+                        onRowAction={(action, user) => {
+                          switch (action) {
+                            case 'view':
+                              handleView(user.id);
+                              break;
+                            case 'edit':
+                              if (hasAnyRole(['ADMIN'])) {
+                                handleEdit(user.id);
+                              }
+                              break;
+                            case 'delete':
+                              if (hasAnyRole(['ADMIN'])) {
+                                handleDeleteClick(user);
+                              }
+                              break;
+                          }
+                        }}
+                      />
+                    </SkeletonToContentTransition>
+                  </ErrorBoundary>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className='space-y-4'>
-              {/* Card View (Mobile First) */}
-              {(viewMode === 'card' || isMobile) && (
-                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-                  {finalData.content.map(user => (
-                    <UserCard key={user.id} user={user} />
-                  ))}
+            )}
+
+            {/* Pagination for Card View Only */}
+            {(viewMode === 'card' || isMobile) && finalData?.content.length > 0 && (
+              <>
+                <Separator className='opacity-30' />
+                <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
+                  <PaginationControls />
                 </div>
-              )}
-
-              {/* Enhanced Table View (Desktop Only) */}
-              {viewMode === 'table' && !isMobile && (
-                <DataTable
-                  data={finalData.content}
-                  columns={columns}
-                  loading={finalLoading}
-                  pagination={{
-                    page: finalData.number,
-                    size: finalData.size,
-                    totalElements: finalData.totalElements,
-                    totalPages: finalData.totalPages,
-                    onPageChange: setPage,
-                    onPageSizeChange: (newSize) => {
-                      setSize(newSize);
-                      setPage(0);
-                    },
-                  }}
-                  sorting={{
-                    field: sortField,
-                    direction: sortDirection,
-                    onSortChange: (field, direction) => {
-                      setSortField(field as SortField);
-                      setSortDirection(direction);
-                      setPage(0);
-                    },
-                  }}
-                  selection={{
-                    selectedIds: selectedUserIds,
-                    onSelectionChange: setSelectedUserIds,
-                  }}
-                  onRowClick={(user) => handleView(user.id)}
-                  onRowAction={(action, user) => {
-                    switch (action) {
-                      case 'view':
-                        handleView(user.id);
-                        break;
-                      case 'edit':
-                        if (hasAnyRole(['ADMIN'])) {
-                          handleEdit(user.id);
-                        }
-                        break;
-                      case 'delete':
-                        if (hasAnyRole(['ADMIN'])) {
-                          handleDeleteClick(user);
-                        }
-                        break;
-                    }
-                  }}
-                />
-              )}
-
-              {/* Pagination for Card View Only */}
-              {(viewMode === 'card' || isMobile) && finalData.content.length > 0 && (
-                <>
-                  <Separator className='opacity-30' />
-                  <div className='bg-gradient-to-r from-muted/40 to-accent/30 px-6 py-6 rounded-b-lg border-t border-border/10 backdrop-blur-sm'>
-                    <PaginationControls />
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+              </>
+            )}
+          </div>
+        </ErrorBoundary>
       </div>
 
       {/* Delete Confirmation Dialog */}

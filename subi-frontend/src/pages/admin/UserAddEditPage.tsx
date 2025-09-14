@@ -33,8 +33,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { PageSkeleton } from '@/components/ui/skeleton';
-import { ErrorFallback } from '@/components/ui/error-fallback';
+import { UserFormSkeleton } from '@/components/ui/skeleton';
+import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -485,9 +486,19 @@ export const UserAddEditPage: React.FC = () => {
     }
   };
 
-  // Handle loading states
+  // Handle loading states with appropriate skeleton
   if (translationLoading || userLoading || (isEditMode && !user)) {
-    return <PageSkeleton />;
+    return (
+      <div className='space-y-6'>
+        <div className='flex items-center gap-2'>
+          <div className='h-8 w-8 bg-muted/60 animate-pulse rounded' />
+          <div className='h-6 w-32 bg-muted/60 animate-pulse rounded' />
+        </div>
+        <UserFormSkeleton
+          sections={isEditMode ? ['personal', 'system', 'roles', 'security'] : ['personal', 'system', 'roles']}
+        />
+      </div>
+    );
   }
 
   if (isEditMode && userError) {
@@ -620,9 +631,22 @@ export const UserAddEditPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Form */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+      {/* Form with Error Boundary */}
+      <ErrorBoundary
+        level='section'
+        title='Ошибка формы пользователя'
+        description='Не удается отобразить форму создания/редактирования пользователя.'
+        fallback={
+          <ServerErrorFallback
+            title='Ошибка формы'
+            description='Форма пользователя временно недоступна. Попробуйте обновить страницу.'
+            showRetry
+            showBack
+          />
+        }
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Personal Information */}
             <Card>
@@ -1080,8 +1104,9 @@ export const UserAddEditPage: React.FC = () => {
                   : t('common.create')}
             </Button>
           </div>
-        </form>
-      </Form>
+          </form>
+        </Form>
+      </ErrorBoundary>
     </div>
   );
 };

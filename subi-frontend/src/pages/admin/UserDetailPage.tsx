@@ -40,9 +40,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PageSkeleton } from '@/components/ui/skeleton';
+import { UserProfileSkeleton } from '@/components/ui/skeleton';
 import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
-import { ErrorFallback } from '@/components/ui/error-fallback';
+import { ErrorFallback, ServerErrorFallback } from '@/components/ui/error-fallback';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
@@ -343,7 +344,7 @@ export const UserDetailPage: React.FC = () => {
   const canModifyUser = hasAnyRole(['ADMIN']);
 
   if (isLoading) {
-    return <PageSkeleton />;
+    return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
   if (error) {
@@ -359,7 +360,7 @@ export const UserDetailPage: React.FC = () => {
   if (!user && !isLoading) {
     // No user data and not loading - showing loading state instead of redirecting
     // Instead of returning null and redirecting, show a proper loading/error state
-    return <PageSkeleton />;
+    return <UserProfileSkeleton showActivity showRoles sections={4} />;
   }
 
   return (
@@ -706,12 +707,25 @@ export const UserDetailPage: React.FC = () => {
               </CardContent>
             </Card>
           ) : (
-            <UserActivityTimeline
-              activities={activities}
-              isLoading={activitiesLoading}
-              maxItems={20}
-              showPerformedBy={true}
-            />
+            <ErrorBoundary
+              level='component'
+              title='Ошибка истории активности'
+              description='Не удается отобразить историю активности пользователя.'
+              fallback={
+                <ServerErrorFallback
+                  title='Ошибка истории активности'
+                  description='Не удается загрузить историю активности пользователя.'
+                  showRetry
+                />
+              }
+            >
+              <UserActivityTimeline
+                activities={activities}
+                isLoading={activitiesLoading}
+                maxItems={20}
+                showPerformedBy={true}
+              />
+            </ErrorBoundary>
           )}
         </TabsContent>
 

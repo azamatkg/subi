@@ -1,8 +1,9 @@
 import React from 'react';
 import { Clock, Key, LogIn, LogOut, Shield, Trash2, User, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { UserActivityTimelineSkeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { AccessibleDate, AccessibleLoading } from '@/components/ui/accessible-status-badge';
+import { AccessibleDate } from '@/components/ui/accessible-status-badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { ActivityAction, UserActivityTimelineEntry } from '@/types/user';
@@ -128,7 +129,7 @@ export function UserActivityTimeline({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <AccessibleLoading context={t('userActivity.loading')} />
+          <UserActivityTimelineSkeleton items={maxItems} />
         </CardContent>
       </Card>
     );

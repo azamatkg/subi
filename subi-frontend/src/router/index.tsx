@@ -6,6 +6,9 @@ import { ROUTES } from '@/constants';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 
+// Error boundary component
+import { RouteErrorBoundary } from '@/components/ui/RouteErrorBoundary';
+
 // Route protection components
 import {
   AdminRoute,
@@ -66,6 +69,7 @@ export const router = createBrowserRouter([
   {
     path: '/auth',
     element: <AuthLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         path: 'login',
@@ -74,6 +78,7 @@ export const router = createBrowserRouter([
             <LoginPage />
           </GuestRoute>
         ),
+        errorElement: <RouteErrorBoundary />,
       },
     ],
   },
@@ -86,6 +91,7 @@ export const router = createBrowserRouter([
         <MainLayout />
       </ProtectedRoute>
     ),
+    errorElement: <RouteErrorBoundary />,
     children: [
       // Dashboard
       {
@@ -240,29 +246,36 @@ export const router = createBrowserRouter([
             <Outlet />
           </AdminRoute>
         ),
+        errorElement: <RouteErrorBoundary />,
         children: [
           {
             index: true,
             element: <UserManagementPage />,
+            errorElement: <RouteErrorBoundary />,
           },
           {
             path: 'users',
+            errorElement: <RouteErrorBoundary />,
             children: [
               {
                 index: true,
                 element: <UserListPage />,
+                errorElement: <RouteErrorBoundary />,
               },
               {
                 path: 'new',
                 element: <UserAddEditPage />,
+                errorElement: <RouteErrorBoundary />,
               },
               {
                 path: ':id',
                 element: <UserDetailPage />,
+                errorElement: <RouteErrorBoundary />,
               },
               {
                 path: ':id/edit',
                 element: <UserAddEditPage />,
+                errorElement: <RouteErrorBoundary />,
               },
             ],
           },

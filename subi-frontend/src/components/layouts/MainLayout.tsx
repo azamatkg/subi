@@ -3,6 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/common/Sidebar';
 import { Header } from '@/components/common/Header';
 import { useAppSelector } from '@/hooks/redux';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { ErrorFallback } from '@/components/ui/error-fallback';
 
 // Auth listener for custom events from API client
 const AuthEventListener: React.FC = () => {
@@ -43,11 +45,33 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className='min-h-screen bg-background'>
-      {/* Auth event listener */}
-      <AuthEventListener />
+      {/* Auth event listener with error boundary */}
+      <ErrorBoundary
+        level='component'
+        title='Ошибка аутентификации'
+        description='Произошла ошибка в системе аутентификации.'
+        fallback={<div className='hidden' />} // Hidden fallback for auth listener
+      >
+        <AuthEventListener />
+      </ErrorBoundary>
 
-      {/* Sidebar */}
-      <Sidebar />
+      {/* Sidebar with error boundary */}
+      <ErrorBoundary
+        level='component'
+        title='Ошибка навигации'
+        description='Боковое меню временно недоступно.'
+        fallback={
+          <ErrorFallback
+            type='generic'
+            size='sm'
+            title='Ошибка навигации'
+            description='Боковое меню временно недоступно.'
+            showRetry
+          />
+        }
+      >
+        <Sidebar />
+      </ErrorBoundary>
 
       {/* Content wrapper - positions header and main content together */}
       <div
@@ -55,13 +79,37 @@ export const MainLayout: React.FC = () => {
           sidebarOpen ? 'lg:ml-72' : 'lg:ml-16'
         }`}
       >
-        {/* Header */}
-        <Header />
+        {/* Header with error boundary */}
+        <ErrorBoundary
+          level='component'
+          title='Ошибка заголовка'
+          description='Заголовок страницы временно недоступен.'
+          fallback={
+            <div className='h-16 bg-background border-b flex items-center justify-center'>
+              <ErrorFallback
+                type='generic'
+                size='sm'
+                title='Ошибка заголовка'
+                description='Заголовок временно недоступен.'
+                showRetry
+                className='max-w-sm'
+              />
+            </div>
+          }
+        >
+          <Header />
+        </ErrorBoundary>
 
-        {/* Main content */}
+        {/* Main content with error boundary */}
         <main className='pt-4 pb-6 px-4 bg-muted min-h-screen'>
           <div className='w-full'>
-            <Outlet key={location.pathname} />
+            <ErrorBoundary
+              level='section'
+              title='Ошибка загрузки страницы'
+              description='Содержимое страницы не может быть отображено.'
+            >
+              <Outlet key={location.pathname} />
+            </ErrorBoundary>
           </div>
         </main>
       </div>

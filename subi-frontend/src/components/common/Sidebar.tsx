@@ -23,7 +23,6 @@ import {
   Home,
   Scale,
   Settings,
-  Users,
 } from 'lucide-react';
 
 interface NavItem {
