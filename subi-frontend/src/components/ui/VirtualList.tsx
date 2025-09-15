@@ -125,7 +125,7 @@ const EmptyState: React.FC<{ message?: string }> = ({
  * VirtualList component for efficient rendering of large lists
  * Provides virtual scrolling capabilities with full accessibility support
  */
-export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<any>>(
+export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<unknown>>(
   <T,>({
     items,
     renderItem,
@@ -264,14 +264,37 @@ export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<any>>(
       }
     }, [enableFocusManagement, virtualItems, items.length, scrollToIndex]);
 
-    // Item ref callback
-    const getItemRef = useCallback((index: number) => (element: HTMLElement | null) => {
-      if (element) {
-        itemRefs.current.set(index, element);
-      } else {
-        itemRefs.current.delete(index);
+    // Item ref callbacks - memoize individual callbacks to prevent infinite loops
+    const itemRefCallbacks = useRef<Map<number, (element: HTMLElement | null) => void>>(new Map());
+
+    const getItemRef = useCallback((index: number) => {
+      let callback = itemRefCallbacks.current.get(index);
+      if (!callback) {
+        callback = (element: HTMLElement | null) => {
+          if (element) {
+            itemRefs.current.set(index, element);
+          } else {
+            itemRefs.current.delete(index);
+          }
+        };
+        itemRefCallbacks.current.set(index, callback);
       }
+      return callback;
     }, []);
+
+    // Clean up unused ref callbacks when virtualItems change
+    useEffect(() => {
+      const currentIndices = new Set(virtualItems.map(item => item.index));
+      const callbackIndices = Array.from(itemRefCallbacks.current.keys());
+
+      // Remove callbacks for items that are no longer in the virtual list
+      for (const index of callbackIndices) {
+        if (!currentIndices.has(index)) {
+          itemRefCallbacks.current.delete(index);
+          itemRefs.current.delete(index);
+        }
+      }
+    }, [virtualItems]);
 
     // Handle loading state
     if (loading) {

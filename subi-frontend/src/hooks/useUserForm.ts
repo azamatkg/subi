@@ -7,7 +7,7 @@ import type { UserCreateDto, UserFormData, UserUpdateDto } from '@/types/user';
 import { useUsernameValidation } from './useUsernameValidation';
 import { useEmailValidation } from './useEmailValidation';
 import { useSecurityValidation } from './useSecurityValidation';
-import { SecurityDetector, InputSanitizer } from '@/utils/securityValidation';
+import { InputSanitizer, SecurityDetector } from '@/utils/securityValidation';
 
 // Enhanced Zod validation schema with security checks
 const userFormSchema = z.object({
@@ -92,7 +92,9 @@ const userFormSchema = z.object({
       'Please enter a valid phone number'
     )
     .refine((val) => {
-      if (!val) return true;
+      if (!val) {
+        return true;
+      }
       const securityCheck = SecurityDetector.scanInput(val);
       return securityCheck.isValid;
     }, 'Phone number contains potentially unsafe content')
@@ -102,7 +104,9 @@ const userFormSchema = z.object({
     .string()
     .optional()
     .refine((val) => {
-      if (!val) return true;
+      if (!val) {
+        return true;
+      }
       const securityCheck = SecurityDetector.scanInput(val);
       return securityCheck.isValid;
     }, 'Department contains potentially unsafe content')
@@ -150,18 +154,24 @@ const userEditFormSchema = userFormSchema.extend({
       'Password must be at least 8 characters with uppercase, lowercase, number, and special character'
     )
     .refine((val) => {
-      if (!val) return true;
+      if (!val) {
+        return true;
+      }
       // Apply same security checks as create mode
       const weakPasswords = ['password', '123456', 'qwerty', 'admin', 'welcome'];
       return !weakPasswords.some(weak => val.toLowerCase().includes(weak));
     }, 'Password is too common. Please choose a stronger password')
     .refine((val) => {
-      if (!val) return true;
+      if (!val) {
+        return true;
+      }
       const hasSequential = /123|abc|qwe|asd|zxc/i.test(val);
       return !hasSequential;
     }, 'Password should not contain sequential characters')
     .refine((val) => {
-      if (!val) return true;
+      if (!val) {
+        return true;
+      }
       const hasRepeated = /(.)\1{2,}/.test(val);
       return !hasRepeated;
     }, 'Password should not contain repeated characters'),

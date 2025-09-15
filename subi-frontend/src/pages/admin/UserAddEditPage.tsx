@@ -219,42 +219,11 @@ const calculatePasswordStrength = (password: string): PasswordStrength => {
 export const UserAddEditPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t, isLoading: translationLoading } = useTranslation();
-  const { hasAnyRole } = useAuth();
+  const { t, isLoading: _translationLoading } = useTranslation();
+  const { hasAnyRole: _hasAnyRole } = useAuth();
   const accessControl = useUserFormAccess();
 
-  const isEditMode = Boolean(id);
-
-  // Early access control check
-  if (isEditMode && !accessControl.canAccessEditPage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
-            {t('accessControl.unauthorized')}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('accessControl.insufficientPermissions')}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isEditMode && !accessControl.canAccessCreatePage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
-            {t('accessControl.unauthorized')}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('accessControl.insufficientPermissions')}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // All hooks must be called before any conditional returns
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
@@ -272,6 +241,8 @@ export const UserAddEditPage: React.FC = () => {
   const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [_fieldWarnings, setFieldWarnings] = useState<Record<string, string>>({});
 
+  const isEditMode = Boolean(id);
+
   useSetPageTitle(
     isEditMode ? t('userManagement.editUser') : t('userManagement.createUser')
   );
@@ -280,18 +251,16 @@ export const UserAddEditPage: React.FC = () => {
   const {
     data: userResponse,
     isLoading: userLoading,
-    error: userError,
+    error: _userError,
   } = useGetUserByIdQuery(id!, { skip: !isEditMode });
 
   // Progressive loading for smooth transitions
   const {
-    showLoading: showUserLoading,
+    showLoading: _showUserLoading,
   } = useProgressiveLoading(userResponse, userLoading, {
     minDelay: 150,
     minDuration: 400,
   });
-
-  // const { data: departmentsResponse } = useGetUserDepartmentsQuery();
 
   // API mutations
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
@@ -395,6 +364,36 @@ export const UserAddEditPage: React.FC = () => {
     }
   }, [user, isEditMode, form]);
 
+  // Early access control check
+  if (isEditMode && !accessControl.canAccessEditPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isEditMode && !accessControl.canAccessCreatePage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Enhanced form submission with validation and sanitization
   const onSubmit = async (data: FormData) => {
@@ -1117,7 +1116,9 @@ export const UserAddEditPage: React.FC = () => {
                                   checked={field.value?.includes(role.value)}
                                   disabled={!accessControl.canAssignRoles}
                                   onCheckedChange={checked => {
-                                    if (!accessControl.canAssignRoles) return;
+                                    if (!accessControl.canAssignRoles) {
+                                      return;
+                                    }
                                     const updatedRoles = checked
                                       ? [...(field.value || []), role.value]
                                       : field.value?.filter(

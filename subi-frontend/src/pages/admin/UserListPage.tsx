@@ -77,6 +77,7 @@ import { useGetRolesQuery } from '@/store/api/roleApi';
 import type {
   BulkOperationProgress,
   UserFilterState,
+  UserListParams,
   UserListResponseDto,
   UserSearchAndFilterParams,
   UserStatus,
@@ -105,27 +106,11 @@ type ViewMode = 'table' | 'card';
 export const UserListPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { hasAnyRole } = useAuth();
+  const { hasAnyRole: _hasAnyRole } = useAuth();
   const accessControl = useUserListAccess();
   useSetPageTitle(t('userManagement.users'));
 
-  // Early access control check
-  if (!accessControl.canAccessPage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
-            {t('accessControl.unauthorized')}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('accessControl.userManagementRestricted')}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // State management
+  // State management - must be called before any conditional returns
   const [filters, setFilters] = useState<UserFilterState>({
     searchTerm: '',
     roles: [],
@@ -139,6 +124,11 @@ export const UserListPage: React.FC = () => {
   });
   const [page, setPage] = useState(0);
   const [size, setSize] = useState<number>(PAGINATION.DEFAULT_PAGE_SIZE);
+  const [_windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isSmall: window.innerWidth < 480,
+  });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserListResponseDto | null>(
     null
@@ -158,43 +148,8 @@ export const UserListPage: React.FC = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Virtual scrolling config
-  const shouldUseVirtualScrollingCards = (finalData?.content.length || 0) >= 50;
-  const cardHeight = isMobile ? 140 : 160;
-
-  // Custom view mode setter that persists to localStorage
-  const handleSetViewMode = (mode: ViewMode) => {
-    setViewMode(mode);
-    setStoredViewMode(mode);
-  };
-
-  // Enhanced mobile detection with improved breakpoints
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileView = window.innerWidth < 768;
-      const isSmallMobile = window.innerWidth < 480;
-      setIsMobile(isMobileView);
-
-      // Force card view on mobile for better usability
-      if (isMobileView && viewMode === 'table') {
-        setViewMode('card');
-        setStoredViewMode('card');
-      }
-
-      // Adjust page size for small mobile screens
-      if (isSmallMobile && size > 10) {
-        setSize(10);
-      }
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [viewMode, size]);
-
-
   // Build query parameters
-  const baseParams = {
+  const baseParams: UserListParams = {
     page,
     size,
     sort: `${sortField},${sortDirection}`,
@@ -263,6 +218,58 @@ export const UserListPage: React.FC = () => {
   const [bulkUpdateUserStatus] = useBulkUpdateUserStatusMutation();
   const [bulkUpdateUserRoles] = useBulkUpdateUserRolesMutation();
   const { data: rolesData } = useGetRolesQuery();
+
+  // Enhanced mobile detection with improved breakpoints
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileView = window.innerWidth < 768;
+      const isSmallMobile = window.innerWidth < 480;
+      setIsMobile(isMobileView);
+
+      // Force card view on mobile for better usability
+      if (isMobileView && viewMode === 'table') {
+        setViewMode('card');
+        setStoredViewMode('card');
+      }
+
+      // Additional mobile-specific size information
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        isSmall: isSmallMobile,
+      });
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [viewMode]);
+
+  // Early access control check
+  if (!accessControl.canAccessPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.userManagementRestricted')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Virtual scrolling config
+  const shouldUseVirtualScrollingCards = (finalData?.content.length || 0) >= 50;
+  const cardHeight = isMobile ? 140 : 160;
+
+  // Custom view mode setter that persists to localStorage
+  const handleSetViewMode = (mode: ViewMode) => {
+    setViewMode(mode);
+    setStoredViewMode(mode);
+  };
 
   // Handle filter changes with validation
   const handleFilterChange = (
@@ -1301,29 +1308,22 @@ export const UserListPage: React.FC = () => {
                           <div className='min-h-[600px]'>
                             <VirtualList
                               items={finalData?.content || []}
-                              renderItem={(user, index, virtualItem) => (
-                                <div
-                                  className={cn(
-                                    'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 px-1',
-                                    smartLoading && finalData && 'opacity-60'
-                                  )}
-                                  style={{
-                                    height: virtualItem.height,
-                                    display: 'flex',
-                                    alignItems: 'stretch',
-                                  }}
-                                >
+                              renderItem={(user, index, _virtualItem) => (
+                                <div className={cn(
+                                  'px-2 py-1', // Padding around each virtual item
+                                  smartLoading && finalData && 'opacity-60'
+                                )}>
                                   <UserCard
                                     key={user.id}
                                     user={user}
                                     index={index}
                                     isVirtual
-                                    className="flex-1"
+                                    className="w-full"
                                   />
                                 </div>
                               )}
                               config={{
-                                itemHeight: cardHeight,
+                                itemHeight: cardHeight + 8, // Add padding to height calculation
                                 threshold: 50,
                                 containerHeight: 600,
                                 overscan: 3,

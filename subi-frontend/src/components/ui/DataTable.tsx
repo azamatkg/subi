@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronDown,
   ChevronLeft,
@@ -343,6 +343,9 @@ export function DataTable<T extends { id: string }>({
 }: DataTableProps<T>) {
   const { t } = useTranslation();
 
+  // Selection state - memoized to avoid infinite loops
+  const selectedIds = useMemo(() => selection?.selectedIds || [], [selection?.selectedIds]);
+
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileActions, setShowMobileActions] = useState<string | null>(null);
@@ -651,7 +654,6 @@ export function DataTable<T extends { id: string }>({
     );
   }
 
-  const selectedIds = selection?.selectedIds || [];
   const allSelected = selectedIds.length === data.length && data.length > 0;
   const someSelected = selectedIds.length > 0 && selectedIds.length < data.length;
 

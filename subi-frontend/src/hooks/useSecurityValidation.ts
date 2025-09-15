@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from './useAuth';
 import {
-  SecurityDetector,
   InputSanitizer,
-  SECURITY_LIMITS,
   RateLimiter,
+  SECURITY_LIMITS,
+  SecurityDetector,
   SecurityLogger
 } from '@/utils/securityValidation';
-import { isTokenExpired, getStoredToken } from '@/utils/auth';
+import { getStoredToken, isTokenExpired } from '@/utils/auth';
 
 // Global rate limiter instance
 const globalRateLimiter = new RateLimiter();
@@ -64,13 +64,13 @@ export const useSecurityValidation = (
   options: UseSecurityValidationOptions = {}
 ): UseSecurityValidationReturn => {
   const {
-    enableRealTimeValidation = true,
+    enableRealTimeValidation: _enableRealTimeValidation = true,
     enableSessionMonitoring = true,
     enableIdleDetection = true,
     customRateLimit,
   } = options;
 
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [sessionSecurity, setSessionSecurity] = useState<SessionSecurityState>({
     isSessionValid: true,
     timeUntilExpiry: 0,
@@ -257,7 +257,9 @@ export const useSecurityValidation = (
 
     // Validate ID format
     const invalidIds = targetIds.filter(id => {
-      if (typeof id !== 'string') return true;
+      if (typeof id !== 'string') {
+        return true;
+      }
       // Check for valid UUID or numeric format
       return !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) &&
              !/^\d+$/.test(id);
@@ -291,7 +293,9 @@ export const useSecurityValidation = (
 
   // Session monitoring effect
   useEffect(() => {
-    if (!enableSessionMonitoring) return;
+    if (!enableSessionMonitoring) {
+      return;
+    }
 
     const checkSession = () => {
       const token = getStoredToken();
@@ -343,7 +347,9 @@ export const useSecurityValidation = (
 
   // Idle detection effect
   useEffect(() => {
-    if (!enableIdleDetection) return;
+    if (!enableIdleDetection) {
+      return;
+    }
 
     const updateActivity = () => {
       lastActivityRef.current = Date.now();

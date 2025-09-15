@@ -86,7 +86,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   progress,
 }) => {
   const { t } = useTranslation();
-  const { hasAnyRole } = useAuth();
+  const { hasAnyRole: _hasAnyRole } = useAuth();
   const accessControl = useBulkActionsAccess();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showProgressDetails, setShowProgressDetails] = useState(false);

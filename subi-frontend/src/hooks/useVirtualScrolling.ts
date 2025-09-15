@@ -214,7 +214,7 @@ export function useVirtualScrolling<T>(
     }));
   }, [isVirtual, itemMetrics, visibleRange]);
 
-  // Scroll event handler with debouncing and RAF optimization
+  // Scroll event handler with debouncing and RAF optimization - fixed infinite loop
   const handleScroll = useCallback(() => {
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
@@ -226,24 +226,29 @@ export function useVirtualScrolling<T>(
 
       const newScrollOffset = container.scrollTop;
 
-      if (newScrollOffset !== scrollOffset) {
-        setScrollOffset(newScrollOffset);
-        isScrollingRef.current = true;
+      // Use functional update to avoid dependency on scrollOffset
+      setScrollOffset(prevScrollOffset => {
+        if (newScrollOffset !== prevScrollOffset) {
+          isScrollingRef.current = true;
 
-        // Clear existing timeout
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
+          // Clear existing timeout
+          if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+          }
+
+          // Set scrolling to false after debounce period
+          scrollTimeoutRef.current = window.setTimeout(() => {
+            isScrollingRef.current = false;
+          }, scrollDebounceMs);
+
+          return newScrollOffset;
         }
-
-        // Set scrolling to false after debounce period
-        scrollTimeoutRef.current = window.setTimeout(() => {
-          isScrollingRef.current = false;
-        }, scrollDebounceMs);
-      }
+        return prevScrollOffset;
+      });
     });
-  }, [scrollOffset, scrollDebounceMs]);
+  }, [scrollDebounceMs]); // Removed scrollOffset dependency to prevent infinite loop
 
-  // Container ref callback
+  // Container ref callback - fixed to prevent infinite loops
   const containerRefCallback = useCallback((element: HTMLElement | null) => {
     if (containerRef.current) {
       containerRef.current.removeEventListener('scroll', handleScroll);
@@ -252,11 +257,14 @@ export function useVirtualScrolling<T>(
     containerRef.current = element;
 
     if (element) {
-      // Update container height
+      // Update container height only if different
       const height = element.clientHeight;
-      if (height !== containerHeight) {
-        setContainerHeight(height);
-      }
+      setContainerHeight(prevHeight => {
+        if (height !== prevHeight && height > 0) {
+          return height;
+        }
+        return prevHeight;
+      });
 
       // Add scroll listener
       element.addEventListener('scroll', handleScroll, { passive: true });
@@ -264,7 +272,7 @@ export function useVirtualScrolling<T>(
       // Set initial scroll offset
       setScrollOffset(element.scrollTop);
     }
-  }, [handleScroll, containerHeight]);
+  }, [handleScroll]); // Removed containerHeight dependency to prevent infinite loop
 
   // Total height ref callback
   const totalHeightRefCallback = useCallback((element: HTMLElement | null) => {

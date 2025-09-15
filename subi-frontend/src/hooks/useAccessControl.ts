@@ -1,13 +1,12 @@
 import { useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  UserManagementPermission,
-  UserManagementPermissions,
-  hasPermission,
-  hasAnyPermission,
-  hasAllPermissions,
-  UserManagementAccess,
   ActionAccess,
+  UserManagementAccess,
+  UserManagementPermission,
+  hasAllPermissions,
+  hasAnyPermission,
+  hasPermission,
 } from '@/utils/accessControl';
 import { UserRole } from '@/types';
 
@@ -79,43 +78,54 @@ export const useAccessControl = () => {
   };
 };
 
-// Hook for user list page specific permissions
+// Hook for user list page specific permissions - optimized to prevent infinite re-renders
 export const useUserListAccess = () => {
-  const { userManagement, actions } = useAccessControl();
+  const { user } = useAuth();
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    // Direct permission checks to avoid nested useMemo dependencies
+    const canViewUsers = UserManagementAccess.canViewUsers(user);
+    const canCreateNewUser = ActionAccess.canCreateNewUser(user);
+    const canEditUserFromList = ActionAccess.canEditUserFromList(user);
+    const canDeleteUserFromList = ActionAccess.canDeleteUserFromList(user);
+    const canViewUserProfile = ActionAccess.canViewUserProfile(user);
+    const canExportUserList = ActionAccess.canExportUserList(user);
+    const canSelectMultipleUsers = ActionAccess.canSelectMultipleUsers(user);
+    const canBulkDeleteUsers = ActionAccess.canBulkDeleteUsers(user);
+    const canBulkUpdateUserStatus = ActionAccess.canBulkUpdateUserStatus(user);
+    const canBulkUpdateUserRoles = ActionAccess.canBulkUpdateUserRoles(user);
+
+    return {
       // Basic access
-      canAccessPage: userManagement.canViewUsers,
-      canViewList: userManagement.canViewUsers,
+      canAccessPage: canViewUsers,
+      canViewList: canViewUsers,
 
       // Creation
-      canShowCreateButton: actions.canCreateNewUser,
-      canCreateUser: actions.canCreateNewUser,
+      canShowCreateButton: canCreateNewUser,
+      canCreateUser: canCreateNewUser,
 
       // List actions
-      canShowEditAction: actions.canEditUserFromList,
-      canShowDeleteAction: actions.canDeleteUserFromList,
-      canShowViewAction: actions.canViewUserProfile,
+      canShowEditAction: canEditUserFromList,
+      canShowDeleteAction: canDeleteUserFromList,
+      canShowViewAction: canViewUserProfile,
 
       // Export functionality
-      canExportData: actions.canExportUserList,
-      canShowExportButton: actions.canExportUserList,
+      canExportData: canExportUserList,
+      canShowExportButton: canExportUserList,
 
       // Bulk operations
-      canShowBulkActions: actions.canSelectMultipleUsers,
-      canSelectMultiple: actions.canSelectMultipleUsers,
-      canBulkDelete: actions.canBulkDeleteUsers,
-      canBulkUpdateStatus: actions.canBulkUpdateUserStatus,
-      canBulkUpdateRoles: actions.canBulkUpdateUserRoles,
+      canShowBulkActions: canSelectMultipleUsers,
+      canSelectMultiple: canSelectMultipleUsers,
+      canBulkDelete: canBulkDeleteUsers,
+      canBulkUpdateStatus: canBulkUpdateUserStatus,
+      canBulkUpdateRoles: canBulkUpdateUserRoles,
 
       // Table columns visibility
-      canShowActionsColumn: actions.canEditUserFromList || actions.canDeleteUserFromList || actions.canViewUserProfile,
+      canShowActionsColumn: canEditUserFromList || canDeleteUserFromList || canViewUserProfile,
       canShowStatusColumn: true, // Always visible for display
       canShowRolesColumn: true, // Always visible for display
-    }),
-    [userManagement, actions]
-  );
+    };
+  }, [user]); // Depend on user object since we use multiple properties
 };
 
 // Hook for user creation/edit page specific permissions
@@ -188,35 +198,40 @@ export const useUserDetailAccess = () => {
   );
 };
 
-// Hook for bulk actions toolbar specific permissions
+// Hook for bulk actions toolbar specific permissions - optimized to prevent infinite re-renders
 export const useBulkActionsAccess = () => {
-  const { actions } = useAccessControl();
+  const { user } = useAuth();
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    // Direct permission checks to avoid nested useMemo dependencies
+    const canSelectMultipleUsers = ActionAccess.canSelectMultipleUsers(user);
+    const canBulkDeleteUsers = ActionAccess.canBulkDeleteUsers(user);
+    const canBulkUpdateUserStatus = ActionAccess.canBulkUpdateUserStatus(user);
+    const canBulkUpdateUserRoles = ActionAccess.canBulkUpdateUserRoles(user);
+
+    return {
       // Toolbar visibility
-      canShowToolbar: actions.canSelectMultipleUsers,
-      canSelectMultiple: actions.canSelectMultipleUsers,
+      canShowToolbar: canSelectMultipleUsers,
+      canSelectMultiple: canSelectMultipleUsers,
 
       // Individual actions
-      canBulkDelete: actions.canBulkDeleteUsers,
-      canBulkActivate: actions.canBulkUpdateUserStatus,
-      canBulkDeactivate: actions.canBulkUpdateUserStatus,
-      canBulkSuspend: actions.canBulkUpdateUserStatus,
-      canBulkUpdateRoles: actions.canBulkUpdateUserRoles,
+      canBulkDelete: canBulkDeleteUsers,
+      canBulkActivate: canBulkUpdateUserStatus,
+      canBulkDeactivate: canBulkUpdateUserStatus,
+      canBulkSuspend: canBulkUpdateUserStatus,
+      canBulkUpdateRoles: canBulkUpdateUserRoles,
 
       // Action buttons visibility
-      canShowDeleteButton: actions.canBulkDeleteUsers,
-      canShowStatusButtons: actions.canBulkUpdateUserStatus,
-      canShowRoleButtons: actions.canBulkUpdateUserRoles,
-    }),
-    [actions]
-  );
+      canShowDeleteButton: canBulkDeleteUsers,
+      canShowStatusButtons: canBulkUpdateUserStatus,
+      canShowRoleButtons: canBulkUpdateUserRoles,
+    };
+  }, [user]); // Only depend on user object
 };
 
 // Hook for checking if user has any admin privileges
 export const useAdminAccess = () => {
-  const { user, userManagement } = useAccessControl();
+  const { userManagement } = useAccessControl();
 
   return useMemo(
     () => ({
@@ -225,7 +240,7 @@ export const useAdminAccess = () => {
       canAccessAdminPanel: userManagement.hasAnyAccess,
       canManageUsers: userManagement.canViewUsers,
     }),
-    [user, userManagement]
+    [userManagement]
   );
 };
 

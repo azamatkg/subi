@@ -495,10 +495,18 @@ export const SecurityErrorHandler = {
     if (error && typeof error === 'object' && 'status' in error) {
       const status = (error as RTKQueryError).status;
 
-      if (status === 401) return 'medium'; // Authentication required
-      if (status === 403) return 'high';   // Forbidden access
-      if (status === 429) return 'medium'; // Rate limited
-      if (status === 418) return 'critical'; // I'm a teapot (often used for blocked requests)
+      if (status === 401) {
+        return 'medium'; // Authentication required
+      }
+      if (status === 403) {
+        return 'high';   // Forbidden access
+      }
+      if (status === 429) {
+        return 'medium'; // Rate limited
+      }
+      if (status === 418) {
+        return 'critical'; // I'm a teapot (often used for blocked requests)
+      }
     }
 
     if (error instanceof Error) {

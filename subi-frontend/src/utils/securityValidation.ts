@@ -37,9 +37,9 @@ const SUSPICIOUS_PATTERNS = {
   ],
   PATH_TRAVERSAL: [
     /\.\.\//,
-    /\.\.\\\\,
+    /\.\.\\\\/,
     /%2e%2e%2f/i,
-    /%2e%2e\\\\i,
+    /%2e%2e\\\\/i,
     /\.\.%2f/i,
     /\.\.%5c/i,
   ],
@@ -507,7 +507,9 @@ export const BulkOperationValidator = {
 
     // Validate ID format (UUIDs or numbers)
     const invalidIds = targetIds.filter(id => {
-      if (typeof id !== 'string') return true;
+      if (typeof id !== 'string') {
+        return true;
+      }
       // Check for UUID format or numeric ID
       return !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) &&
              !/^\d+$/.test(id);

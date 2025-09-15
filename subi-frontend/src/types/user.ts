@@ -99,6 +99,13 @@ export interface UserSearchAndFilterParams {
   lastLoginTo?: string;
 }
 
+// Basic User List Parameters (for simple list queries)
+export interface UserListParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
 // User Filter State (for UI state management)
 export interface UserFilterState {
   searchTerm: string;

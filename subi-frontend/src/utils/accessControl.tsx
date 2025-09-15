@@ -1,7 +1,7 @@
 import React from 'react';
 import { AuthUser } from '@/types/auth';
 import { UserRole } from '@/types';
-import { hasRole, hasAnyRole, isAdmin } from '@/utils/auth';
+import { hasAnyRole, isAdmin } from '@/utils/auth';
 
 // Permission levels for user management actions
 export const UserManagementPermissions = {

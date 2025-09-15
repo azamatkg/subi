@@ -1,15 +1,14 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSecurityValidation } from '@/hooks/useSecurityValidation';
-import { hasRole, hasAnyRole, isAdmin } from '@/utils/auth';
-import { hasPermission, hasAnyPermission, UserManagementPermission } from '@/utils/accessControl';
-import { AuthUser } from '@/types/auth';
+import { hasAnyRole, hasRole, isAdmin } from '@/utils/auth';
+import { UserManagementPermission, hasAnyPermission, hasPermission } from '@/utils/accessControl';
 import { UserRole } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldX, Clock, AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Clock, Loader2, ShieldX } from 'lucide-react';
 
 export interface SecurityGuardProps {
   children: React.ReactNode;

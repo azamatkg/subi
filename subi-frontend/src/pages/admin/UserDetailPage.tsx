@@ -86,26 +86,9 @@ export const UserDetailPage: React.FC = () => {
   }, [id, navigate]);
   const { t } = useTranslation();
   const {
-    hasAnyRole,
+    hasAnyRole: _hasAnyRole,
   } = useAuth();
   const accessControl = useUserDetailAccess();
-
-  // Early access control check
-  if (!accessControl.canAccessPage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
-            {t('accessControl.unauthorized')}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('accessControl.insufficientPermissions')}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
 
   // State for modals and actions
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -184,12 +167,27 @@ export const UserDetailPage: React.FC = () => {
     }
   }, [error, user, isLoading, navigate]);
 
-
   useSetPageTitle(
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
       : t('userManagement.userDetails')
   );
+
+  // Early access control check
+  if (!accessControl.canAccessPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Generate random password for reset
   function generateRandomPassword(): string {
@@ -379,7 +377,6 @@ export const UserDetailPage: React.FC = () => {
     }
   };
 
-  const canModifyUser = accessControl.canShowEditButton;
 
   if (showUserLoading || !user) {
     return <UserProfileSkeleton showActivity showRoles sections={4} />;
