@@ -42,6 +42,7 @@ import { KeyboardNavigation, announceToScreenReader } from '@/lib/accessibility'
 import {
   QuickTooltip
 } from '@/components/ui/enhanced-tooltip';
+import { VirtualItem, useVirtualScrolling } from '@/hooks/useVirtualScrolling';
 
 // Types
 export interface DataTableColumn<T> {
@@ -92,6 +93,14 @@ export interface DataTableProps<T extends { id: string }> {
   className?: string;
   enableKeyboardNavigation?: boolean;
   ariaLabel?: string;
+  /** Enable virtual scrolling for large datasets */
+  enableVirtualScrolling?: boolean;
+  /** Row height in pixels for virtual scrolling */
+  virtualRowHeight?: number;
+  /** Threshold for enabling virtual scrolling */
+  virtualScrollThreshold?: number;
+  /** Container height for virtual scrolling */
+  virtualScrollHeight?: number;
 }
 
 // Loading skeleton component
@@ -314,7 +323,7 @@ const DataTablePagination: React.FC<{
   );
 };
 
-// Main DataTable component with mobile responsiveness
+// Main DataTable component with mobile responsiveness and virtual scrolling
 export function DataTable<T extends { id: string }>({
   data,
   columns,
@@ -327,6 +336,10 @@ export function DataTable<T extends { id: string }>({
   className,
   enableKeyboardNavigation = true,
   ariaLabel,
+  enableVirtualScrolling = true,
+  virtualRowHeight = 65,
+  virtualScrollThreshold = 100,
+  virtualScrollHeight = 600,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
 
@@ -338,6 +351,15 @@ export function DataTable<T extends { id: string }>({
   const [focusedRowIndex, setFocusedRowIndex] = useState(-1);
   const tableRef = useRef<HTMLTableElement>(null);
   const lastAnnouncementTime = useRef(0);
+
+  // Virtual scrolling
+  const shouldUseVirtualScrolling = enableVirtualScrolling && !isMobile && data.length >= virtualScrollThreshold;
+  const virtualScrolling = useVirtualScrolling(data, {
+    itemHeight: virtualRowHeight,
+    threshold: virtualScrollThreshold,
+    containerHeight: virtualScrollHeight,
+    overscan: 5,
+  });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -481,6 +503,105 @@ export function DataTable<T extends { id: string }>({
       }
     }
   }, [focusedRowIndex]);
+
+  // Render virtual table row - moved before early returns
+  const renderVirtualTableRow = useCallback((item: T, index: number, virtualItem: VirtualItem) => {
+    return (
+      <TableRow
+        key={item.id}
+        data-row-index={index}
+        className={cn(
+          'cursor-pointer focus:ring-2 focus:ring-primary/50 focus:outline-none absolute left-0 right-0',
+          selectedIds.includes(item.id) && 'bg-muted/50',
+          focusedRowIndex === index && 'bg-accent/50'
+        )}
+        style={{
+          top: virtualItem.offsetTop,
+          height: virtualItem.height,
+        }}
+        onClick={() => onRowClick?.(item)}
+        onKeyDown={handleKeyboardBulkSelect}
+        tabIndex={enableKeyboardNavigation ? 0 : -1}
+        role="row"
+        aria-selected={selectedIds.includes(item.id)}
+        aria-rowindex={index + 2}
+      >
+        {selection && (
+          <TableCell role="cell" className="h-full flex items-center">
+            <Checkbox
+              checked={selectedIds.includes(item.id)}
+              onCheckedChange={(checked) =>
+                handleRowSelection(item.id, checked as boolean)
+              }
+              aria-label={`Select row ${index + 1}`}
+              onClick={(e) => e.stopPropagation()}
+              tabIndex={-1}
+            />
+          </TableCell>
+        )}
+        {columns.map((column, _colIndex) => (
+          <TableCell
+            key={column.id}
+            role="cell"
+            aria-describedby={`col-${column.id}-header`}
+            className="h-full flex items-center"
+          >
+            <div className="truncate w-full">
+              {column.render
+                ? column.render(item)
+                : (item[column.key as keyof T] as React.ReactNode)
+              }
+            </div>
+          </TableCell>
+        ))}
+        <TableCell className="h-full flex items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <QuickTooltip content={t('common.actions')}>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={t('common.actions', { item: item.id })}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </QuickTooltip>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRowAction?.('view', item);
+                }}
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                {t('common.view')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRowAction?.('edit', item);
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                {t('common.edit')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRowAction?.('delete', item);
+                }}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                {t('common.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
+    );
+  }, [selectedIds, focusedRowIndex, selection, columns, handleRowSelection, onRowClick, handleKeyboardBulkSelect, enableKeyboardNavigation, onRowAction, t]);
 
   // Loading state
   if (loading) {
@@ -714,7 +835,8 @@ export function DataTable<T extends { id: string }>({
     );
   }
 
-  // Desktop version (existing functionality)
+
+  // Desktop version with virtual scrolling support
   return (
     <div className={cn('space-y-4', className)}>
       {/* Bulk actions toolbar */}
@@ -729,170 +851,286 @@ export function DataTable<T extends { id: string }>({
 
       {/* Table */}
       <div className="rounded-md border">
-        <Table
-          ref={tableRef}
-          aria-label={ariaLabel || t('common.dataTable')}
-          onKeyDown={handleTableKeyDown}
-          tabIndex={enableKeyboardNavigation ? 0 : -1}
-          role="table"
-          aria-rowcount={data.length + 1}
-          aria-colcount={columns.length + (selection ? 1 : 0) + 1}
-        >
-          <TableHeader>
-            <TableRow>
-              {selection && (
-                <TableHead className="w-[50px]">
-                  <QuickTooltip
-                    content={t('userManagement.tooltips.dataTable.selection.header')}
-                  >
-                    <Checkbox
-                      checked={allSelected}
-                      ref={(el) => {
-                        if (el) {el.indeterminate = someSelected;}
-                      }}
-                      onCheckedChange={handleSelectAll}
-                      aria-label={t('common.selectAll')}
-                    />
-                  </QuickTooltip>
-                </TableHead>
-              )}
-              {columns.map((column, _colIndex) => (
-                <TableHead
-                  key={column.id}
-                  className={cn(
-                    sorting?.field === column.id && 'bg-muted/50'
-                  )}
-                  role="columnheader"
-                  aria-sort={sorting?.field === column.id ?
-                    (sorting.direction === 'asc' ? 'ascending' : 'descending') :
-                    (column.sortable ? 'none' : undefined)
-                  }
-                >
-                  {column.sortable ? (
-                    <QuickTooltip
-                      content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
-                        `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
-                        ''}`}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="-ml-3 h-8 data-[state=open]:bg-accent"
-                        onClick={() => handleSort(column.id)}
-                        onKeyDown={(e) => {
-                          if (KeyboardNavigation.isActionKey(e.key)) {
-                            e.preventDefault();
-                            handleSort(column.id);
-                          }
-                        }}
-                        aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
-                          (sorting.direction === 'asc' ? 'ascending' : 'descending') :
-                          'none'}`}
-                        tabIndex={0}
+        {shouldUseVirtualScrolling ? (
+          /* Virtual Scrolling Table */
+          <div className="relative">
+            {/* Table Header */}
+            <Table
+              aria-label={ariaLabel || t('common.dataTable')}
+              role="table"
+              aria-rowcount={data.length + 1}
+              aria-colcount={columns.length + (selection ? 1 : 0) + 1}
+            >
+              <TableHeader className="sticky top-0 z-10 bg-background">
+                <TableRow>
+                  {selection && (
+                    <TableHead className="w-[50px]">
+                      <QuickTooltip
+                        content={t('userManagement.tooltips.dataTable.selection.header')}
                       >
-                        <span>{column.label}</span>
-                        {getSortIcon(column.id)}
-                      </Button>
-                    </QuickTooltip>
-                  ) : (
-                    <span role="presentation">{column.label}</span>
+                        <Checkbox
+                          checked={allSelected}
+                          ref={(el) => {
+                            if (el) {el.indeterminate = someSelected;}
+                          }}
+                          onCheckedChange={handleSelectAll}
+                          aria-label={t('common.selectAll')}
+                        />
+                      </QuickTooltip>
+                    </TableHead>
                   )}
-                </TableHead>
-              ))}
-              <TableHead className="w-[70px]"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item, rowIndex) => (
-              <TableRow
-                key={item.id}
-                data-row-index={rowIndex}
-                className={cn(
-                  'cursor-pointer focus:ring-2 focus:ring-primary/50 focus:outline-none',
-                  selectedIds.includes(item.id) && 'bg-muted/50',
-                  focusedRowIndex === rowIndex && 'bg-accent/50'
-                )}
-                onClick={() => onRowClick?.(item)}
-                onKeyDown={handleKeyboardBulkSelect}
-                tabIndex={enableKeyboardNavigation ? 0 : -1}
-                role="row"
-                aria-selected={selectedIds.includes(item.id)}
-                aria-rowindex={rowIndex + 2}
-              >
-                {selection && (
-                  <TableCell role="cell">
-                    <Checkbox
-                      checked={selectedIds.includes(item.id)}
-                      onCheckedChange={(checked) =>
-                        handleRowSelection(item.id, checked as boolean)
+                  {columns.map((column, _colIndex) => (
+                    <TableHead
+                      key={column.id}
+                      className={cn(
+                        sorting?.field === column.id && 'bg-muted/50'
+                      )}
+                      role="columnheader"
+                      aria-sort={sorting?.field === column.id ?
+                        (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                        (column.sortable ? 'none' : undefined)
                       }
-                      aria-label={`Select row ${rowIndex + 1}`}
-                      onClick={(e) => e.stopPropagation()}
-                      tabIndex={-1}
-                    />
-                  </TableCell>
+                    >
+                      {column.sortable ? (
+                        <QuickTooltip
+                          content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
+                            `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
+                            ''}`}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="-ml-3 h-8 data-[state=open]:bg-accent"
+                            onClick={() => handleSort(column.id)}
+                            onKeyDown={(e) => {
+                              if (KeyboardNavigation.isActionKey(e.key)) {
+                                e.preventDefault();
+                                handleSort(column.id);
+                              }
+                            }}
+                            aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
+                              (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                              'none'}`}
+                            tabIndex={0}
+                          >
+                            <span>{column.label}</span>
+                            {getSortIcon(column.id)}
+                          </Button>
+                        </QuickTooltip>
+                      ) : (
+                        <span role="presentation">{column.label}</span>
+                      )}
+                    </TableHead>
+                  ))}
+                  <TableHead className="w-[70px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+            </Table>
+
+            {/* Virtual Scrolling Container */}
+            <div
+              ref={virtualScrolling.containerRef}
+              className="overflow-auto"
+              style={{
+                height: virtualScrollHeight,
+                position: 'relative',
+              }}
+              onKeyDown={handleTableKeyDown}
+              tabIndex={enableKeyboardNavigation ? 0 : -1}
+              aria-label="Virtual scrolling table content"
+            >
+              <div
+                ref={virtualScrolling.totalHeightRef}
+                style={{
+                  height: virtualScrolling.totalHeight,
+                  position: 'relative',
+                }}
+              >
+                <table className="w-full">
+                  <tbody className="relative">
+                    {virtualScrolling.virtualItems.map((virtualItem) => {
+                      const item = data[virtualItem.index];
+                      if (!item) {return null;}
+                      return renderVirtualTableRow(item, virtualItem.index, virtualItem);
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Virtual scrolling info */}
+            <div className="p-2 text-xs text-muted-foreground border-t bg-muted/30">
+              Showing {virtualScrolling.virtualItems.length} of {data.length} rows
+              {virtualScrolling.isVirtual && ' (Virtual scrolling active)'}
+            </div>
+          </div>
+        ) : (
+          /* Standard Table */
+          <Table
+            ref={tableRef}
+            aria-label={ariaLabel || t('common.dataTable')}
+            onKeyDown={handleTableKeyDown}
+            tabIndex={enableKeyboardNavigation ? 0 : -1}
+            role="table"
+            aria-rowcount={data.length + 1}
+            aria-colcount={columns.length + (selection ? 1 : 0) + 1}
+          >
+            <TableHeader>
+              <TableRow>
+                {selection && (
+                  <TableHead className="w-[50px]">
+                    <QuickTooltip
+                      content={t('userManagement.tooltips.dataTable.selection.header')}
+                    >
+                      <Checkbox
+                        checked={allSelected}
+                        ref={(el) => {
+                          if (el) {el.indeterminate = someSelected;}
+                        }}
+                        onCheckedChange={handleSelectAll}
+                        aria-label={t('common.selectAll')}
+                      />
+                    </QuickTooltip>
+                  </TableHead>
                 )}
                 {columns.map((column, _colIndex) => (
-                  <TableCell
+                  <TableHead
                     key={column.id}
-                    role="cell"
-                    aria-describedby={`col-${column.id}-header`}
-                  >
-                    {column.render
-                      ? column.render(item)
-                      : (item[column.key as keyof T] as React.ReactNode)
+                    className={cn(
+                      sorting?.field === column.id && 'bg-muted/50'
+                    )}
+                    role="columnheader"
+                    aria-sort={sorting?.field === column.id ?
+                      (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                      (column.sortable ? 'none' : undefined)
                     }
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <QuickTooltip content={t('common.actions')}>
+                  >
+                    {column.sortable ? (
+                      <QuickTooltip
+                        content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
+                          `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
+                          ''}`}
+                      >
                         <Button
                           variant="ghost"
-                          className="h-8 w-8 p-0"
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label={t('common.actions', { item: item.id })}
+                          size="sm"
+                          className="-ml-3 h-8 data-[state=open]:bg-accent"
+                          onClick={() => handleSort(column.id)}
+                          onKeyDown={(e) => {
+                            if (KeyboardNavigation.isActionKey(e.key)) {
+                              e.preventDefault();
+                              handleSort(column.id);
+                            }
+                          }}
+                          aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
+                            (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                            'none'}`}
+                          tabIndex={0}
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <span>{column.label}</span>
+                          {getSortIcon(column.id)}
                         </Button>
                       </QuickTooltip>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRowAction?.('view', item);
-                        }}
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        {t('common.view')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRowAction?.('edit', item);
-                        }}
-                      >
-                        <Edit className="mr-2 h-4 w-4" />
-                        {t('common.edit')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRowAction?.('delete', item);
-                        }}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        {t('common.delete')}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                    ) : (
+                      <span role="presentation">{column.label}</span>
+                    )}
+                  </TableHead>
+                ))}
+                <TableHead className="w-[70px]"></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {data.map((item, rowIndex) => (
+                <TableRow
+                  key={item.id}
+                  data-row-index={rowIndex}
+                  className={cn(
+                    'cursor-pointer focus:ring-2 focus:ring-primary/50 focus:outline-none',
+                    selectedIds.includes(item.id) && 'bg-muted/50',
+                    focusedRowIndex === rowIndex && 'bg-accent/50'
+                  )}
+                  onClick={() => onRowClick?.(item)}
+                  onKeyDown={handleKeyboardBulkSelect}
+                  tabIndex={enableKeyboardNavigation ? 0 : -1}
+                  role="row"
+                  aria-selected={selectedIds.includes(item.id)}
+                  aria-rowindex={rowIndex + 2}
+                >
+                  {selection && (
+                    <TableCell role="cell">
+                      <Checkbox
+                        checked={selectedIds.includes(item.id)}
+                        onCheckedChange={(checked) =>
+                          handleRowSelection(item.id, checked as boolean)
+                        }
+                        aria-label={`Select row ${rowIndex + 1}`}
+                        onClick={(e) => e.stopPropagation()}
+                        tabIndex={-1}
+                      />
+                    </TableCell>
+                  )}
+                  {columns.map((column, _colIndex) => (
+                    <TableCell
+                      key={column.id}
+                      role="cell"
+                      aria-describedby={`col-${column.id}-header`}
+                    >
+                      {column.render
+                        ? column.render(item)
+                        : (item[column.key as keyof T] as React.ReactNode)
+                      }
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <QuickTooltip content={t('common.actions')}>
+                          <Button
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={t('common.actions', { item: item.id })}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </QuickTooltip>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRowAction?.('view', item);
+                          }}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          {t('common.view')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRowAction?.('edit', item);
+                          }}
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          {t('common.edit')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRowAction?.('delete', item);
+                          }}
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          {t('common.delete')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       {/* Pagination */}

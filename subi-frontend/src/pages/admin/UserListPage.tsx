@@ -53,6 +53,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { DataTable, DataTableColumn } from '@/components/ui/DataTable';
 import { BulkActionsToolbar } from '@/components/admin/BulkActionsToolbar';
 import { SearchAndFilterPanel } from '@/components/admin/SearchAndFilterPanel';
+import { VirtualList } from '@/components/ui/VirtualList';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
@@ -138,6 +139,10 @@ export const UserListPage: React.FC = () => {
   const [operationCancelled, setOperationCancelled] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [_validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  // Virtual scrolling config
+  const shouldUseVirtualScrollingCards = (finalData?.content.length || 0) >= 50;
+  const cardHeight = isMobile ? 140 : 160;
 
   // Custom view mode setter that persists to localStorage
   const handleSetViewMode = (mode: ViewMode) => {
@@ -723,18 +728,30 @@ export const UserListPage: React.FC = () => {
   ];
 
   // Enhanced mobile-first card component with improved touch targets
-  const UserCard: React.FC<{ user: UserListResponseDto; style?: React.CSSProperties; className?: string }> = ({ user, style, className }) => (
+  const UserCard: React.FC<{
+    user: UserListResponseDto;
+    index?: number;
+    style?: React.CSSProperties;
+    className?: string;
+    isVirtual?: boolean;
+  }> = ({ user, index, style, className, isVirtual }) => (
     <div
       className={cn(
         'group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg',
         // Mobile-specific improvements
         'active:scale-[0.98] active:shadow-lg', // Touch feedback
         'min-h-[140px] sm:min-h-[160px]', // Consistent card heights
+        isVirtual && 'w-full', // Full width for virtual rendering
         className
       )}
-      style={style}
+      style={{
+        ...style,
+        height: isVirtual ? `${cardHeight}px` : style?.height,
+      }}
       role='article'
       aria-labelledby={`user-title-${user.id}`}
+      aria-posinset={typeof index === 'number' ? index + 1 : undefined}
+      aria-setsize={finalData?.content.length}
     >
       <div className='p-3 sm:p-4 lg:p-5'>
         <div className='space-y-2 sm:space-y-3'>
@@ -1258,22 +1275,75 @@ export const UserListPage: React.FC = () => {
                           show={smartLoading && Boolean(finalData)}
                           message='Updating...'
                         />
-                        <div className={cn(
-                          'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 transition-opacity duration-300',
-                          // Responsive grid: 1 col on mobile, 2 cols on tablet, 3 cols on desktop
-                          smartLoading && finalData && 'opacity-60'
-                        )}>
-                          {finalData?.content.slice(0, visibleItemCount).map((user, index) => (
-                            <UserCard
-                              key={user.id}
-                              user={user}
-                              style={{
-                                animationDelay: `${index * 80}ms`,
+
+                        {shouldUseVirtualScrollingCards ? (
+                          /* Virtual scrolling for large card lists */
+                          <div className='min-h-[600px]'>
+                            <VirtualList
+                              items={finalData?.content || []}
+                              renderItem={(user, index, virtualItem) => (
+                                <div
+                                  className={cn(
+                                    'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 px-1',
+                                    smartLoading && finalData && 'opacity-60'
+                                  )}
+                                  style={{
+                                    height: virtualItem.height,
+                                    display: 'flex',
+                                    alignItems: 'stretch',
+                                  }}
+                                >
+                                  <UserCard
+                                    key={user.id}
+                                    user={user}
+                                    index={index}
+                                    isVirtual
+                                    className="flex-1"
+                                  />
+                                </div>
+                              )}
+                              config={{
+                                itemHeight: cardHeight,
+                                threshold: 50,
+                                containerHeight: 600,
+                                overscan: 3,
                               }}
-                              className="animate-in slide-in-from-left-2 duration-300 fill-mode-both"
+                              height={600}
+                              className={cn(
+                                'transition-opacity duration-300',
+                                smartLoading && finalData && 'opacity-60'
+                              )}
+                              ariaLabel={`${t('userManagement.users')} - Virtual scrolling list`}
                             />
-                          ))}
-                        </div>
+
+                            {/* Virtual scrolling indicator */}
+                            <div className="mt-2 text-xs text-center text-muted-foreground">
+                              {t('userManagement.messages.virtualScrollingActive',
+                                'Showing optimized view for {count} users',
+                                { count: finalData?.content.length || 0 }
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          /* Standard grid for smaller lists */
+                          <div className={cn(
+                            'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 transition-opacity duration-300',
+                            // Responsive grid: 1 col on mobile, 2 cols on tablet, 3 cols on desktop
+                            smartLoading && finalData && 'opacity-60'
+                          )}>
+                            {finalData?.content.slice(0, visibleItemCount).map((user, index) => (
+                              <UserCard
+                                key={user.id}
+                                user={user}
+                                index={index}
+                                style={{
+                                  animationDelay: `${index * 80}ms`,
+                                }}
+                                className="animate-in slide-in-from-left-2 duration-300 fill-mode-both"
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </SkeletonToContentTransition>
                   </ErrorBoundary>
@@ -1304,6 +1374,10 @@ export const UserListPage: React.FC = () => {
                         data={finalData?.content || []}
                         columns={columns}
                         loading={smartLoading}
+                        enableVirtualScrolling={true}
+                        virtualRowHeight={65}
+                        virtualScrollThreshold={100}
+                        virtualScrollHeight={600}
                         pagination={finalData ? {
                           page: finalData.number,
                           size: finalData.size,
