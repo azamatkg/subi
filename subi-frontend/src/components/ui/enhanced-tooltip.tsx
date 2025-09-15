@@ -47,7 +47,7 @@ export interface EnhancedTooltipProps {
  * - Accessibility enhancements
  * - Consistent styling and behavior
  */
-export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = ({
+export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = React.memo(({
   content,
   children,
   side = 'top',
@@ -63,11 +63,8 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  if (disabled) {
-    return <>{children}</>;
-  }
-
-  const getVariantStyles = () => {
+  // Memoize variant styles to prevent recreation on every render
+  const variantStyles = React.useMemo(() => {
     switch (variant) {
       case 'help':
         return 'bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-100';
@@ -78,9 +75,10 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = ({
       default:
         return '';
     }
-  };
+  }, [variant]);
 
-  const renderContent = () => {
+  // Memoize content rendering to prevent unnecessary re-renders
+  const renderedContent = React.useMemo(() => {
     // If using rich content (title/description)
     if (title || description || shortcut) {
       return (
@@ -110,7 +108,11 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = ({
     }
 
     return content;
-  };
+  }, [title, description, shortcut, content, t]);
+
+  if (disabled) {
+    return <>{children}</>;
+  }
 
   return (
     <TooltipProvider delayDuration={delayDuration}>
@@ -123,18 +125,18 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = ({
           align={align}
           className={cn(
             'max-w-[320px] p-3 text-left',
-            getVariantStyles(),
+            variantStyles,
             className
           )}
           style={{ maxWidth }}
           sideOffset={8}
         >
-          {renderContent()}
+          {renderedContent}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
-};
+});
 
 /**
  * HelpTooltip - A specialized tooltip for help content
@@ -144,7 +146,7 @@ export const HelpTooltip: React.FC<Omit<EnhancedTooltipProps, 'variant' | 'child
   iconSize?: number;
   /** Whether to show as inline or block */
   inline?: boolean;
-}> = ({
+}> = React.memo(({
   iconSize = 16,
   inline = true,
   className,
@@ -166,7 +168,7 @@ export const HelpTooltip: React.FC<Omit<EnhancedTooltipProps, 'variant' | 'child
       />
     </EnhancedTooltip>
   );
-};
+});
 
 /**
  * InfoTooltip - A specialized tooltip for informational content

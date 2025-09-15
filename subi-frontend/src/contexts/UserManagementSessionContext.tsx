@@ -322,7 +322,7 @@ export const UserManagementSessionProvider: React.FC<UserManagementSessionProvid
   const [showSessionWarning, setShowSessionWarning] = useState(false);
   const [hasCheckedRecovery, setHasCheckedRecovery] = useState(false);
 
-  // Save navigation state
+  // Save navigation state with stable reference
   const saveNavigationState = useCallback((
     filters?: Record<string, unknown>,
     pagination?: { page: number; limit: number }
@@ -432,9 +432,32 @@ export const UserManagementSessionProvider: React.FC<UserManagementSessionProvid
   useEffect(() => {
     const isUserManagementPage = location.pathname.includes('/admin/users');
     if (isUserManagementPage) {
-      saveNavigationState();
+      // Call saveNavigationState without arguments to save current state
+      try {
+        const recoveryData = sessionManagement.getSessionRecoveryData() || {
+          formBackups: [],
+          lastActivity: Date.now(),
+        };
+
+        const updatedRecoveryData = {
+          ...recoveryData,
+          navigationState: {
+            currentPage: location.pathname,
+            filters: undefined,
+            pagination: undefined,
+          },
+          lastActivity: Date.now(),
+        };
+
+        localStorage.setItem(
+          'user_management_session_recovery',
+          JSON.stringify(updatedRecoveryData)
+        );
+      } catch (error) {
+        console.warn('Failed to auto-save navigation state:', error);
+      }
     }
-  }, [location, saveNavigationState]);
+  }, [location.pathname, sessionManagement]);
 
   const contextValue: UserManagementSessionContextType = {
     ...sessionManagement,
@@ -447,7 +470,10 @@ export const UserManagementSessionProvider: React.FC<UserManagementSessionProvid
     dismissSessionWarning,
   };
 
-  const recoveryData = sessionManagement.getSessionRecoveryData();
+  // Memoize recovery data to prevent re-renders
+  const recoveryData = React.useMemo(() => {
+    return sessionManagement.getSessionRecoveryData();
+  }, [sessionManagement]);
 
   return (
     <UserManagementSessionContext.Provider value={contextValue}>

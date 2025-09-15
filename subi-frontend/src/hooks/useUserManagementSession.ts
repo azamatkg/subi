@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from './useAuth';
 import { useSecurityValidation } from './useSecurityValidation';
 
@@ -81,18 +81,30 @@ export interface UseUserManagementSessionReturn {
 export const useUserManagementSession = (
   options: UseUserManagementSessionOptions = {}
 ): UseUserManagementSessionReturn => {
+  // Memoize options to prevent re-renders when options object is recreated
+  const memoizedOptions = useMemo(() => ({
+    autoBackupForms: options.autoBackupForms ?? true,
+    backupInterval: options.backupInterval ?? 30000, // 30 seconds
+    maxBackupAge: options.maxBackupAge ?? 24 * 60 * 60 * 1000, // 24 hours
+    enableBulkOperationProtection: options.enableBulkOperationProtection ?? true,
+  }), [options.autoBackupForms, options.backupInterval, options.maxBackupAge, options.enableBulkOperationProtection]);
+
   const {
-    autoBackupForms = true,
-    backupInterval = 30000, // 30 seconds
-    maxBackupAge = 24 * 60 * 60 * 1000, // 24 hours
-    enableBulkOperationProtection = true,
-  } = options;
+    autoBackupForms,
+    backupInterval,
+    maxBackupAge,
+    enableBulkOperationProtection,
+  } = memoizedOptions;
 
   useAuth();
-  const { sessionSecurity, refreshSession } = useSecurityValidation({
+
+  // Memoize security validation options to prevent re-renders
+  const securityOptions = useMemo(() => ({
     enableSessionMonitoring: true,
     enableIdleDetection: true,
-  });
+  }), []);
+
+  const { sessionSecurity, refreshSession } = useSecurityValidation(securityOptions);
 
   const [hasPendingBulkOperation, setHasPendingBulkOperation] = useState(false);
   const [isSessionHealthy, setIsSessionHealthy] = useState(true);
@@ -370,11 +382,36 @@ export const useUserManagementSession = (
     }
   }, [refreshSession]);
 
-  // Check for pending bulk operations on mount
+  // Check for pending bulk operations on mount (run only once)
   useEffect(() => {
-    const bulkState = restoreBulkOperationState();
+    const checkBulkState = () => {
+      try {
+        const stateJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.BULK_OPERATION_STATE);
+        if (!stateJson) {
+          return null;
+        }
+
+        const state = JSON.parse(stateJson) as BulkOperationState;
+
+        // Check if state is not too old (max 1 hour for bulk operations)
+        const maxAge = 60 * 60 * 1000; // 1 hour
+        const age = Date.now() - state.timestamp;
+
+        if (age > maxAge) {
+          localStorage.removeItem(USER_MANAGEMENT_STORAGE.BULK_OPERATION_STATE);
+          return null;
+        }
+
+        return state;
+      } catch (error) {
+        console.warn('Failed to restore bulk operation state:', error);
+        return null;
+      }
+    };
+
+    const bulkState = checkBulkState();
     setHasPendingBulkOperation(!!bulkState);
-  }, [restoreBulkOperationState]);
+  }, []); // Empty dependency array - run only on mount
 
   // Monitor session security changes
   useEffect(() => {
@@ -393,35 +430,36 @@ export const useUserManagementSession = (
     }
   }, [sessionSecurity.isSessionValid, sessionSecurity.showTimeoutWarning, isSessionHealthy]);
 
+  const cleanup = useCallback(() => {
+    try {
+      const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+      if (!dataJson) {
+        return;
+      }
+
+      const recoveryData = JSON.parse(dataJson) as SessionRecoveryData;
+      const now = Date.now();
+      const validBackups = recoveryData.formBackups.filter(
+        backup => now - backup.timestamp <= maxBackupAge
+      );
+
+      if (validBackups.length !== recoveryData.formBackups.length) {
+        const updatedRecoveryData = {
+          ...recoveryData,
+          formBackups: validBackups,
+        };
+        localStorage.setItem(
+          USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
+          JSON.stringify(updatedRecoveryData)
+        );
+      }
+    } catch (error) {
+      console.warn('Failed to cleanup old backups:', error);
+    }
+  }, [maxBackupAge]);
+
   // Auto cleanup old backups
   useEffect(() => {
-    const cleanup = () => {
-      try {
-        const recoveryData = getSessionRecoveryData();
-        if (!recoveryData) {
-          return;
-        }
-
-        const now = Date.now();
-        const validBackups = recoveryData.formBackups.filter(
-          backup => now - backup.timestamp <= maxBackupAge
-        );
-
-        if (validBackups.length !== recoveryData.formBackups.length) {
-          const updatedRecoveryData = {
-            ...recoveryData,
-            formBackups: validBackups,
-          };
-          localStorage.setItem(
-            USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
-            JSON.stringify(updatedRecoveryData)
-          );
-        }
-      } catch (error) {
-        console.warn('Failed to cleanup old backups:', error);
-      }
-    };
-
     cleanupIntervalRef.current = setInterval(cleanup, backupInterval);
     cleanup(); // Run initial cleanup
 
@@ -430,7 +468,7 @@ export const useUserManagementSession = (
         clearInterval(cleanupIntervalRef.current);
       }
     };
-  }, [maxBackupAge, backupInterval, getSessionRecoveryData]);
+  }, [cleanup, backupInterval]);
 
   return {
     // Form backup management

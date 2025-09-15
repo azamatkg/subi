@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/enhanced-tooltip';
 
 import { useTranslation } from '@/hooks/useTranslation';
+import { useDebounce } from '@/hooks/useDebounce';
 import type {
   UserFilterState,
   UserRole,
@@ -40,7 +41,6 @@ import { UserStatus as UserStatusEnum } from '@/types/user';
 import { cn } from '@/lib/utils';
 import {
   InputSanitizer,
-  ValidationUtils,
   showWarningMessage
 } from '@/utils/errorHandling';
 
@@ -100,24 +100,35 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isFilterOpen, setIsFilterOpen] = useState(initiallyOpen);
+  const [localSearchTerm, setLocalSearchTerm] = useState(filters.searchTerm);
 
   const userStatuses = useMemo(() => Object.values(UserStatusEnum), []);
 
+  // Debounce search term to reduce API calls and re-renders
+  const debouncedSearchTerm = useDebounce(localSearchTerm, 300);
 
-  // Create a stable filters serialization to avoid dependency issues
-  const filtersString = useMemo(() => JSON.stringify(filters), [
-    filters.searchTerm,
-    filters.roles?.length,
-    filters.status,
-    filters.isActive,
-    filters.department,
-    filters.createdDateFrom,
-    filters.createdDateTo,
-    filters.lastLoginFrom,
-    filters.lastLoginTo,
-  ]);
+  // Update parent component when debounced search term changes
+  useEffect(() => {
+    // Only update if there's an actual change and avoid unnecessary calls
+    if (debouncedSearchTerm !== filters.searchTerm) {
+      onFilterChange('searchTerm', debouncedSearchTerm);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm, filters.searchTerm]); // onFilterChange omitted to prevent infinite loops (parent uses useCallback)
 
-  // Count applied filters for badge display - using stable serialization
+  // Memoize the help tooltip description to prevent re-renders
+  const helpTooltipDescription = useMemo(() => (
+    <div className='space-y-2'>
+      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.wildcard')}</div>
+      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.exact')}</div>
+      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.multiple')}</div>
+    </div>
+  ), [t]);
+
+
+
+
+  // Memoize filters applied count to prevent unnecessary recalculations
   const filtersApplied = useMemo(() => {
     let count = 0;
 
@@ -152,10 +163,21 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
     }
 
     return count;
-  }, [filtersString, showDateFilters]);
+  }, [
+    filters.searchTerm,
+    filters.roles?.length,
+    filters.status,
+    filters.isActive,
+    filters.department,
+    filters.createdDateFrom,
+    filters.createdDateTo,
+    filters.lastLoginFrom,
+    filters.lastLoginTo,
+    showDateFilters,
+  ]);
 
-  // Handle search input changes with sanitization but deferred validation
-  const handleSearchChange = (value: string) => {
+  // Handle search input changes with sanitization
+  const handleSearchChange = useCallback((value: string) => {
     // Sanitize input immediately
     const sanitizedValue = InputSanitizer.sanitizeText(value);
 
@@ -167,37 +189,26 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
       );
     }
 
-    // Always update the input value to allow typing
-    onFilterChange('searchTerm', sanitizedValue);
+    // Update local search term immediately for responsive UI
+    setLocalSearchTerm(sanitizedValue);
+  }, [t]);
 
-    // Only validate if the user has typed enough characters for a meaningful search
-    // This allows typing but validates complete search terms
-    if (sanitizedValue.length >= 2) {
-      const validation = ValidationUtils.validateSearchTerm(sanitizedValue);
-      if (!validation.isValid) {
-        showWarningMessage(
-          t('userManagement.validation.invalidSearch'),
-          validation.error
-        );
-      }
-    }
-  };
-
-  // Handle role selection
-  const handleRoleChange = (roles: string[]) => {
+  // Handle role selection - memoized to prevent re-renders
+  const handleRoleChange = useCallback((roles: string[]) => {
     onFilterChange('roles', roles as UserRole[]);
-  };
+  }, [onFilterChange]);
 
-  // Clear all filters
-  const handleClearFilters = () => {
+  // Clear all filters - memoized to prevent re-renders
+  const handleClearFilters = useCallback(() => {
+    setLocalSearchTerm('');
     onClearFilters();
     setIsFilterOpen(false);
-  };
+  }, [onClearFilters]);
 
-  // Get placeholder text for search
-  const getSearchPlaceholder = () => {
+  // Get placeholder text for search - memoized to prevent re-renders
+  const getSearchPlaceholder = useMemo(() => {
     return searchPlaceholder || t('userManagement.searchPlaceholder');
-  };
+  }, [searchPlaceholder, t]);
 
   return (
     <div className={cn('bg-muted/10 rounded-lg border border-border/20 shadow-sm', className)}>
@@ -211,22 +222,16 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
               <div className='absolute right-3 top-1/2 -translate-y-1/2'>
                 <HelpTooltip
                   title={t('userManagement.tooltips.searchFilters.searchSyntax.title')}
-                  description={
-                    <div className='space-y-2'>
-                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.wildcard')}</div>
-                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.exact')}</div>
-                      <div>• {t('userManagement.tooltips.searchFilters.searchSyntax.multiple')}</div>
-                    </div>
-                  }
+                  description={helpTooltipDescription}
                   iconSize={14}
                 />
               </div>
               <Input
-                placeholder={getSearchPlaceholder()}
-                value={filters.searchTerm}
+                placeholder={getSearchPlaceholder}
+                value={localSearchTerm}
                 onChange={e => handleSearchChange(e.target.value)}
                 className='pl-10 pr-10 touch-manipulation min-h-[44px] text-base sm:text-sm'
-                aria-label={`${getSearchPlaceholder()}. ${filtersApplied > 0 ? `${filtersApplied} filters applied.` : 'No filters applied.'}`}
+                aria-label={`${getSearchPlaceholder}. ${filtersApplied > 0 ? `${filtersApplied} filters applied.` : 'No filters applied.'}`}
                 aria-describedby="search-status"
                 disabled={isLoading}
                 maxLength={100}

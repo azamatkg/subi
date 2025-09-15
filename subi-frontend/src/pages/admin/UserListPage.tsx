@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Clock,
@@ -247,6 +247,64 @@ export const UserListPage: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, [viewMode]);
 
+  // Memoize validation errors to prevent cascading re-renders
+  const memoizedValidationErrors = useMemo(() => _validationErrors, [_validationErrors]);
+
+  // Handle filter changes with validation - optimized to prevent infinite loops
+  const handleFilterChange = useCallback((
+    key: keyof UserFilterState,
+    value: string | string[] | boolean | UserStatus | null
+  ) => {
+    // Batch state updates to prevent multiple re-renders
+    let newValidationErrors = { ...memoizedValidationErrors };
+
+    // Clear previous validation error for this field
+    if (newValidationErrors[key]) {
+      newValidationErrors = { ...newValidationErrors, [key]: '' };
+    }
+
+    // Validate input based on filter type
+    if (key === 'searchTerm' && typeof value === 'string') {
+      // Only validate search terms that are long enough for meaningful search
+      // Allow typing of shorter terms but show validation for complete searches
+      if (value.length >= 2) {
+        const searchValidation = ValidationUtils.validateSearchTerm(value);
+        if (!searchValidation.isValid) {
+          newValidationErrors = { ...newValidationErrors, searchTerm: searchValidation.error || '' };
+          showWarningMessage(t('userManagement.validation.invalidSearch'), searchValidation.error);
+          // Don't return here - still allow the input to be updated so user can continue typing
+        }
+      }
+    }
+
+    if ((key === 'createdDateFrom' || key === 'createdDateTo' || key === 'lastLoginFrom' || key === 'lastLoginTo') && typeof value === 'string') {
+      const otherDateKey = key === 'createdDateFrom' ? 'createdDateTo' :
+                          key === 'createdDateTo' ? 'createdDateFrom' :
+                          key === 'lastLoginFrom' ? 'lastLoginTo' : 'lastLoginFrom';
+      const otherDateValue = filters[otherDateKey as keyof UserFilterState] as string;
+
+      const dateValidation = ValidationUtils.validateDateRange(
+        key.includes('From') ? value : otherDateValue,
+        key.includes('To') ? value : otherDateValue
+      );
+
+      if (!dateValidation.isValid) {
+        newValidationErrors = { ...newValidationErrors, [key]: dateValidation.error || '' };
+        showWarningMessage(t('userManagement.validation.invalidDateRange'), dateValidation.error);
+        return;
+      }
+    }
+
+    // Batch all state updates together to prevent cascading re-renders
+    setValidationErrors(newValidationErrors);
+    setFilters(prev => ({ ...prev, [key]: value }));
+
+    // Only reset page for non-search filters or when search is meaningful
+    if (key !== 'searchTerm' || (typeof value === 'string' && value.length >= 2)) {
+      setPage(0);
+    }
+  }, [memoizedValidationErrors, filters, t]);
+
   // Session recovery effect - restore bulk operation state
   useEffect(() => {
     const restoreBulkOperation = () => {
@@ -314,53 +372,6 @@ export const UserListPage: React.FC = () => {
   const handleSetViewMode = (mode: ViewMode) => {
     setViewMode(mode);
     setStoredViewMode(mode);
-  };
-
-  // Handle filter changes with validation
-  const handleFilterChange = (
-    key: keyof UserFilterState,
-    value: string | string[] | boolean | UserStatus | null
-  ) => {
-    // Clear previous validation errors
-    setValidationErrors(prev => ({ ...prev, [key]: '' }));
-
-    // Validate input based on filter type
-    if (key === 'searchTerm' && typeof value === 'string') {
-      // Only validate search terms that are long enough for meaningful search
-      // Allow typing of shorter terms but show validation for complete searches
-      if (value.length >= 2) {
-        const searchValidation = ValidationUtils.validateSearchTerm(value);
-        if (!searchValidation.isValid) {
-          setValidationErrors(prev => ({ ...prev, searchTerm: searchValidation.error || '' }));
-          showWarningMessage(t('userManagement.validation.invalidSearch'), searchValidation.error);
-          // Don't return here - still allow the input to be updated so user can continue typing
-        }
-      } else {
-        // Clear any previous search validation errors for short inputs
-        setValidationErrors(prev => ({ ...prev, searchTerm: '' }));
-      }
-    }
-
-    if ((key === 'createdDateFrom' || key === 'createdDateTo' || key === 'lastLoginFrom' || key === 'lastLoginTo') && typeof value === 'string') {
-      const otherDateKey = key === 'createdDateFrom' ? 'createdDateTo' :
-                          key === 'createdDateTo' ? 'createdDateFrom' :
-                          key === 'lastLoginFrom' ? 'lastLoginTo' : 'lastLoginFrom';
-      const otherDateValue = filters[otherDateKey as keyof UserFilterState] as string;
-
-      const dateValidation = ValidationUtils.validateDateRange(
-        key.includes('From') ? value : otherDateValue,
-        key.includes('To') ? value : otherDateValue
-      );
-
-      if (!dateValidation.isValid) {
-        setValidationErrors(prev => ({ ...prev, [key]: dateValidation.error || '' }));
-        showWarningMessage(t('userManagement.validation.invalidDateRange'), dateValidation.error);
-        return;
-      }
-    }
-
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPage(0);
   };
 
   const clearFilters = () => {
