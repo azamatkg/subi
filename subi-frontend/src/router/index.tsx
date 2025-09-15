@@ -20,6 +20,9 @@ import {
   ProtectedRoute,
 } from '@/components/common/ProtectedRoute';
 
+// Context providers
+import { UserManagementSessionProvider } from '@/contexts/UserManagementSessionContext';
+
 // Page components (will be created later)
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage';
@@ -255,6 +258,11 @@ export const router = createBrowserRouter([
           },
           {
             path: 'users',
+            element: (
+              <UserManagementSessionProvider>
+                <Outlet />
+              </UserManagementSessionProvider>
+            ),
             errorElement: <RouteErrorBoundary />,
             children: [
               {

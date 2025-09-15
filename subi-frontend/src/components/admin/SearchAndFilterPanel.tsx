@@ -139,29 +139,33 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
     setFiltersApplied(count);
   }, [filters, showDateFilters]);
 
-  // Handle search input changes with validation and sanitization
+  // Handle search input changes with sanitization but deferred validation
   const handleSearchChange = (value: string) => {
-    // Sanitize input
+    // Sanitize input immediately
     const sanitizedValue = InputSanitizer.sanitizeText(value);
 
-    // Validate search term
-    if (sanitizedValue !== value.trim()) {
+    // Show sanitization warning if characters were removed
+    if (sanitizedValue !== value.trim() && value.trim().length > 0) {
       showWarningMessage(
         t('userManagement.validation.inputSanitized'),
         t('userManagement.validation.invalidCharactersRemoved')
       );
     }
 
-    const validation = ValidationUtils.validateSearchTerm(sanitizedValue);
-    if (!validation.isValid && sanitizedValue.length > 0) {
-      showWarningMessage(
-        t('userManagement.validation.invalidSearch'),
-        validation.error
-      );
-      return;
-    }
-
+    // Always update the input value to allow typing
     onFilterChange('searchTerm', sanitizedValue);
+
+    // Only validate if the user has typed enough characters for a meaningful search
+    // This allows typing but validates complete search terms
+    if (sanitizedValue.length >= 2) {
+      const validation = ValidationUtils.validateSearchTerm(sanitizedValue);
+      if (!validation.isValid) {
+        showWarningMessage(
+          t('userManagement.validation.invalidSearch'),
+          validation.error
+        );
+      }
+    }
   };
 
   // Handle role selection

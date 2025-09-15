@@ -59,6 +59,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserListAccess } from '@/hooks/useAccessControl';
+import { useUserManagementSessionContext } from '@/contexts/UserManagementSessionContext';
 import { cn } from '@/lib/utils';
 import { useProgressiveLoading, useSmartLoading, useStaggeredLoading } from '@/hooks/useSmartLoading';
 import {
@@ -108,6 +109,7 @@ export const UserListPage: React.FC = () => {
   const navigate = useNavigate();
   const { hasAnyRole: _hasAnyRole } = useAuth();
   const accessControl = useUserListAccess();
+  const sessionContext = useUserManagementSessionContext();
   useSetPageTitle(t('userManagement.users'));
 
   // State management - must be called before any conditional returns
@@ -245,6 +247,49 @@ export const UserListPage: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, [viewMode]);
 
+  // Session recovery effect - restore bulk operation state
+  useEffect(() => {
+    const restoreBulkOperation = () => {
+      const bulkState = sessionContext.restoreBulkOperationState();
+      if (bulkState) {
+        // Restore bulk operation selection and state
+        setSelectedUserIds(bulkState.selectedIds);
+        setBulkOperationLoading(false);
+
+        // Show recovery message
+        showInfoMessage(
+          t('userManagement.session.recovery.bulkOperationRestored'),
+          t('userManagement.session.recovery.bulkOperationRestoredDescription', {
+            operation: bulkState.operationType,
+            count: bulkState.selectedIds.length
+          })
+        );
+
+        // If operation was in progress, offer to continue
+        if (bulkState.progress && bulkState.progress.completed < bulkState.progress.total) {
+          showWarningMessage(
+            t('userManagement.session.recovery.bulkOperationIncomplete'),
+            t('userManagement.session.recovery.bulkOperationIncompleteDescription')
+          );
+        }
+      }
+
+      // Restore navigation state
+      const navState = sessionContext.restoreNavigationState();
+      if (navState) {
+        if (navState.filters) {
+          setFilters(prevFilters => ({ ...prevFilters, ...navState.filters }));
+        }
+        if (navState.pagination) {
+          setPage(navState.pagination.page);
+          setSize(navState.pagination.limit);
+        }
+      }
+    };
+
+    restoreBulkOperation();
+  }, [sessionContext, t]);
+
   // Early access control check
   if (!accessControl.canAccessPage) {
     return (
@@ -281,11 +326,18 @@ export const UserListPage: React.FC = () => {
 
     // Validate input based on filter type
     if (key === 'searchTerm' && typeof value === 'string') {
-      const searchValidation = ValidationUtils.validateSearchTerm(value);
-      if (!searchValidation.isValid) {
-        setValidationErrors(prev => ({ ...prev, searchTerm: searchValidation.error || '' }));
-        showWarningMessage(t('userManagement.validation.invalidSearch'), searchValidation.error);
-        return;
+      // Only validate search terms that are long enough for meaningful search
+      // Allow typing of shorter terms but show validation for complete searches
+      if (value.length >= 2) {
+        const searchValidation = ValidationUtils.validateSearchTerm(value);
+        if (!searchValidation.isValid) {
+          setValidationErrors(prev => ({ ...prev, searchTerm: searchValidation.error || '' }));
+          showWarningMessage(t('userManagement.validation.invalidSearch'), searchValidation.error);
+          // Don't return here - still allow the input to be updated so user can continue typing
+        }
+      } else {
+        // Clear any previous search validation errors for short inputs
+        setValidationErrors(prev => ({ ...prev, searchTerm: '' }));
       }
     }
 
@@ -390,8 +442,17 @@ export const UserListPage: React.FC = () => {
     }
   };
 
-  // Enhanced bulk operations handlers with detailed progress tracking
+  // Enhanced bulk operations handlers with detailed progress tracking and session handling
   const handleBulkOperation = async (operation: string, params: Record<string, unknown>) => {
+    // Check session health before starting bulk operation
+    if (!sessionContext.isSessionHealthy) {
+      showWarningMessage(
+        t('userManagement.session.warning.title'),
+        t('userManagement.session.bulkOperationBlocked')
+      );
+      return;
+    }
+
     // Validate bulk selection
     const selectionValidation = ValidationUtils.validateBulkSelection(selectedUserIds);
     if (!selectionValidation.isValid) {
@@ -420,11 +481,27 @@ export const UserListPage: React.FC = () => {
       canCancel: true,
     };
 
+    // Save bulk operation state for session recovery
+    sessionContext.saveBulkOperationState({
+      operationType: operation as 'delete' | 'updateStatus' | 'updateRoles' | 'export',
+      selectedIds: selectedUserIds,
+      operationData: params,
+      progress: {
+        total: selectedUserIds.length,
+        completed: 0,
+        failed: [],
+      },
+      timestamp: Date.now(),
+    });
+
     setBulkOperationLoading(true);
     setBulkOperationError(null);
     setBulkProgress(initialProgress);
     setOperationCancelled(false);
     setRetryCount(0);
+
+    // Save current page state for session recovery
+    sessionContext.saveNavigationState(filters, { page, limit: size });
 
     const updateProgress = (processedItems: number, successfulItems: number, failedItems: number, currentItem?: string, errorDetails: { itemId: string; itemName: string; error: string; retryable: boolean; retryCount: number }[] = []) => {
       const percentage = (processedItems / selectedUserIds.length) * 100;
@@ -567,6 +644,9 @@ export const UserListPage: React.FC = () => {
 
       // Clear selection after successful operation
       setSelectedUserIds([]);
+
+      // Clear bulk operation session state on success
+      sessionContext.clearBulkOperationState();
     } catch (error) {
       const errorInfo = handleApiError(error, t);
 
@@ -611,6 +691,10 @@ export const UserListPage: React.FC = () => {
       endTime: new Date(),
       canCancel: false,
     } : null);
+
+    // Clear bulk operation session state on cancellation
+    sessionContext.clearBulkOperationState();
+
     showInfoMessage(
       t('userManagement.bulkActions.operationCancelled'),
       t('userManagement.bulkActions.operationCancelledDescription')

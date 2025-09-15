@@ -49,6 +49,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserFormAccess } from '@/hooks/useAccessControl';
+import { useUserManagementSessionContext } from '@/contexts/UserManagementSessionContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProgressiveLoading } from '@/hooks/useSmartLoading';
 import {
@@ -222,6 +223,7 @@ export const UserAddEditPage: React.FC = () => {
   const { t, isLoading: _translationLoading } = useTranslation();
   const { hasAnyRole: _hasAnyRole } = useAuth();
   const accessControl = useUserFormAccess();
+  const sessionContext = useUserManagementSessionContext();
 
   // All hooks must be called before any conditional returns
   const [showPassword, setShowPassword] = useState(false);
@@ -364,6 +366,59 @@ export const UserAddEditPage: React.FC = () => {
     }
   }, [user, isEditMode, form]);
 
+  // Session recovery effect - restore form data if available
+  useEffect(() => {
+    const formId = isEditMode ? `user-edit-${id}` : 'user-create';
+    const backupData = sessionContext.restoreFormData(formId);
+
+    if (backupData && Object.keys(backupData).length > 0) {
+      // Only restore if the form hasn't been loaded with user data yet (for edit mode)
+      if (!isEditMode || !user) {
+        form.reset(backupData as FormData);
+
+        // Show recovery notification
+        showInfoMessage(
+          t('userManagement.session.recovery.formRestored'),
+          t('userManagement.session.recovery.formRestoredDescription')
+        );
+      }
+    }
+  }, [form, isEditMode, id, user, sessionContext, t]);
+
+  // Auto-backup form data on changes (with debouncing)
+  const formValues = form.watch();
+  const debouncedFormValues = useDebounce(formValues, 2000); // 2 second delay
+
+  useEffect(() => {
+    // Don't backup immediately after form initialization
+    if (Object.keys(debouncedFormValues).length === 0) {
+      return;
+    }
+
+    // Don't backup if form is pristine (no user changes)
+    if (!form.formState.isDirty) {
+      return;
+    }
+
+    // Check if session is healthy before backing up
+    if (!sessionContext.isSessionHealthy) {
+      return;
+    }
+
+    const formId = isEditMode ? `user-edit-${id}` : 'user-create';
+
+    // Remove sensitive data from backup (passwords)
+    const backupData = { ...debouncedFormValues };
+    if ('password' in backupData) {
+      delete backupData.password;
+    }
+    if ('confirmPassword' in backupData) {
+      delete backupData.confirmPassword;
+    }
+
+    sessionContext.backupFormData(formId, backupData);
+  }, [debouncedFormValues, form.formState.isDirty, sessionContext, isEditMode, id]);
+
   // Early access control check
   if (isEditMode && !accessControl.canAccessEditPage) {
     return (
@@ -469,6 +524,11 @@ export const UserAddEditPage: React.FC = () => {
         };
 
         await updateUser({ id, data: updateData }).unwrap();
+
+        // Clear form backup on successful update
+        const formId = `user-edit-${id}`;
+        sessionContext.clearFormBackup(formId);
+
         showSuccessMessage(
           t('userManagement.messages.userUpdated'),
           t('userManagement.messages.userUpdatedDescription', {
@@ -489,6 +549,10 @@ export const UserAddEditPage: React.FC = () => {
         };
 
         const result = await createUser(newUserData).unwrap();
+
+        // Clear form backup on successful creation
+        sessionContext.clearFormBackup('user-create');
+
         showSuccessMessage(
           t('userManagement.messages.userCreated'),
           t('userManagement.messages.userCreatedDescription', {
@@ -521,6 +585,10 @@ export const UserAddEditPage: React.FC = () => {
   };
 
   const handleCancel = () => {
+    // Clear form backup on cancel
+    const formId = isEditMode ? `user-edit-${id}` : 'user-create';
+    sessionContext.clearFormBackup(formId);
+
     if (isEditMode) {
       navigate(`${ROUTES.ADMIN}/users/${id}`);
     } else {
