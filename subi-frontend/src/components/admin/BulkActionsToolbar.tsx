@@ -48,6 +48,7 @@ import type { RoleResponseDto } from '@/types/role';
 import { UserStatus as UserStatusEnum } from '@/types/user';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/hooks/useAuth';
+import { useBulkActionsAccess } from '@/hooks/useAccessControl';
 import { cn } from '@/lib/utils';
 import { announceToScreenReader } from '@/lib/accessibility';
 
@@ -86,6 +87,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
 }) => {
   const { t } = useTranslation();
   const { hasAnyRole } = useAuth();
+  const accessControl = useBulkActionsAccess();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showProgressDetails, setShowProgressDetails] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<ConfirmationDialogState>({
@@ -115,27 +117,27 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
         case 'd':
         case 'D':
           e.preventDefault();
-          if (hasAnyRole(['ADMIN'])) {
+          if (accessControl.canBulkDelete) {
             handleDelete();
           }
           break;
         case 'a':
         case 'A':
           e.preventDefault();
-          if (hasAnyRole(['ADMIN'])) {
+          if (accessControl.canBulkActivate) {
             handleStatusChange(UserStatusEnum.ACTIVE);
           }
           break;
         case 'i':
         case 'I':
           e.preventDefault();
-          if (hasAnyRole(['ADMIN'])) {
+          if (accessControl.canBulkDeactivate) {
             handleStatusChange(UserStatusEnum.INACTIVE);
           }
           break;
       }
     }
-  }, [selectedUserIds.length, onClearSelection, hasAnyRole, handleDelete, handleStatusChange]);
+  }, [selectedUserIds.length, onClearSelection, accessControl, handleDelete, handleStatusChange]);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -182,8 +184,8 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
     });
   }, [t, selectedUserIds.length, onBulkOperation]);
 
-  // Don't render if no users selected
-  if (selectedUserIds.length === 0) {
+  // Don't render if no users selected or no toolbar access
+  if (selectedUserIds.length === 0 || !accessControl.canShowToolbar) {
     return null;
   }
 
@@ -419,17 +421,17 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
           <div className="flex items-center gap-2">
             {!isMobile ? (
               <>
-                {hasAnyRole(['ADMIN']) && (
+                {accessControl.canShowToolbar && (
                   <>
-                    {renderStatusButtons()}
-                    {renderRoleAssignmentButton()}
-                    {renderDeleteButton()}
+                    {accessControl.canShowStatusButtons && renderStatusButtons()}
+                    {accessControl.canShowRoleButtons && renderRoleAssignmentButton()}
+                    {accessControl.canShowDeleteButton && renderDeleteButton()}
                   </>
                 )}
               </>
             ) : (
               <>
-                {hasAnyRole(['ADMIN']) && renderMobileActions()}
+                {accessControl.canShowToolbar && renderMobileActions()}
               </>
             )}
 

@@ -43,3 +43,31 @@ export const VALIDATION = {
   MIN_LOAN_AMOUNT: 1000,
   MIN_MONTHLY_PAYMENT: 1000,
 } as const;
+
+// User Management Access Control
+export const USER_MANAGEMENT_ROUTES = {
+  LIST: '/admin/users',
+  CREATE: '/admin/users/create',
+  EDIT: '/admin/users/:id/edit',
+  DETAIL: '/admin/users/:id',
+} as const;
+
+// User Management Actions
+export const USER_MANAGEMENT_ACTIONS = {
+  VIEW: 'VIEW',
+  CREATE: 'CREATE',
+  EDIT: 'EDIT',
+  DELETE: 'DELETE',
+  BULK_OPERATIONS: 'BULK_OPERATIONS',
+  MANAGE_ROLES: 'MANAGE_ROLES',
+  CHANGE_STATUS: 'CHANGE_STATUS',
+  EXPORT: 'EXPORT',
+} as const;
+
+// Access Control Messages
+export const ACCESS_CONTROL_MESSAGES = {
+  UNAUTHORIZED_ACCESS: 'You do not have permission to access this resource.',
+  ADMIN_ONLY: 'This action is restricted to administrators only.',
+  INSUFFICIENT_PERMISSIONS: 'You do not have sufficient permissions to perform this action.',
+  USER_MANAGEMENT_RESTRICTED: 'User management features are restricted to administrators.',
+} as const;

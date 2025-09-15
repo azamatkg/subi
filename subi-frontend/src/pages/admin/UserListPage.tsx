@@ -58,6 +58,7 @@ import { VirtualList } from '@/components/ui/VirtualList';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserListAccess } from '@/hooks/useAccessControl';
 import { cn } from '@/lib/utils';
 import { useProgressiveLoading, useSmartLoading, useStaggeredLoading } from '@/hooks/useSmartLoading';
 import {
@@ -105,7 +106,24 @@ export const UserListPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { hasAnyRole } = useAuth();
+  const accessControl = useUserListAccess();
   useSetPageTitle(t('userManagement.users'));
+
+  // Early access control check
+  if (!accessControl.canAccessPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.userManagementRestricted')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // State management
   const [filters, setFilters] = useState<UserFilterState>({
@@ -808,7 +826,7 @@ export const UserListPage: React.FC = () => {
                     <Eye className='mr-2 h-4 w-4' />
                     {t('common.view')}
                   </DropdownMenuItem>
-                  {hasAnyRole(['ADMIN']) && (
+                  {accessControl.canShowEditAction && (
                     <DropdownMenuItem
                       onClick={() => handleEdit(user.id)}
                       className='hover:bg-accent focus:bg-accent'
@@ -817,7 +835,7 @@ export const UserListPage: React.FC = () => {
                       {t('common.edit')}
                     </DropdownMenuItem>
                   )}
-                  {hasAnyRole(['ADMIN']) && (
+                  {accessControl.canShowDeleteAction && (
                     <>
                       <Separator />
                       <DropdownMenuItem
@@ -1084,7 +1102,7 @@ export const UserListPage: React.FC = () => {
             </SkeletonToContentTransition>
           </div>
 
-          {hasAnyRole(['ADMIN']) && (
+          {accessControl.canShowCreateButton && (
             <div className="flex items-center justify-center sm:justify-start sm:pt-0">
               <Button
                 onClick={handleCreate}
@@ -1115,18 +1133,20 @@ export const UserListPage: React.FC = () => {
             />
           }
         >
-          <BulkActionsToolbar
-            selectedUserIds={selectedUserIds}
-            selectedUsers={finalData?.content.filter(user => selectedUserIds.includes(user.id)) || []}
-            onClearSelection={handleClearSelection}
-            onBulkOperation={handleBulkOperation}
-            onCancelOperation={handleCancelOperation}
-            availableRoles={rolesData?.content || []}
-            isLoading={bulkOperationLoading}
-            progressMessage={bulkProgressMessage || undefined}
-            error={bulkOperationError || undefined}
-            progress={bulkProgress || undefined}
-          />
+          {accessControl.canShowBulkActions && (
+            <BulkActionsToolbar
+              selectedUserIds={selectedUserIds}
+              selectedUsers={finalData?.content.filter(user => selectedUserIds.includes(user.id)) || []}
+              onClearSelection={handleClearSelection}
+              onBulkOperation={handleBulkOperation}
+              onCancelOperation={handleCancelOperation}
+              availableRoles={rolesData?.content || []}
+              isLoading={bulkOperationLoading}
+              progressMessage={bulkProgressMessage || undefined}
+              error={bulkOperationError || undefined}
+              progress={bulkProgress || undefined}
+            />
+          )}
         </ErrorBoundary>
       )}
 
@@ -1398,10 +1418,10 @@ export const UserListPage: React.FC = () => {
                             setPage(0);
                           },
                         }}
-                        selection={{
+                        selection={accessControl.canSelectMultiple ? {
                           selectedIds: selectedUserIds,
                           onSelectionChange: setSelectedUserIds,
-                        }}
+                        } : undefined}
                         onRowClick={(user) => handleView(user.id)}
                         onRowAction={(action, user) => {
                           switch (action) {
@@ -1409,12 +1429,12 @@ export const UserListPage: React.FC = () => {
                               handleView(user.id);
                               break;
                             case 'edit':
-                              if (hasAnyRole(['ADMIN'])) {
+                              if (accessControl.canEditUserFromList) {
                                 handleEdit(user.id);
                               }
                               break;
                             case 'delete':
-                              if (hasAnyRole(['ADMIN'])) {
+                              if (accessControl.canDeleteUserFromList) {
                                 handleDeleteClick(user);
                               }
                               break;

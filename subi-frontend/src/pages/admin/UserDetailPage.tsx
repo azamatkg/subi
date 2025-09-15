@@ -52,6 +52,7 @@ import {
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserDetailAccess } from '@/hooks/useAccessControl';
 import { useProgressiveLoading } from '@/hooks/useSmartLoading';
 import {
   handleApiError,
@@ -87,6 +88,23 @@ export const UserDetailPage: React.FC = () => {
   const {
     hasAnyRole,
   } = useAuth();
+  const accessControl = useUserDetailAccess();
+
+  // Early access control check
+  if (!accessControl.canAccessPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
 
   // State for modals and actions
@@ -361,7 +379,7 @@ export const UserDetailPage: React.FC = () => {
     }
   };
 
-  const canModifyUser = hasAnyRole(['ADMIN']);
+  const canModifyUser = accessControl.canShowEditButton;
 
   if (showUserLoading || !user) {
     return <UserProfileSkeleton showActivity showRoles sections={4} />;
@@ -407,7 +425,7 @@ export const UserDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {canModifyUser && (
+        {accessControl.canShowEditButton && (
           <div className='flex items-center gap-2'>
             <Button
               onClick={handleEdit}
@@ -425,37 +443,45 @@ export const UserDetailPage: React.FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
-                {user.status === UserStatus.ACTIVE ? (
+                {accessControl.canChangeStatus && (
+                  user.status === UserStatus.ACTIVE ? (
+                    <DropdownMenuItem
+                      onClick={() => setSuspendDialogOpen(true)}
+                      className='text-orange-600'
+                    >
+                      <UserX className='mr-2 h-4 w-4' />
+                      {t('userManagement.actions.suspend')}
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={handleActivate}
+                      className='text-green-600'
+                    >
+                      <UserCheck className='mr-2 h-4 w-4' />
+                      {t('userManagement.actions.activate')}
+                    </DropdownMenuItem>
+                  )
+                )}
+                {accessControl.canEditRoles && (
                   <DropdownMenuItem
-                    onClick={() => setSuspendDialogOpen(true)}
-                    className='text-orange-600'
+                    onClick={() => setResetPasswordDialogOpen(true)}
                   >
-                    <UserX className='mr-2 h-4 w-4' />
-                    {t('userManagement.actions.suspend')}
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem
-                    onClick={handleActivate}
-                    className='text-green-600'
-                  >
-                    <UserCheck className='mr-2 h-4 w-4' />
-                    {t('userManagement.actions.activate')}
+                    <Key className='mr-2 h-4 w-4' />
+                    {t('userManagement.actions.resetPassword')}
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  onClick={() => setResetPasswordDialogOpen(true)}
-                >
-                  <Key className='mr-2 h-4 w-4' />
-                  {t('userManagement.actions.resetPassword')}
-                </DropdownMenuItem>
-                <Separator />
-                <DropdownMenuItem
-                  onClick={() => setDeleteDialogOpen(true)}
-                  className='text-destructive'
-                >
-                  <Trash className='mr-2 h-4 w-4' />
-                  {t('common.delete')}
-                </DropdownMenuItem>
+                {accessControl.canShowDeleteButton && (
+                  <>
+                    <Separator />
+                    <DropdownMenuItem
+                      onClick={() => setDeleteDialogOpen(true)}
+                      className='text-destructive'
+                    >
+                      <Trash className='mr-2 h-4 w-4' />
+                      {t('common.delete')}
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

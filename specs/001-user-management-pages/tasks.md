@@ -29,7 +29,7 @@ This is a React TypeScript frontend enhancement project using:
 - [x] T007 [P] Contract test DELETE /api/users/{id} in `tests/contract/users-delete.test.ts`
 - [x] T008 [P] Contract test GET /api/users/search in `tests/contract/users-search.test.ts`
 - [x] T009 [P] Contract test GET /api/users/exists/username/{username} in `tests/contract/users-validation.test.ts`
-- [x] T010 [P] Contract test GET /api/users/exists/email/{email} in `tests/contract/users-validation.test.ts`
+- [x] T010 [P] Contract test GET /api/users/exists/email/{email} in `tests/contract/users-validation.test.ts` ✅
 
 ### Component Tests (UI Behavior) [P]
 - [x] T011 [P] Component test for enhanced UserListPage in `src/pages/admin/__tests__/UserListPage.test.tsx`
@@ -92,8 +92,8 @@ This is a React TypeScript frontend enhancement project using:
 - [x] T048 [P] Optimize performance with virtual scrolling for large user lists
 
 ### Security & Validation
-- [ ] T049 Implement role-based component rendering and access controls
-- [ ] T050 Add client-side security validations matching backend API requirements
+- [x] T049 Implement role-based component rendering and access controls
+- [x] T050 Add client-side security validations matching backend API requirements
 - [ ] T051 Implement session timeout handling in user management context
 
 ## Phase 3.5: E2E Testing & Validation

@@ -48,6 +48,7 @@ import {
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserFormAccess } from '@/hooks/useAccessControl';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProgressiveLoading } from '@/hooks/useSmartLoading';
 import {
@@ -220,8 +221,40 @@ export const UserAddEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { t, isLoading: translationLoading } = useTranslation();
   const { hasAnyRole } = useAuth();
+  const accessControl = useUserFormAccess();
 
   const isEditMode = Boolean(id);
+
+  // Early access control check
+  if (isEditMode && !accessControl.canAccessEditPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isEditMode && !accessControl.canAccessCreatePage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+            {t('accessControl.unauthorized')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('accessControl.insufficientPermissions')}
+          </p>
+        </div>
+      </div>
+    );
+  }
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
@@ -362,12 +395,6 @@ export const UserAddEditPage: React.FC = () => {
     }
   }, [user, isEditMode, form]);
 
-  // Check permissions
-  if (!hasAnyRole(['ADMIN'])) {
-    return (
-      <ErrorFallback error={new Error('Unauthorized')} type='permission' />
-    );
-  }
 
   // Enhanced form submission with validation and sanitization
   const onSubmit = async (data: FormData) => {
@@ -1027,7 +1054,8 @@ export const UserAddEditPage: React.FC = () => {
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          disabled={!accessControl.canChangeStatus}
+                          onCheckedChange={accessControl.canChangeStatus ? field.onChange : undefined}
                         />
                       </FormControl>
                       <div className='space-y-1 leading-none'>
@@ -1087,7 +1115,9 @@ export const UserAddEditPage: React.FC = () => {
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(role.value)}
+                                  disabled={!accessControl.canAssignRoles}
                                   onCheckedChange={checked => {
+                                    if (!accessControl.canAssignRoles) return;
                                     const updatedRoles = checked
                                       ? [...(field.value || []), role.value]
                                       : field.value?.filter(
@@ -1137,7 +1167,7 @@ export const UserAddEditPage: React.FC = () => {
             </Button>
             <Button
               type='submit'
-              disabled={isCreating || isUpdating}
+              disabled={isCreating || isUpdating || !accessControl.canSaveUser}
               className='w-full sm:w-auto touch-manipulation min-h-[44px] order-1 sm:order-2'
             >
               <ButtonLoadingState

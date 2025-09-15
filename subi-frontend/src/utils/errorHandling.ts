@@ -386,3 +386,284 @@ export const NetworkErrorRecovery = {
     };
   },
 };
+
+/**
+ * Security-enhanced error handling utilities
+ */
+export const SecurityErrorHandler = {
+  /**
+   * Check if error indicates a security threat
+   */
+  isSecurityThreat: (error: unknown): boolean => {
+    if (error && typeof error === 'object' && 'status' in error) {
+      const status = (error as RTKQueryError).status;
+      // Security-related status codes
+      return typeof status === 'number' &&
+             (status === 401 || status === 403 || status === 429 || status === 418);
+    }
+
+    if (error instanceof Error) {
+      const message = error.message.toLowerCase();
+      return message.includes('unauthorized') ||
+             message.includes('forbidden') ||
+             message.includes('blocked') ||
+             message.includes('suspicious') ||
+             message.includes('rate limit') ||
+             message.includes('csrf') ||
+             message.includes('xss') ||
+             message.includes('injection');
+    }
+
+    return false;
+  },
+
+  /**
+   * Sanitize error message before displaying to user
+   */
+  sanitizeErrorMessage: (message: string): string => {
+    if (!message || typeof message !== 'string') {
+      return 'An unexpected error occurred';
+    }
+
+    // Remove potentially sensitive information
+    return message
+      .replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '[IP]') // IP addresses
+      .replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi, '[UUID]') // UUIDs
+      .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[EMAIL]') // Email addresses
+      .replace(/Bearer\s+[A-Za-z0-9-._~+/]+=*/g, '[TOKEN]') // Bearer tokens
+      .replace(/password[:\s=]+[^\s]+/gi, 'password: [REDACTED]') // Passwords
+      .replace(/secret[:\s=]+[^\s]+/gi, 'secret: [REDACTED]') // Secrets
+      .replace(/key[:\s=]+[^\s]+/gi, 'key: [REDACTED]') // API keys
+      .substring(0, 500); // Limit message length
+  },
+
+  /**
+   * Check if error should be logged for security monitoring
+   */
+  shouldLogSecurityEvent: (error: unknown): boolean => {
+    if (!SecurityErrorHandler.isSecurityThreat(error)) {
+      return false;
+    }
+
+    // Always log security-related errors
+    return true;
+  },
+
+  /**
+   * Log security-related error event
+   */
+  logSecurityError: (error: unknown, context?: { userId?: string; action?: string; resource?: string }): void => {
+    if (!SecurityErrorHandler.shouldLogSecurityEvent(error)) {
+      return;
+    }
+
+    const sanitizedMessage = error instanceof Error
+      ? SecurityErrorHandler.sanitizeErrorMessage(error.message)
+      : 'Unknown security error';
+
+    const securityEvent = {
+      type: 'security_error' as const,
+      details: sanitizedMessage,
+      timestamp: new Date(),
+      context: {
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        ...context,
+      },
+      severity: SecurityErrorHandler.getErrorSeverity(error),
+    };
+
+    // In production, this would send to a security monitoring service
+    console.warn('[SECURITY ERROR]', securityEvent);
+
+    // Store locally for debugging (in development only)
+    if (process.env.NODE_ENV === 'development') {
+      const logs = JSON.parse(localStorage.getItem('security-error-logs') || '[]');
+      logs.push(securityEvent);
+      // Keep only last 50 error logs
+      if (logs.length > 50) {
+        logs.splice(0, logs.length - 50);
+      }
+      localStorage.setItem('security-error-logs', JSON.stringify(logs));
+    }
+  },
+
+  /**
+   * Determine error severity level
+   */
+  getErrorSeverity: (error: unknown): 'low' | 'medium' | 'high' | 'critical' => {
+    if (error && typeof error === 'object' && 'status' in error) {
+      const status = (error as RTKQueryError).status;
+
+      if (status === 401) return 'medium'; // Authentication required
+      if (status === 403) return 'high';   // Forbidden access
+      if (status === 429) return 'medium'; // Rate limited
+      if (status === 418) return 'critical'; // I'm a teapot (often used for blocked requests)
+    }
+
+    if (error instanceof Error) {
+      const message = error.message.toLowerCase();
+      if (message.includes('csrf') || message.includes('xss') || message.includes('injection')) {
+        return 'critical';
+      }
+      if (message.includes('unauthorized') || message.includes('forbidden')) {
+        return 'high';
+      }
+      if (message.includes('suspicious') || message.includes('blocked')) {
+        return 'medium';
+      }
+    }
+
+    return 'low';
+  },
+
+  /**
+   * Handle security error with appropriate response
+   */
+  handleSecurityError: (
+    error: unknown,
+    context?: { userId?: string; action?: string; resource?: string }
+  ): {
+    shouldBlock: boolean;
+    shouldRedirect: boolean;
+    redirectTo?: string;
+    userMessage: string;
+  } => {
+    SecurityErrorHandler.logSecurityError(error, context);
+
+    const severity = SecurityErrorHandler.getErrorSeverity(error);
+    const sanitizedMessage = error instanceof Error
+      ? SecurityErrorHandler.sanitizeErrorMessage(error.message)
+      : 'A security error occurred';
+
+    switch (severity) {
+      case 'critical':
+        return {
+          shouldBlock: true,
+          shouldRedirect: true,
+          redirectTo: '/security-error',
+          userMessage: 'A critical security issue was detected. Please contact support.',
+        };
+
+      case 'high':
+        return {
+          shouldBlock: true,
+          shouldRedirect: true,
+          redirectTo: '/unauthorized',
+          userMessage: 'Access denied. You do not have permission to perform this action.',
+        };
+
+      case 'medium':
+        return {
+          shouldBlock: true,
+          shouldRedirect: false,
+          userMessage: sanitizedMessage || 'Access temporarily restricted. Please try again later.',
+        };
+
+      case 'low':
+      default:
+        return {
+          shouldBlock: false,
+          shouldRedirect: false,
+          userMessage: sanitizedMessage || 'An error occurred. Please try again.',
+        };
+    }
+  },
+};
+
+/**
+ * Request validation utilities
+ */
+export const RequestValidator = {
+  /**
+   * Validate API request parameters
+   */
+  validateRequestParams: (params: Record<string, unknown>): { isValid: boolean; sanitizedParams: Record<string, unknown>; errors: string[] } => {
+    const errors: string[] = [];
+    const sanitizedParams: Record<string, unknown> = {};
+
+    Object.entries(params).forEach(([key, value]) => {
+      // Validate parameter name
+      if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(key)) {
+        errors.push(`Invalid parameter name: ${key}`);
+        return;
+      }
+
+      // Sanitize string values
+      if (typeof value === 'string') {
+        const sanitized = InputSanitizer.sanitizeText(value);
+        if (sanitized !== value) {
+          errors.push(`Parameter ${key} contains potentially unsafe content`);
+        }
+        sanitizedParams[key] = sanitized;
+      } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
+        sanitizedParams[key] = value;
+      } else if (Array.isArray(value)) {
+        // Validate array elements
+        const sanitizedArray = value.map(item => {
+          if (typeof item === 'string') {
+            return InputSanitizer.sanitizeText(item);
+          }
+          return item;
+        });
+        sanitizedParams[key] = sanitizedArray;
+      } else {
+        errors.push(`Unsupported parameter type for ${key}`);
+      }
+    });
+
+    return {
+      isValid: errors.length === 0,
+      sanitizedParams,
+      errors,
+    };
+  },
+
+  /**
+   * Validate request headers for security
+   */
+  validateRequestHeaders: (headers: Record<string, string>): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    Object.entries(headers).forEach(([name, value]) => {
+      // Check for header injection attempts
+      if (name.includes('\n') || name.includes('\r') || value.includes('\n') || value.includes('\r')) {
+        errors.push(`Header injection attempt detected in ${name}`);
+      }
+
+      // Validate Content-Type
+      if (name.toLowerCase() === 'content-type') {
+        const allowedTypes = [
+          'application/json',
+          'application/x-www-form-urlencoded',
+          'multipart/form-data',
+          'text/plain'
+        ];
+
+        const contentType = value.split(';')[0].trim();
+        if (!allowedTypes.includes(contentType)) {
+          errors.push(`Unsupported content type: ${contentType}`);
+        }
+      }
+
+      // Check for suspicious header values
+      if (typeof value === 'string') {
+        const suspiciousPatterns = [
+          /<script/i,
+          /javascript:/i,
+          /vbscript:/i,
+          /on\w+=/i,
+        ];
+
+        if (suspiciousPatterns.some(pattern => pattern.test(value))) {
+          errors.push(`Suspicious content detected in header ${name}`);
+        }
+      }
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  },
+};

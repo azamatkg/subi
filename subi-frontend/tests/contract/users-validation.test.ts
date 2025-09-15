@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { store } from '@/store';
@@ -11,6 +11,10 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' });
 });
 
+afterEach(() => {
+  server.resetHandlers();
+});
+
 afterAll(() => {
   server.close();
 });
@@ -21,8 +25,7 @@ describe('User Validation API Contract Tests', () => {
       const availableUsername = 'newusername';
 
       server.use(
-        http.get(`/api/users/exists/username/${availableUsername}`, ({ params }) => {
-          expect(params.username).toBe(availableUsername);
+        http.get(`http://localhost:8080/api/users/exists/username/${availableUsername}`, () => {
           return HttpResponse.json(false, { status: 200 });
         })
       );
@@ -39,7 +42,7 @@ describe('User Validation API Contract Tests', () => {
       const existingUsername = 'johndoe';
 
       server.use(
-        http.get(`/api/users/exists/username/${existingUsername}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${existingUsername}`, () => {
           return HttpResponse.json(true, { status: 200 });
         })
       );
@@ -55,7 +58,7 @@ describe('User Validation API Contract Tests', () => {
       const uppercaseUsername = 'JOHNDOE';
 
       server.use(
-        http.get(`/api/users/exists/username/${uppercaseUsername}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${uppercaseUsername}`, () => {
           return HttpResponse.json(true, { status: 200 });
         })
       );
@@ -71,7 +74,7 @@ describe('User Validation API Contract Tests', () => {
       const invalidUsername = 'ab'; // Too short
 
       server.use(
-        http.get(`/api/users/exists/username/${invalidUsername}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${invalidUsername}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -94,7 +97,7 @@ describe('User Validation API Contract Tests', () => {
       const invalidUsername = 'user@name!';
 
       server.use(
-        http.get(`/api/users/exists/username/${invalidUsername}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${invalidUsername}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -117,7 +120,7 @@ describe('User Validation API Contract Tests', () => {
       const longUsername = 'a'.repeat(60); // Over 50 character limit
 
       server.use(
-        http.get(`/api/users/exists/username/${longUsername}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${longUsername}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -140,7 +143,7 @@ describe('User Validation API Contract Tests', () => {
       const username = 'testuser';
 
       server.use(
-        http.get(`/api/users/exists/username/${username}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${username}`, () => {
           return HttpResponse.json(
             { message: 'Internal Server Error' },
             { status: 500 }
@@ -159,7 +162,7 @@ describe('User Validation API Contract Tests', () => {
       const username = 'ratelimited';
 
       server.use(
-        http.get(`/api/users/exists/username/${username}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/${username}`, () => {
           return HttpResponse.json(
             { 
               message: 'Too many requests',
@@ -183,8 +186,7 @@ describe('User Validation API Contract Tests', () => {
       const availableEmail = 'newemail@example.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${availableEmail}`, ({ params }) => {
-          expect(params.email).toBe(availableEmail);
+        http.get(`http://localhost:8080/api/users/exists/email/${availableEmail}`, () => {
           return HttpResponse.json(false, { status: 200 });
         })
       );
@@ -201,7 +203,7 @@ describe('User Validation API Contract Tests', () => {
       const existingEmail = 'john.doe@example.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${existingEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${existingEmail}`, () => {
           return HttpResponse.json(true, { status: 200 });
         })
       );
@@ -217,7 +219,7 @@ describe('User Validation API Contract Tests', () => {
       const uppercaseEmail = 'JOHN.DOE@EXAMPLE.COM';
 
       server.use(
-        http.get(`/api/users/exists/email/${uppercaseEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${uppercaseEmail}`, () => {
           return HttpResponse.json(true, { status: 200 });
         })
       );
@@ -233,7 +235,7 @@ describe('User Validation API Contract Tests', () => {
       const invalidEmail = 'invalid-email';
 
       server.use(
-        http.get(`/api/users/exists/email/${invalidEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${invalidEmail}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -256,7 +258,7 @@ describe('User Validation API Contract Tests', () => {
       const invalidEmail = 'useremail.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${invalidEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${invalidEmail}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -279,7 +281,7 @@ describe('User Validation API Contract Tests', () => {
       const invalidEmail = 'user@';
 
       server.use(
-        http.get(`/api/users/exists/email/${invalidEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${invalidEmail}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -302,8 +304,13 @@ describe('User Validation API Contract Tests', () => {
       const specialEmail = 'user+test.123@sub.example.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${specialEmail}`, () => {
-          return HttpResponse.json(false, { status: 200 });
+        http.get(`http://localhost:8080/api/users/exists/email/*`, ({ request }) => {
+          const url = new URL(request.url);
+          const email = decodeURIComponent(url.pathname.split('/').pop() || '');
+          if (email === specialEmail) {
+            return HttpResponse.json(false, { status: 200 });
+          }
+          return HttpResponse.json({ message: 'Not found' }, { status: 404 });
         })
       );
 
@@ -318,7 +325,7 @@ describe('User Validation API Contract Tests', () => {
       const internationalEmail = 'user@example.co.uk';
 
       server.use(
-        http.get(`/api/users/exists/email/${internationalEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${internationalEmail}`, () => {
           return HttpResponse.json(false, { status: 200 });
         })
       );
@@ -334,7 +341,7 @@ describe('User Validation API Contract Tests', () => {
       const longEmail = 'a'.repeat(250) + '@example.com'; // Extremely long email
 
       server.use(
-        http.get(`/api/users/exists/email/${longEmail}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${longEmail}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -357,7 +364,7 @@ describe('User Validation API Contract Tests', () => {
       const email = 'test@example.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${email}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${email}`, () => {
           return HttpResponse.json(
             { message: 'Internal Server Error' },
             { status: 500 }
@@ -376,7 +383,7 @@ describe('User Validation API Contract Tests', () => {
       const email = 'ratelimited@example.com';
 
       server.use(
-        http.get(`/api/users/exists/email/${email}`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/${email}`, () => {
           return HttpResponse.json(
             { 
               message: 'Too many requests',
@@ -398,15 +405,20 @@ describe('User Validation API Contract Tests', () => {
       const emailWithSpaces = 'user name@example.com'; // Invalid but should handle encoding
 
       server.use(
-        http.get(`/api/users/exists/email/${emailWithSpaces}`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Invalid email format',
-              errors: ['Email cannot contain spaces']
-            },
-            { status: 400 }
-          );
+        http.get(`http://localhost:8080/api/users/exists/email/*`, ({ request }) => {
+          const url = new URL(request.url);
+          const email = decodeURIComponent(url.pathname.split('/').pop() || '');
+          if (email === emailWithSpaces) {
+            return HttpResponse.json(
+              {
+                success: false,
+                message: 'Invalid email format',
+                errors: ['Email cannot contain spaces']
+              },
+              { status: 400 }
+            );
+          }
+          return HttpResponse.json({ message: 'Not found' }, { status: 404 });
         })
       );
 
@@ -426,7 +438,7 @@ describe('User Validation API Contract Tests', () => {
 
       let callCount = 0;
       server.use(
-        http.get(`/api/users/exists/username/*`, () => {
+        http.get(`http://localhost:8080/api/users/exists/username/*`, () => {
           callCount++;
           return HttpResponse.json(false, { status: 200 });
         })
@@ -453,7 +465,7 @@ describe('User Validation API Contract Tests', () => {
 
       let callCount = 0;
       server.use(
-        http.get(`/api/users/exists/email/*`, () => {
+        http.get(`http://localhost:8080/api/users/exists/email/*`, () => {
           callCount++;
           return HttpResponse.json(false, { status: 200 });
         })

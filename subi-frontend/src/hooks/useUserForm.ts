@@ -6,8 +6,10 @@ import { UserRole } from '@/types';
 import type { UserCreateDto, UserFormData, UserUpdateDto } from '@/types/user';
 import { useUsernameValidation } from './useUsernameValidation';
 import { useEmailValidation } from './useEmailValidation';
+import { useSecurityValidation } from './useSecurityValidation';
+import { SecurityDetector, InputSanitizer } from '@/utils/securityValidation';
 
-// Zod validation schema for user form
+// Enhanced Zod validation schema with security checks
 const userFormSchema = z.object({
   username: z
     .string()
@@ -16,22 +18,47 @@ const userFormSchema = z.object({
     .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens')
     .regex(/^[a-zA-Z0-9]/, 'Username must start with a letter or number')
     .refine((val) => !/[-_]$/.test(val), 'Username cannot end with a hyphen or underscore')
-    .refine((val) => !/[-_]{2,}/.test(val), 'Username cannot contain consecutive hyphens or underscores'),
+    .refine((val) => !/[-_]{2,}/.test(val), 'Username cannot contain consecutive hyphens or underscores')
+    .refine((val) => {
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'Username contains potentially unsafe content')
+    .transform((val) => InputSanitizer.sanitizeUsername(val)),
 
   email: z
     .string()
     .email('Please enter a valid email address')
     .max(254, 'Email address is too long')
-    .refine((val) => !val.includes('..'), 'Email cannot contain consecutive dots'),
+    .refine((val) => !val.includes('..'), 'Email cannot contain consecutive dots')
+    .refine((val) => {
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'Email contains potentially unsafe content')
+    .transform((val) => InputSanitizer.sanitizeEmail(val)),
 
   password: z
     .string()
-    .min(6, 'Password must be at least 6 characters')
+    .min(8, 'Password must be at least 8 characters') // Increased from 6 for better security
     .max(128, 'Password must not exceed 128 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+    .refine((val) => {
+      // Check for common weak passwords
+      const weakPasswords = ['password', '123456', 'qwerty', 'admin', 'welcome'];
+      return !weakPasswords.some(weak => val.toLowerCase().includes(weak));
+    }, 'Password is too common. Please choose a stronger password')
+    .refine((val) => {
+      // Check for sequential characters
+      const hasSequential = /123|abc|qwe|asd|zxc/i.test(val);
+      return !hasSequential;
+    }, 'Password should not contain sequential characters')
+    .refine((val) => {
+      // Check for repeated characters
+      const hasRepeated = /(.)\1{2,}/.test(val);
+      return !hasRepeated;
+    }, 'Password should not contain repeated characters'),
 
   confirmPassword: z.string().optional(),
 
@@ -39,13 +66,23 @@ const userFormSchema = z.object({
     .string()
     .min(2, 'First name must be at least 2 characters')
     .max(50, 'First name must not exceed 50 characters')
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'First name contains invalid characters'),
+    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'First name contains invalid characters')
+    .refine((val) => {
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'First name contains potentially unsafe content')
+    .transform((val) => InputSanitizer.sanitizeText(val, 50)),
 
   lastName: z
     .string()
     .min(2, 'Last name must be at least 2 characters')
     .max(50, 'Last name must not exceed 50 characters')
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Last name contains invalid characters'),
+    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Last name contains invalid characters')
+    .refine((val) => {
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'Last name contains potentially unsafe content')
+    .transform((val) => InputSanitizer.sanitizeText(val, 50)),
 
   phone: z
     .string()
@@ -53,18 +90,35 @@ const userFormSchema = z.object({
     .refine(
       (val) => !val || /^\+?[1-9]\d{1,14}$/.test(val.replace(/[\s-()]/g, '')),
       'Please enter a valid phone number'
-    ),
+    )
+    .refine((val) => {
+      if (!val) return true;
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'Phone number contains potentially unsafe content')
+    .transform((val) => val ? InputSanitizer.sanitizePhone(val) : val),
 
   department: z
     .string()
-    .optional(),
+    .optional()
+    .refine((val) => {
+      if (!val) return true;
+      const securityCheck = SecurityDetector.scanInput(val);
+      return securityCheck.isValid;
+    }, 'Department contains potentially unsafe content')
+    .transform((val) => val ? InputSanitizer.sanitizeText(val, 100) : val),
 
   enabled: z.boolean().default(true),
 
   roles: z
     .array(z.nativeEnum(UserRole))
     .min(1, 'At least one role must be assigned')
-    .refine((roles) => roles.length <= 3, 'Maximum 3 roles can be assigned'),
+    .refine((roles) => roles.length <= 3, 'Maximum 3 roles can be assigned')
+    .refine((roles) => {
+      // Security check: Ensure no privilege escalation attempts
+      const uniqueRoles = new Set(roles);
+      return uniqueRoles.size === roles.length;
+    }, 'Duplicate roles detected'),
 }).refine(
   (data) => {
     if (data.password && data.confirmPassword) {
@@ -78,7 +132,7 @@ const userFormSchema = z.object({
   }
 );
 
-// Create schema for edit mode (password optional)
+// Create schema for edit mode (password optional with enhanced security)
 const userEditFormSchema = userFormSchema.extend({
   password: z
     .string()
@@ -86,15 +140,31 @@ const userEditFormSchema = userFormSchema.extend({
     .refine(
       (val) => {
         if (!val) {return true;}
-        return val.length >= 6 &&
+        return val.length >= 8 && // Updated to match the stricter requirement
                val.length <= 128 &&
                /[A-Z]/.test(val) &&
                /[a-z]/.test(val) &&
                /[0-9]/.test(val) &&
                /[^A-Za-z0-9]/.test(val);
       },
-      'Password must be at least 6 characters with uppercase, lowercase, number, and special character'
-    ),
+      'Password must be at least 8 characters with uppercase, lowercase, number, and special character'
+    )
+    .refine((val) => {
+      if (!val) return true;
+      // Apply same security checks as create mode
+      const weakPasswords = ['password', '123456', 'qwerty', 'admin', 'welcome'];
+      return !weakPasswords.some(weak => val.toLowerCase().includes(weak));
+    }, 'Password is too common. Please choose a stronger password')
+    .refine((val) => {
+      if (!val) return true;
+      const hasSequential = /123|abc|qwe|asd|zxc/i.test(val);
+      return !hasSequential;
+    }, 'Password should not contain sequential characters')
+    .refine((val) => {
+      if (!val) return true;
+      const hasRepeated = /(.)\1{2,}/.test(val);
+      return !hasRepeated;
+    }, 'Password should not contain repeated characters'),
 }).refine(
   (data) => {
     if (data.password && data.confirmPassword) {
@@ -131,6 +201,9 @@ export interface UseUserFormReturn {
   usernameValidation: ReturnType<typeof useUsernameValidation>;
   emailValidation: ReturnType<typeof useEmailValidation>;
 
+  // Security validation
+  securityValidation: ReturnType<typeof useSecurityValidation>;
+
   // Form methods
   handleSubmit: (onSubmit: (data: UserCreateDto | UserUpdateDto) => Promise<void>) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   reset: () => void;
@@ -140,11 +213,16 @@ export interface UseUserFormReturn {
   // Validation helpers
   validateField: (field: keyof UserFormData) => Promise<boolean>;
   validateAllFields: () => Promise<boolean>;
+  validateSecurityThreats: () => { hasThreats: boolean; threats: string[] };
 
   // Form data helpers
   getFormData: () => UserFormData;
   getSubmitData: () => UserCreateDto | UserUpdateDto;
   hasUnsavedChanges: () => boolean;
+
+  // Security helpers
+  sanitizeFormData: () => UserFormData;
+  checkRateLimit: () => boolean;
 }
 
 export const useUserForm = (options: UseUserFormOptions): UseUserFormReturn => {
@@ -196,6 +274,13 @@ export const useUserForm = (options: UseUserFormOptions): UseUserFormReturn => {
   const emailValidation = useEmailValidation(watchedEmail, {
     excludeEmail,
     debounceMs: 300,
+  });
+
+  // Security validation hook
+  const securityValidation = useSecurityValidation({
+    enableRealTimeValidation: true,
+    enableSessionMonitoring: true,
+    enableIdleDetection: true,
   });
 
   // Combined form validation state
@@ -325,17 +410,85 @@ export const useUserForm = (options: UseUserFormOptions): UseUserFormReturn => {
     formReset(defaultValues);
   }, [formReset, defaultValues]);
 
+  // Security validation helpers
+  const validateSecurityThreats = useCallback((): { hasThreats: boolean; threats: string[] } => {
+    const formData = form.getValues();
+    const allThreats: string[] = [];
+
+    // Check each field for security threats
+    Object.entries(formData).forEach(([key, value]) => {
+      if (typeof value === 'string' && value.length > 0) {
+        const result = securityValidation.validateInput(value);
+        if (!result.isValid) {
+          allThreats.push(`${key}: ${result.threats.join(', ')}`);
+        }
+      }
+    });
+
+    return {
+      hasThreats: allThreats.length > 0,
+      threats: allThreats,
+    };
+  }, [form, securityValidation]);
+
+  const sanitizeFormData = useCallback((): UserFormData => {
+    const formData = form.getValues();
+    const sanitized: UserFormData = { ...formData };
+
+    // Sanitize string fields
+    if (sanitized.username) {
+      sanitized.username = InputSanitizer.sanitizeUsername(sanitized.username);
+    }
+    if (sanitized.email) {
+      sanitized.email = InputSanitizer.sanitizeEmail(sanitized.email);
+    }
+    if (sanitized.firstName) {
+      sanitized.firstName = InputSanitizer.sanitizeText(sanitized.firstName, 50);
+    }
+    if (sanitized.lastName) {
+      sanitized.lastName = InputSanitizer.sanitizeText(sanitized.lastName, 50);
+    }
+    if (sanitized.phone) {
+      sanitized.phone = InputSanitizer.sanitizePhone(sanitized.phone);
+    }
+    if (sanitized.department) {
+      sanitized.department = InputSanitizer.sanitizeText(sanitized.department, 100);
+    }
+
+    return sanitized;
+  }, [form]);
+
+  const checkRateLimit = useCallback((): boolean => {
+    const identifier = `user-form-${mode}`;
+    return securityValidation.checkRateLimit(identifier);
+  }, [mode, securityValidation]);
+
   const handleSubmit = useCallback((onSubmit: (data: UserCreateDto | UserUpdateDto) => Promise<void>) => {
     return rhfHandleSubmit(async (_formData) => {
+      // Check rate limiting
+      if (checkRateLimit()) {
+        throw new Error('Too many form submissions. Please wait before trying again.');
+      }
+
       // Ensure real-time validation is complete and valid
       if (!isFormValid) {
         throw new Error('Form validation failed');
       }
 
+      // Check for security threats
+      const securityCheck = validateSecurityThreats();
+      if (securityCheck.hasThreats) {
+        securityValidation.logSecurityEvent(
+          'suspicious_activity',
+          `Form submission contains security threats: ${securityCheck.threats.join('; ')}`
+        );
+        throw new Error('Form contains potentially unsafe content');
+      }
+
       const submitData = getSubmitData();
       await onSubmit(submitData);
     });
-  }, [rhfHandleSubmit, isFormValid, getSubmitData]);
+  }, [rhfHandleSubmit, isFormValid, getSubmitData, validateSecurityThreats, checkRateLimit, securityValidation]);
 
   return {
     // Form state
@@ -348,6 +501,9 @@ export const useUserForm = (options: UseUserFormOptions): UseUserFormReturn => {
     usernameValidation,
     emailValidation,
 
+    // Security validation
+    securityValidation,
+
     // Form methods
     handleSubmit,
     reset,
@@ -357,10 +513,15 @@ export const useUserForm = (options: UseUserFormOptions): UseUserFormReturn => {
     // Validation helpers
     validateField,
     validateAllFields,
+    validateSecurityThreats,
 
     // Form data helpers
     getFormData,
     getSubmitData,
     hasUnsavedChanges,
+
+    // Security helpers
+    sanitizeFormData,
+    checkRateLimit,
   };
 };
