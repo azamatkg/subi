@@ -109,39 +109,43 @@ export const useUserManagementSession = (
     return window.location.pathname + window.location.search;
   }, []);
 
-  // Form backup functions
-  const backupFormData = useCallback((formId: string, data: Record<string, unknown>) => {
-    if (!autoBackupForms) {
-      return;
-    }
-
+  // Session recovery functions (moved up to avoid circular dependency)
+  const getSessionRecoveryData = useCallback((): SessionRecoveryData | null => {
     try {
-      const existingBackups = getSessionRecoveryData()?.formBackups || [];
-      const backup: UserManagementFormData = {
-        formId,
-        formData: data,
-        timestamp: Date.now(),
-        pageUrl: getCurrentPageUrl(),
-      };
+      const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+      if (!dataJson) {
+        return null;
+      }
 
-      // Remove existing backup for this form
-      const filteredBackups = existingBackups.filter(b => b.formId !== formId);
-      const updatedBackups = [...filteredBackups, backup];
+      return JSON.parse(dataJson) as SessionRecoveryData;
+    } catch (error) {
+      console.warn('Failed to get session recovery data:', error);
+      return null;
+    }
+  }, []);
 
-      const recoveryData: SessionRecoveryData = {
-        ...getSessionRecoveryData(),
+  // Form backup functions - ordered to avoid circular dependencies
+  const clearFormBackup = useCallback((formId: string) => {
+    try {
+      const recoveryData = getSessionRecoveryData();
+      if (!recoveryData) {
+        return;
+      }
+
+      const updatedBackups = recoveryData.formBackups.filter(b => b.formId !== formId);
+      const updatedRecoveryData = {
+        ...recoveryData,
         formBackups: updatedBackups,
-        lastActivity: Date.now(),
       };
 
       localStorage.setItem(
         USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
-        JSON.stringify(recoveryData)
+        JSON.stringify(updatedRecoveryData)
       );
     } catch (error) {
-      console.warn('Failed to backup form data:', error);
+      console.warn('Failed to clear form backup:', error);
     }
-  }, [autoBackupForms, getCurrentPageUrl, getSessionRecoveryData]);
+  }, [getSessionRecoveryData]);
 
   const restoreFormData = useCallback((formId: string): Record<string, unknown> | null => {
     try {
@@ -169,27 +173,49 @@ export const useUserManagementSession = (
     }
   }, [maxBackupAge, getSessionRecoveryData, clearFormBackup]);
 
-  const clearFormBackup = useCallback((formId: string) => {
-    try {
-      const recoveryData = getSessionRecoveryData();
-      if (!recoveryData) {
-        return;
-      }
+  const backupFormData = useCallback((formId: string, data: Record<string, unknown>) => {
+    if (!autoBackupForms) {
+      return;
+    }
 
-      const updatedBackups = recoveryData.formBackups.filter(b => b.formId !== formId);
-      const updatedRecoveryData = {
-        ...recoveryData,
+    try {
+      // Get current recovery data directly to avoid circular dependency
+      const currentRecoveryData = (() => {
+        try {
+          const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+          return dataJson ? JSON.parse(dataJson) as SessionRecoveryData : null;
+        } catch (error) {
+          console.warn('Failed to get session recovery data:', error);
+          return null;
+        }
+      })();
+
+      const existingBackups = currentRecoveryData?.formBackups || [];
+      const backup: UserManagementFormData = {
+        formId,
+        formData: data,
+        timestamp: Date.now(),
+        pageUrl: getCurrentPageUrl(),
+      };
+
+      // Remove existing backup for this form
+      const filteredBackups = existingBackups.filter(b => b.formId !== formId);
+      const updatedBackups = [...filteredBackups, backup];
+
+      const recoveryData: SessionRecoveryData = {
+        ...currentRecoveryData,
         formBackups: updatedBackups,
+        lastActivity: Date.now(),
       };
 
       localStorage.setItem(
         USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
-        JSON.stringify(updatedRecoveryData)
+        JSON.stringify(recoveryData)
       );
     } catch (error) {
-      console.warn('Failed to clear form backup:', error);
+      console.warn('Failed to backup form data:', error);
     }
-  }, [getSessionRecoveryData]);
+  }, [autoBackupForms, getCurrentPageUrl]);
 
   const hasFormBackup = useCallback((formId: string): boolean => {
     const recoveryData = getSessionRecoveryData();
@@ -201,6 +227,38 @@ export const useUserManagementSession = (
   }, [getSessionRecoveryData]);
 
   // Bulk operation functions
+  const clearBulkOperationState = useCallback(() => {
+    try {
+      localStorage.removeItem(USER_MANAGEMENT_STORAGE.BULK_OPERATION_STATE);
+      setHasPendingBulkOperation(false);
+
+      // Get current recovery data directly to avoid circular dependency
+      const currentRecoveryData = (() => {
+        try {
+          const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+          return dataJson ? JSON.parse(dataJson) as SessionRecoveryData : null;
+        } catch (error) {
+          console.warn('Failed to get session recovery data:', error);
+          return null;
+        }
+      })();
+
+      // Also clear from session recovery data
+      if (currentRecoveryData) {
+        const updatedRecoveryData = {
+          ...currentRecoveryData,
+          bulkOperation: undefined,
+        };
+        localStorage.setItem(
+          USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
+          JSON.stringify(updatedRecoveryData)
+        );
+      }
+    } catch (error) {
+      console.warn('Failed to clear bulk operation state:', error);
+    }
+  }, []);
+
   const saveBulkOperationState = useCallback((state: BulkOperationState) => {
     if (!enableBulkOperationProtection) {
       return;
@@ -213,9 +271,20 @@ export const useUserManagementSession = (
       );
       setHasPendingBulkOperation(true);
 
+      // Get current recovery data directly to avoid circular dependency
+      const currentRecoveryData = (() => {
+        try {
+          const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+          return dataJson ? JSON.parse(dataJson) as SessionRecoveryData : null;
+        } catch (error) {
+          console.warn('Failed to get session recovery data:', error);
+          return null;
+        }
+      })();
+
       // Also save to session recovery data
       const recoveryData: SessionRecoveryData = {
-        ...getSessionRecoveryData(),
+        ...currentRecoveryData,
         bulkOperation: state,
         lastActivity: Date.now(),
       };
@@ -227,7 +296,7 @@ export const useUserManagementSession = (
     } catch (error) {
       console.warn('Failed to save bulk operation state:', error);
     }
-  }, [enableBulkOperationProtection, getSessionRecoveryData]);
+  }, [enableBulkOperationProtection]);
 
   const restoreBulkOperationState = useCallback((): BulkOperationState | null => {
     try {
@@ -254,43 +323,6 @@ export const useUserManagementSession = (
     }
   }, [clearBulkOperationState]);
 
-  const clearBulkOperationState = useCallback(() => {
-    try {
-      localStorage.removeItem(USER_MANAGEMENT_STORAGE.BULK_OPERATION_STATE);
-      setHasPendingBulkOperation(false);
-
-      // Also clear from session recovery data
-      const recoveryData = getSessionRecoveryData();
-      if (recoveryData) {
-        const updatedRecoveryData = {
-          ...recoveryData,
-          bulkOperation: undefined,
-        };
-        localStorage.setItem(
-          USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA,
-          JSON.stringify(updatedRecoveryData)
-        );
-      }
-    } catch (error) {
-      console.warn('Failed to clear bulk operation state:', error);
-    }
-  }, [getSessionRecoveryData]);
-
-  // Session recovery functions
-  const getSessionRecoveryData = useCallback((): SessionRecoveryData | null => {
-    try {
-      const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
-      if (!dataJson) {
-        return null;
-      }
-
-      return JSON.parse(dataJson) as SessionRecoveryData;
-    } catch (error) {
-      console.warn('Failed to get session recovery data:', error);
-      return null;
-    }
-  }, []);
-
   const clearSessionRecovery = useCallback(() => {
     try {
       localStorage.removeItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
@@ -314,11 +346,21 @@ export const useUserManagementSession = (
   const extendSession = useCallback(() => {
     refreshSession();
 
+    // Get current recovery data directly to avoid circular dependency
+    const currentRecoveryData = (() => {
+      try {
+        const dataJson = localStorage.getItem(USER_MANAGEMENT_STORAGE.SESSION_RECOVERY_DATA);
+        return dataJson ? JSON.parse(dataJson) as SessionRecoveryData : null;
+      } catch (error) {
+        console.warn('Failed to get session recovery data:', error);
+        return null;
+      }
+    })();
+
     // Update last activity in recovery data
-    const recoveryData = getSessionRecoveryData();
-    if (recoveryData) {
+    if (currentRecoveryData) {
       const updatedRecoveryData = {
-        ...recoveryData,
+        ...currentRecoveryData,
         lastActivity: Date.now(),
       };
       localStorage.setItem(
@@ -326,7 +368,7 @@ export const useUserManagementSession = (
         JSON.stringify(updatedRecoveryData)
       );
     }
-  }, [refreshSession, getSessionRecoveryData]);
+  }, [refreshSession]);
 
   // Check for pending bulk operations on mount
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -100,10 +100,25 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isFilterOpen, setIsFilterOpen] = useState(initiallyOpen);
-  const [filtersApplied, setFiltersApplied] = useState(0);
 
-  // Count applied filters for badge display
-  useEffect(() => {
+  const userStatuses = useMemo(() => Object.values(UserStatusEnum), []);
+
+
+  // Create a stable filters serialization to avoid dependency issues
+  const filtersString = useMemo(() => JSON.stringify(filters), [
+    filters.searchTerm,
+    filters.roles?.length,
+    filters.status,
+    filters.isActive,
+    filters.department,
+    filters.createdDateFrom,
+    filters.createdDateTo,
+    filters.lastLoginFrom,
+    filters.lastLoginTo,
+  ]);
+
+  // Count applied filters for badge display - using stable serialization
+  const filtersApplied = useMemo(() => {
     let count = 0;
 
     if (filters.searchTerm?.trim()) {
@@ -136,8 +151,8 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
       }
     }
 
-    setFiltersApplied(count);
-  }, [filters, showDateFilters]);
+    return count;
+  }, [filtersString, showDateFilters]);
 
   // Handle search input changes with sanitization but deferred validation
   const handleSearchChange = (value: string) => {
@@ -238,7 +253,6 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                 <EnhancedTooltip
                   title={t('userManagement.tooltips.searchFilters.advancedFilters.title')}
                   description={t('userManagement.tooltips.searchFilters.advancedFilters.combination')}
-                  content={isFilterOpen ? 'Hide filters' : `Show filters (${filtersApplied} active)`}
                 >
                   <Button
                     variant='outline'
@@ -323,7 +337,7 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value='all'>{t('common.all')}</SelectItem>
-                        {Object.values(UserStatusEnum).map(status => (
+                        {userStatuses.map(status => (
                           <SelectItem key={status} value={status}>
                             {t(`userManagement.status.${status.toLowerCase()}`)}
                           </SelectItem>
