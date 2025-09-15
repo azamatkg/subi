@@ -85,7 +85,9 @@
     "to": "to",
     "up_to": "up to",
     "until": "until",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "dataTable": "Data Table",
+    "selectAll": "Select All"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -304,6 +306,7 @@
     "editUser": "Edit User",
     "userDetails": "User Details",
     "searchPlaceholder": "Search users by name, email, or username...",
+    "searchAndFilters": "Search and Filter Users",
     "advancedFilters": "Advanced Filters",
     "personalInformation": "Personal Information",
     "systemInformation": "System Information",
@@ -713,6 +716,23 @@
       "inactive": "Inactive",
       "suspended": "Suspended",
       "unknown": "Unknown Status"
+    },
+    "session": {
+      "recovery": {
+        "title": "Session Recovery",
+        "description": "Previous session detected",
+        "lastActivity": "Last Activity",
+        "navigationState": "Navigation State",
+        "dismiss": "Dismiss",
+        "restore": "Restore"
+      },
+      "warning": {
+        "title": "Session Warning",
+        "description": "Your session will expire soon",
+        "autoSaveMessage": "Data is being saved automatically",
+        "logout": "Logout",
+        "extend": "Extend Session"
+      }
     }
   },
   "decision": {
