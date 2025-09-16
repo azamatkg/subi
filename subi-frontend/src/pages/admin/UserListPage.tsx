@@ -8,7 +8,6 @@ import {
   List,
   Mail,
   MoreHorizontal,
-  Plus,
   Shield,
   SortAsc,
   SortDesc,
@@ -272,10 +271,6 @@ export const UserListPage: React.FC = () => {
     setPage(0);
   }, []);
 
-  // Refresh callback
-  const handleRefresh = useCallback(() => {
-    window.location.reload();
-  }, []);
 
   // Handle filter changes with validation - optimized to prevent infinite loops
   const handleFilterChange = useCallback((
@@ -871,16 +866,33 @@ export const UserListPage: React.FC = () => {
   }> = ({ user, index, style, className, isVirtual }) => (
     <div
       className={cn(
-        'group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg',
-        // Mobile-specific improvements
-        'active:scale-[0.98] active:shadow-lg', // Touch feedback
+        // Base card styling with optimized hover effects
+        'group relative border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg',
+        'hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:z-10',
+        'transition-all duration-300 ease-out transform-gpu will-change-transform',
+        // Mobile-specific improvements without scale conflicts
         'min-h-[140px] sm:min-h-[160px]', // Consistent card heights
         isVirtual && 'w-full', // Full width for virtual rendering
+        // Performance isolation without breaking portals
+        'isolate',
         className
       )}
       style={{
         ...style,
         height: isVirtual ? `${cardHeight}px` : style?.height,
+      }}
+      onClick={(e) => {
+        // Prevent card click when clicking on interactive elements
+        const target = e.target as HTMLElement;
+        const isDropdownButton = target.closest('[role="button"][aria-label*="actions"]');
+        const isClickableElement = target.closest('button, a, [role="button"]');
+
+        if (isDropdownButton || isClickableElement) {
+          return; // Let the element handle its own click
+        }
+
+        // Default card click behavior - navigate to user view
+        handleView(user.id);
       }}
       role='article'
       aria-labelledby={`user-title-${user.id}`}
@@ -900,17 +912,14 @@ export const UserListPage: React.FC = () => {
                   @{user.username}
                 </span>
               </div>
-              <button
-                onClick={() => handleView(user.id)}
-                className='text-left w-full touch-manipulation' // Added touch-manipulation for better mobile performance
-              >
+              <div className='text-left w-full'>
                 <h3
                   id={`user-title-${user.id}`}
                   className='text-lg sm:text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide line-clamp-2'
                 >
                   {user.fullName}
                 </h3>
-              </button>
+              </div>
               <p className='text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 font-medium truncate'>
                 {user.email}
               </p>
@@ -920,21 +929,23 @@ export const UserListPage: React.FC = () => {
                 status={user.status}
                 className='shrink-0 shadow-sm text-xs sm:text-sm'
               />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-9 w-9 sm:h-8 sm:w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg touch-manipulation' // Larger touch target on mobile
-                    aria-label={t('common.actions', { item: user.fullName })}
+              <div className='relative'>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      className='h-9 w-9 sm:h-8 sm:w-8 p-0 opacity-70 group-hover:opacity-100 transition-opacity duration-200 hover:bg-accent/80 focus:bg-accent focus:ring-2 focus:ring-primary/30 rounded-lg touch-manipulation'
+                      aria-label={t('common.actions', { item: user.fullName })}
+                    >
+                      <MoreHorizontal className='h-4 w-4' />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align='end'
+                    className='shadow-lg border-border/20'
+                    sideOffset={4}
                   >
-                    <MoreHorizontal className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align='end'
-                  className='shadow-lg border-border/20'
-                >
                   <DropdownMenuItem
                     onClick={() => handleView(user.id)}
                     className='hover:bg-accent focus:bg-accent'
@@ -963,20 +974,21 @@ export const UserListPage: React.FC = () => {
                       </DropdownMenuItem>
                     </>
                   )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
 
           {/* Details grid - Mobile optimized */}
           <div className='space-y-1 sm:space-y-2 text-xs sm:text-sm'>
             <div className='flex items-start gap-2 sm:gap-3'>
-              <Shield className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+              <Shield className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5 select-none' />
               <div className='min-w-0 flex-1'>
-                <span className='font-medium block sm:inline'>
+                <span className='font-medium block sm:inline select-none'>
                   {t('userManagement.fields.roles')}:
                 </span>
-                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>
+                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words select-none'>
                   {formatRoles(user.roles)}
                 </span>
               </div>
@@ -984,23 +996,23 @@ export const UserListPage: React.FC = () => {
 
             {user.department && (
               <div className='flex items-start gap-2 sm:gap-3'>
-                <Users className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+                <Users className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5 select-none' />
                 <div className='min-w-0 flex-1'>
-                  <span className='font-medium block sm:inline'>
+                  <span className='font-medium block sm:inline select-none'>
                     {t('userManagement.fields.department')}:
                   </span>
-                  <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>{user.department}</span>
+                  <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words select-none'>{user.department}</span>
                 </div>
               </div>
             )}
 
             <div className='flex items-start gap-2 sm:gap-3'>
-              <Clock className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5' />
+              <Clock className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-0.5 select-none' />
               <div className='min-w-0 flex-1'>
-                <span className='font-medium block sm:inline'>
+                <span className='font-medium block sm:inline select-none'>
                   {t('userManagement.fields.lastLogin')}:
                 </span>
-                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words'>
+                <span className='ml-0 sm:ml-2 font-semibold block sm:inline break-words select-none'>
                   {user.lastLoginAt
                     ? new Date(user.lastLoginAt).toLocaleDateString()
                     : t('userManagement.never')}
@@ -1211,25 +1223,13 @@ export const UserListPage: React.FC = () => {
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 isLoading={smartLoading}
-                onRefresh={handleRefresh}
                 showDateFilters={true}
                 showRoleFilters={false}
+                showCreateButton={accessControl.canShowCreateButton}
+                onCreateClick={handleCreate}
               />
             </SkeletonToContentTransition>
           </div>
-
-          {accessControl.canShowCreateButton && (
-            <div className="flex items-center justify-center sm:justify-start sm:pt-0">
-              <Button
-                onClick={handleCreate}
-                className='add-new-user-button shadow-md hover:shadow-lg transition-shadow relative group w-full sm:w-auto touch-manipulation min-h-[44px]' // Better mobile touch target
-                size={isMobile ? 'lg' : 'default'}
-              >
-                <Plus className='h-4 w-4 mr-2' />
-                <span className='font-medium'>{t('userManagement.createUser')}</span>
-              </Button>
-            </div>
-          )}
         </div>
       </ErrorBoundary>
       </Landmark>
@@ -1438,6 +1438,7 @@ export const UserListPage: React.FC = () => {
                                 overscan: 3,
                               }}
                               height={600}
+                              allowPortals={true}
                               className={cn(
                                 'transition-opacity duration-300',
                                 smartLoading && finalData && 'opacity-60'

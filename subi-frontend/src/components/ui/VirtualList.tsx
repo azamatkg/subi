@@ -48,6 +48,11 @@ export interface VirtualListProps<T> {
    */
   emptyComponent?: React.ReactNode;
   /**
+   * Allow portals (like dropdowns) to render outside the container bounds
+   * When true, uses overflow-visible instead of overflow-hidden
+   */
+  allowPortals?: boolean;
+  /**
    * Callback when scroll position changes
    */
   onScroll?: (scrollOffset: number) => void;
@@ -138,6 +143,7 @@ export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<unknow
     loading = false,
     loadingComponent,
     emptyComponent,
+    allowPortals = false,
     onScroll,
     onVisibleRangeChange,
     ariaLabel,
@@ -300,7 +306,11 @@ export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<unknow
     if (loading) {
       return (
         <div
-          className={cn('relative overflow-hidden', className)}
+          className={cn(
+            'relative',
+            allowPortals ? 'overflow-visible' : 'overflow-hidden',
+            className
+          )}
           style={containerStyle}
           role={role}
           aria-label={ariaLabel || "Loading list"}
@@ -332,7 +342,11 @@ export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<unknow
     // Main render
     return (
       <div
-        className={cn('relative', className)}
+        className={cn(
+          'relative',
+          allowPortals ? 'overflow-visible' : 'overflow-hidden',
+          className
+        )}
         style={containerStyle}
         role={role}
         aria-label={ariaLabel}
@@ -362,12 +376,17 @@ export const VirtualList = forwardRef<VirtualListHandle, VirtualListProps<unknow
         <div
           ref={containerRef}
           className={cn(
-            'overflow-auto h-full w-full',
+            allowPortals ? 'overflow-visible h-full w-full' : 'overflow-auto h-full w-full',
             scrollAreaClassName
           )}
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'hsl(var(--muted-foreground)) transparent',
+            // For portals mode, we need to manually handle scrolling
+            ...(allowPortals && {
+              overflowY: 'auto',
+              overflowX: 'visible',
+            }),
           }}
         >
           {/* Total height placeholder for virtual scrolling */}

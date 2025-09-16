@@ -1,0 +1,57 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - navigation "Главное навигационное меню" [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "АСУБК" [level=1] [ref=e9]
+          - button "Свернуть меню" [ref=e10]:
+            - img
+        - generic [ref=e11]:
+          - navigation [ref=e13]:
+            - link "Панель управления Главная панель управления" [ref=e14] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e15] [cursor=pointer]
+              - generic [ref=e18] [cursor=pointer]:
+                - generic [ref=e19] [cursor=pointer]: Панель управления
+                - generic [ref=e20] [cursor=pointer]: Главная панель управления
+          - generic [ref=e22]:
+            - button "Кредитное управление" [expanded] [ref=e23]:
+              - generic [ref=e24]: Кредитное управление
+              - img
+            - navigation [ref=e26]:
+              - link "Кредитные программы Управление кредитными программами" [ref=e27] [cursor=pointer]:
+                - /url: /credit-programs
+                - img [ref=e28] [cursor=pointer]
+                - generic [ref=e30] [cursor=pointer]:
+                  - generic [ref=e31] [cursor=pointer]: Кредитные программы
+                  - generic [ref=e32] [cursor=pointer]: Управление кредитными программами
+              - link "Решения Основания на выдачу кредита" [ref=e33] [cursor=pointer]:
+                - /url: /decisions
+                - img [ref=e34] [cursor=pointer]
+                - generic [ref=e38] [cursor=pointer]:
+                  - generic [ref=e39] [cursor=pointer]: Решения
+                  - generic [ref=e40] [cursor=pointer]: Основания на выдачу кредита
+          - button "Администрирование" [ref=e43]:
+            - generic [ref=e44]: Администрирование
+            - img
+        - generic [ref=e47]:
+          - button [ref=e48]:
+            - img
+          - 'button "Текущая тема: Системная тема" [ref=e49]':
+            - img
+            - generic [ref=e50]: Переключить тему
+    - generic [ref=e51]:
+      - banner [ref=e52]:
+        - generic [ref=e53]:
+          - heading "Детали пользователя" [level=1] [ref=e55]
+          - generic [ref=e56]:
+            - button [ref=e57]:
+              - img
+            - button "SA" [ref=e61]:
+              - generic [ref=e63]: SA
+      - main [ref=e64]
+  - region "Notifications alt+T"
+```

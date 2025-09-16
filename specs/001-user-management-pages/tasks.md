@@ -99,9 +99,9 @@ This is a React TypeScript frontend enhancement project using:
 ## Phase 3.5: E2E Testing & Validation
 
 ### Playwright E2E Tests [P]
-- [ ] T052 [P] E2E test for admin user list management workflow in `tests/e2e/user-list-management.spec.ts`
-- [ ] T053 [P] E2E test for user creation and validation workflow in `tests/e2e/user-creation.spec.ts`
-- [ ] T054 [P] E2E test for user details and editing workflow in `tests/e2e/user-editing.spec.ts`
+- [x] T052 [P] E2E test for admin user list management workflow in `tests/e2e/user-list-management.spec.ts`
+- [x] T053 [P] E2E test for user creation and validation workflow in `tests/e2e/user-creation.spec.ts`
+- [x] T054 [P] E2E test for user details and editing workflow in `tests/e2e/user-editing.spec.ts`
 - [ ] T055 [P] E2E test for user status management workflow in `tests/e2e/user-status.spec.ts`
 - [ ] T056 [P] E2E test for bulk operations workflow in `tests/e2e/bulk-operations.spec.ts`
 - [ ] T057 [P] E2E test for multilingual support in `tests/e2e/multilingual.spec.ts`

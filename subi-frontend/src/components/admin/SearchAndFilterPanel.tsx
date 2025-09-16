@@ -3,7 +3,7 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
-  RefreshCw,
+  Plus,
   Search,
   X,
 } from 'lucide-react';
@@ -53,7 +53,8 @@ export interface SearchAndFilterPanelProps {
   showRoleFilters?: boolean;
   searchPlaceholder?: string;
   isLoading?: boolean;
-  onRefresh?: () => void;
+  showCreateButton?: boolean;
+  onCreateClick?: () => void;
 }
 
 /**
@@ -70,7 +71,8 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
   showRoleFilters = true,
   searchPlaceholder,
   isLoading = false,
-  onRefresh,
+  showCreateButton = false,
+  onCreateClick,
 }) => {
   const { t } = useTranslation();
   const [isFilterOpen, setIsFilterOpen] = useState(initiallyOpen);
@@ -184,7 +186,7 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
             </div>
           </div>
 
-          <div className='flex flex-wrap gap-2 sm:flex-nowrap'>
+          <div className='flex flex-wrap gap-3 sm:flex-nowrap sm:gap-4'>
             <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <CollapsibleTrigger asChild>
                 <Button
@@ -227,15 +229,15 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                 </Button>
               )}
 
-              {onRefresh && (
+              {showCreateButton && onCreateClick && (
                 <Button
-                  variant='outline'
                   size='icon'
-                  onClick={onRefresh}
-                  className='shrink-0 touch-manipulation min-h-[44px] min-w-[44px]'
+                  onClick={onCreateClick}
+                  className='bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200 shrink-0 touch-manipulation min-h-[44px] min-w-[44px]'
                   disabled={isLoading}
+                  aria-label={t('userManagement.createUser')}
                 >
-                  <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
+                  <Plus className='h-4 w-4' />
                 </Button>
               )}
 
@@ -414,18 +416,6 @@ export const SearchAndFilterPanel: React.FC<SearchAndFilterPanelProps> = ({
                       <span>{t('common.clear')}</span>
                       {filtersApplied > 0 && <span className='ml-1'>({filtersApplied})</span>}
                     </Button>
-
-                    {onRefresh && (
-                      <Button
-                        variant='outline'
-                        onClick={onRefresh}
-                        className='w-full sm:w-auto touch-manipulation min-h-[44px]'
-                        disabled={isLoading}
-                      >
-                        <RefreshCw className={cn('mr-2 h-4 w-4', isLoading && 'animate-spin')} />
-                        {t('common.refresh')}
-                      </Button>
-                    )}
                   </div>
                 </div>
               </CollapsibleContent>
