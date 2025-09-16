@@ -722,6 +722,13 @@
         "title": "Session Recovery",
         "description": "Previous session detected",
         "lastActivity": "Last Activity",
+        "formBackups": "Form Backups",
+        "formBackupsDescription": "Previously saved form data",
+        "bulkOperation": "Bulk Operation",
+        "bulkOperationDescription": "Previously started bulk operation",
+        "selectedItems": "Selected Items",
+        "bulkStartedAt": "Started at",
+        "progress": "Progress",
         "navigationState": "Navigation State",
         "dismiss": "Dismiss",
         "restore": "Restore"

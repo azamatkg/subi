@@ -3,7 +3,8 @@ export const APP_NAME = 'ASUBK Financial Management System';
 
 // API Configuration
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? '/api' : 'http://localhost:8080/api');
 
 // Local Storage Keys
 export const STORAGE_KEYS = {

@@ -663,6 +663,13 @@
         "title": "Восстановление сессии",
         "description": "Обнаружена предыдущая сессия",
         "lastActivity": "Последняя активность",
+        "formBackups": "Резервные копии форм",
+        "formBackupsDescription": "Ранее сохраненные данные форм",
+        "bulkOperation": "Групповая операция",
+        "bulkOperationDescription": "Ранее начатая групповая операция",
+        "selectedItems": "Выбранные элементы",
+        "bulkStartedAt": "Начато в",
+        "progress": "Прогресс",
         "navigationState": "Состояние навигации",
         "dismiss": "Отклонить",
         "restore": "Восстановить"

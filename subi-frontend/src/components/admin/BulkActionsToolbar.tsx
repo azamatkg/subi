@@ -98,6 +98,38 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
     variant: 'default',
   });
 
+  // Define delete handler first (needed by keyboard shortcuts)
+  const handleDelete = useCallback(() => {
+    setConfirmDialog({
+      open: true,
+      title: t('userManagement.bulkActions.confirmDelete', { count: selectedUserIds.length }),
+      message: t('userManagement.bulkActions.confirmDeleteMessage', { count: selectedUserIds.length }),
+      onConfirm: () => {
+        onBulkOperation('delete', {});
+        setConfirmDialog(prev => ({ ...prev, open: false }));
+      },
+      variant: 'destructive',
+    });
+  }, [t, selectedUserIds.length, onBulkOperation]);
+
+  // Define status change handler (needed by keyboard shortcuts)
+  const handleStatusChange = useCallback((status: UserStatus) => {
+    const statusLabel = t(`userManagement.status.${status.toLowerCase()}`);
+    setConfirmDialog({
+      open: true,
+      title: t('userManagement.bulkActions.confirmStatusChange', { count: selectedUserIds.length }),
+      message: t('userManagement.bulkActions.confirmStatusChangeMessage', {
+        count: selectedUserIds.length,
+        status: statusLabel,
+      }),
+      onConfirm: () => {
+        onBulkOperation('status-change', { status });
+        setConfirmDialog(prev => ({ ...prev, open: false }));
+      },
+      variant: 'default',
+    });
+  }, [t, selectedUserIds.length, onBulkOperation]);
+
   // Keyboard shortcuts
   const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
     // Only handle shortcuts when bulk actions are visible
@@ -152,37 +184,6 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
       window.removeEventListener('keydown', handleKeyboardShortcuts);
     };
   }, [handleKeyboardShortcuts]);
-
-  // Define handlers with useCallback
-  const handleStatusChange = useCallback((status: UserStatus) => {
-    const statusLabel = t(`userManagement.status.${status.toLowerCase()}`);
-    setConfirmDialog({
-      open: true,
-      title: t('userManagement.bulkActions.confirmStatusChange', { count: selectedUserIds.length }),
-      message: t('userManagement.bulkActions.confirmStatusChangeMessage', {
-        count: selectedUserIds.length,
-        status: statusLabel,
-      }),
-      onConfirm: () => {
-        onBulkOperation('status-change', { status });
-        setConfirmDialog(prev => ({ ...prev, open: false }));
-      },
-      variant: 'default',
-    });
-  }, [t, selectedUserIds.length, onBulkOperation]);
-
-  const handleDelete = useCallback(() => {
-    setConfirmDialog({
-      open: true,
-      title: t('userManagement.bulkActions.confirmDelete', { count: selectedUserIds.length }),
-      message: t('userManagement.bulkActions.confirmDeleteMessage', { count: selectedUserIds.length }),
-      onConfirm: () => {
-        onBulkOperation('delete', {});
-        setConfirmDialog(prev => ({ ...prev, open: false }));
-      },
-      variant: 'destructive',
-    });
-  }, [t, selectedUserIds.length, onBulkOperation]);
 
   // Don't render if no users selected or no toolbar access
   if (selectedUserIds.length === 0 || !accessControl.canShowToolbar) {

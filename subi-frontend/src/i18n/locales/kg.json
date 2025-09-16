@@ -656,6 +656,13 @@
         "title": "Сессияны калыбына келтирүү",
         "description": "Мурунку сессия табылды",
         "lastActivity": "Акыркы активдүүлүк",
+        "formBackups": "Формалардын көчүрмөлөрү",
+        "formBackupsDescription": "Мурда сакталган форма маалыматтары",
+        "bulkOperation": "Топтук операция",
+        "bulkOperationDescription": "Мурда башталган топтук операция",
+        "selectedItems": "Тандалган элементтер",
+        "bulkStartedAt": "Башталды",
+        "progress": "Прогресс",
         "navigationState": "Навигация абалы",
         "dismiss": "Четке кагуу",
         "restore": "Калыбына келтирүү"

@@ -250,6 +250,33 @@ export const UserListPage: React.FC = () => {
   // Memoize validation errors to prevent cascading re-renders
   const memoizedValidationErrors = useMemo(() => _validationErrors, [_validationErrors]);
 
+  // Stable selection props to prevent DataTable re-renders and infinite loops
+  const selectionProps = useMemo(() => ({
+    selectedIds: selectedUserIds,
+    onSelectionChange: setSelectedUserIds,
+  }), [selectedUserIds]);
+
+  // Clear filters callback
+  const clearFilters = useCallback(() => {
+    setFilters({
+      searchTerm: '',
+      roles: [],
+      status: null,
+      isActive: null,
+      department: '',
+      createdDateFrom: '',
+      createdDateTo: '',
+      lastLoginFrom: '',
+      lastLoginTo: '',
+    });
+    setPage(0);
+  }, []);
+
+  // Refresh callback
+  const handleRefresh = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   // Handle filter changes with validation - optimized to prevent infinite loops
   const handleFilterChange = useCallback((
     key: keyof UserFilterState,
@@ -305,7 +332,7 @@ export const UserListPage: React.FC = () => {
     }
   }, [memoizedValidationErrors, filters, t]);
 
-  // Session recovery effect - restore bulk operation state
+  // Session recovery effect - restore bulk operation state (run only once)
   useEffect(() => {
     const restoreBulkOperation = () => {
       const bulkState = sessionContext.restoreBulkOperationState();
@@ -346,7 +373,7 @@ export const UserListPage: React.FC = () => {
     };
 
     restoreBulkOperation();
-  }, [sessionContext, t]);
+  }, []); // Empty dependency array - run only once on mount
 
   // Early access control check
   if (!accessControl.canAccessPage) {
@@ -374,20 +401,7 @@ export const UserListPage: React.FC = () => {
     setStoredViewMode(mode);
   };
 
-  const clearFilters = () => {
-    setFilters({
-      searchTerm: '',
-      roles: [],
-      status: null,
-      isActive: null,
-      department: '',
-      createdDateFrom: '',
-      createdDateTo: '',
-      lastLoginFrom: '',
-      lastLoginTo: '',
-    });
-    setPage(0);
-  };
+  // Functions moved to before early return to fix React hooks rules
 
   // Sorting handlers
   const handleSort = (field: SortField) => {
@@ -1197,7 +1211,7 @@ export const UserListPage: React.FC = () => {
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 isLoading={smartLoading}
-                onRefresh={() => window.location.reload()}
+                onRefresh={handleRefresh}
                 showDateFilters={true}
                 showRoleFilters={false}
               />
@@ -1513,10 +1527,7 @@ export const UserListPage: React.FC = () => {
                             setPage(0);
                           },
                         }}
-                        selection={accessControl.canSelectMultiple ? {
-                          selectedIds: selectedUserIds,
-                          onSelectionChange: setSelectedUserIds,
-                        } : undefined}
+                        selection={accessControl.canSelectMultiple ? selectionProps : undefined}
                         onRowClick={(user) => handleView(user.id)}
                         onRowAction={(action, user) => {
                           switch (action) {

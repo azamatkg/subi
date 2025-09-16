@@ -39,9 +39,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KeyboardNavigation, announceToScreenReader } from '@/lib/accessibility';
-import {
-  QuickTooltip
-} from '@/components/ui/enhanced-tooltip';
+// Enhanced tooltips replaced with simple title attributes to prevent ref loops
 import { VirtualItem, useVirtualScrolling } from '@/hooks/useVirtualScrolling';
 
 // Types
@@ -336,7 +334,7 @@ export function DataTable<T extends { id: string }>({
   className,
   enableKeyboardNavigation = true,
   ariaLabel,
-  enableVirtualScrolling = true,
+  enableVirtualScrolling: _enableVirtualScrolling = true,
   virtualRowHeight = 65,
   virtualScrollThreshold = 100,
   virtualScrollHeight = 600,
@@ -355,8 +353,22 @@ export function DataTable<T extends { id: string }>({
   const tableRef = useRef<HTMLTableElement>(null);
   const lastAnnouncementTime = useRef(0);
 
-  // Virtual scrolling
-  const shouldUseVirtualScrolling = enableVirtualScrolling && !isMobile && data.length >= virtualScrollThreshold;
+
+  // Selection state helpers
+  const allSelected = selectedIds.length === data.length && data.length > 0;
+  const _someSelected = selectedIds.length > 0 && selectedIds.length < data.length;
+
+  // Fixed checkbox ref callback to prevent infinite loops
+  const checkboxRef = useCallback((el: HTMLInputElement | null) => {
+    if (el) {
+      // Use a stable reference and update indeterminate state directly
+      const isIndeterminate = selectedIds.length > 0 && selectedIds.length < data.length;
+      el.indeterminate = isIndeterminate;
+    }
+  }, [selectedIds.length, data.length]); // Include necessary dependencies
+
+  // Virtual scrolling - temporarily disabled to debug infinite loop
+  const shouldUseVirtualScrolling = false; // enableVirtualScrolling && !isMobile && data.length >= virtualScrollThreshold;
   const virtualScrolling = useVirtualScrolling(data, {
     itemHeight: virtualRowHeight,
     threshold: virtualScrollThreshold,
@@ -560,16 +572,15 @@ export function DataTable<T extends { id: string }>({
         <TableCell className="h-full flex items-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <QuickTooltip content={t('common.actions')}>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={t('common.actions', { item: item.id })}
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </QuickTooltip>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                onClick={(e) => e.stopPropagation()}
+                aria-label={t('common.actions', { item: item.id })}
+                title={t('common.actions')}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
@@ -654,9 +665,6 @@ export function DataTable<T extends { id: string }>({
     );
   }
 
-  const allSelected = selectedIds.length === data.length && data.length > 0;
-  const someSelected = selectedIds.length > 0 && selectedIds.length < data.length;
-
   // Mobile-optimized table with horizontal scroll and responsive features
   if (isMobile) {
     return (
@@ -683,9 +691,7 @@ export function DataTable<T extends { id: string }>({
                         <th scope="col" className="sticky left-0 z-10 bg-gray-50 px-3 py-3 text-left">
                           <Checkbox
                             checked={allSelected}
-                            ref={(el) => {
-                              if (el) {el.indeterminate = someSelected;}
-                            }}
+                            ref={checkboxRef}
                             onCheckedChange={handleSelectAll}
                             aria-label={t('common.selectAll')}
                             className="touch-manipulation"
@@ -867,18 +873,13 @@ export function DataTable<T extends { id: string }>({
                 <TableRow>
                   {selection && (
                     <TableHead className="w-[50px]">
-                      <QuickTooltip
-                        content={t('userManagement.tooltips.dataTable.selection.header')}
-                      >
-                        <Checkbox
-                          checked={allSelected}
-                          ref={(el) => {
-                            if (el) {el.indeterminate = someSelected;}
-                          }}
-                          onCheckedChange={handleSelectAll}
-                          aria-label={t('common.selectAll')}
-                        />
-                      </QuickTooltip>
+                      <Checkbox
+                        checked={allSelected}
+                        ref={checkboxRef}
+                        onCheckedChange={handleSelectAll}
+                        aria-label={t('common.selectAll')}
+                        title={t('userManagement.tooltips.dataTable.selection.header')}
+                      />
                     </TableHead>
                   )}
                   {columns.map((column, _colIndex) => (
@@ -894,31 +895,28 @@ export function DataTable<T extends { id: string }>({
                       }
                     >
                       {column.sortable ? (
-                        <QuickTooltip
-                          content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="-ml-3 h-8 data-[state=open]:bg-accent"
+                          onClick={() => handleSort(column.id)}
+                          onKeyDown={(e) => {
+                            if (KeyboardNavigation.isActionKey(e.key)) {
+                              e.preventDefault();
+                              handleSort(column.id);
+                            }
+                          }}
+                          aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
+                            (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                            'none'}`}
+                          title={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
                             `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
                             ''}`}
+                          tabIndex={0}
                         >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="-ml-3 h-8 data-[state=open]:bg-accent"
-                            onClick={() => handleSort(column.id)}
-                            onKeyDown={(e) => {
-                              if (KeyboardNavigation.isActionKey(e.key)) {
-                                e.preventDefault();
-                                handleSort(column.id);
-                              }
-                            }}
-                            aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
-                              (sorting.direction === 'asc' ? 'ascending' : 'descending') :
-                              'none'}`}
-                            tabIndex={0}
-                          >
-                            <span>{column.label}</span>
-                            {getSortIcon(column.id)}
-                          </Button>
-                        </QuickTooltip>
+                          <span>{column.label}</span>
+                          {getSortIcon(column.id)}
+                        </Button>
                       ) : (
                         <span role="presentation">{column.label}</span>
                       )}
@@ -981,18 +979,13 @@ export function DataTable<T extends { id: string }>({
               <TableRow>
                 {selection && (
                   <TableHead className="w-[50px]">
-                    <QuickTooltip
-                      content={t('userManagement.tooltips.dataTable.selection.header')}
-                    >
-                      <Checkbox
-                        checked={allSelected}
-                        ref={(el) => {
-                          if (el) {el.indeterminate = someSelected;}
-                        }}
-                        onCheckedChange={handleSelectAll}
-                        aria-label={t('common.selectAll')}
-                      />
-                    </QuickTooltip>
+                    <Checkbox
+                      checked={allSelected}
+                      ref={checkboxRef}
+                      onCheckedChange={handleSelectAll}
+                      aria-label={t('common.selectAll')}
+                      title={t('userManagement.tooltips.dataTable.selection.header')}
+                    />
                   </TableHead>
                 )}
                 {columns.map((column, _colIndex) => (
@@ -1008,31 +1001,28 @@ export function DataTable<T extends { id: string }>({
                     }
                   >
                     {column.sortable ? (
-                      <QuickTooltip
-                        content={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="-ml-3 h-8 data-[state=open]:bg-accent"
+                        onClick={() => handleSort(column.id)}
+                        onKeyDown={(e) => {
+                          if (KeyboardNavigation.isActionKey(e.key)) {
+                            e.preventDefault();
+                            handleSort(column.id);
+                          }
+                        }}
+                        aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
+                          (sorting.direction === 'asc' ? 'ascending' : 'descending') :
+                          'none'}`}
+                        title={`${t('userManagement.tooltips.dataTable.sorting.description')} ${sorting?.field === column.id ?
                           `(${sorting.direction === 'asc' ? 'ascending' : 'descending'})` :
                           ''}`}
+                        tabIndex={0}
                       >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="-ml-3 h-8 data-[state=open]:bg-accent"
-                          onClick={() => handleSort(column.id)}
-                          onKeyDown={(e) => {
-                            if (KeyboardNavigation.isActionKey(e.key)) {
-                              e.preventDefault();
-                              handleSort(column.id);
-                            }
-                          }}
-                          aria-label={`Sort by ${column.label}. Current sort: ${sorting?.field === column.id ?
-                            (sorting.direction === 'asc' ? 'ascending' : 'descending') :
-                            'none'}`}
-                          tabIndex={0}
-                        >
-                          <span>{column.label}</span>
-                          {getSortIcon(column.id)}
-                        </Button>
-                      </QuickTooltip>
+                        <span>{column.label}</span>
+                        {getSortIcon(column.id)}
+                      </Button>
                     ) : (
                       <span role="presentation">{column.label}</span>
                     )}
@@ -1086,16 +1076,15 @@ export function DataTable<T extends { id: string }>({
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <QuickTooltip content={t('common.actions')}>
-                          <Button
-                            variant="ghost"
-                            className="h-8 w-8 p-0"
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label={t('common.actions', { item: item.id })}
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </QuickTooltip>
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={t('common.actions', { item: item.id })}
+                          title={t('common.actions')}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
