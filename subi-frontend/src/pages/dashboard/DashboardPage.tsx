@@ -1,57 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
-  CreditCard,
-  FileText,
-  Users,
   TrendingUp,
   Clock,
+  CreditCard,
   CheckCircle,
   AlertCircle,
-  Calendar,
-  ArrowUpRight,
-  BarChart3,
-  Zap,
-  Eye,
+  DollarSign,
   RefreshCw,
 } from 'lucide-react';
 import {
-  AccessibleAmount,
   AccessibleDate,
-  AccessibleStatusBadge,
 } from '@/components/ui/accessible-status-badge';
 import {
   AccessibleHeading,
   Landmark,
   LiveRegion,
 } from '@/components/ui/focus-trap';
-import { CardSkeleton, ListItemSkeleton } from '@/components/ui/skeleton';
+import { CardSkeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useAnnouncement } from '@/lib/accessibility';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
+import { LoanApplicationTrendChart } from '@/components/dashboard/LoanApplicationTrendChart';
+import { LoanStatusDistributionChart } from '@/components/dashboard/LoanStatusDistributionChart';
+import { LoanAmountByProgramChart } from '@/components/dashboard/LoanAmountByProgramChart';
+import { RecentLoanActivitiesTimeline } from '@/components/dashboard/RecentLoanActivitiesTimeline';
 
 export const DashboardPage: React.FC = () => {
   const { userDisplayName } = useAuth();
-  const { formatCurrency, formatNumber } = useTranslation();
+  const { formatNumber } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const announce = useAnnouncement();
-  useSetPageTitle('Панель управления');
+  useSetPageTitle('Панель управления - Кредитная система');
 
-  // Enhanced dashboard state with loading simulation
+  // Loan dashboard state
   const [dashboardStats, setDashboardStats] = useState({
     totalApplications: 0,
-    pendingApplications: 0,
-    approvedApplications: 0,
-    rejectedApplications: 0,
-    totalAmount: 0,
-    thisMonthApplications: 0,
-    growthRate: 0,
-    approvalRate: 0,
+    approvedLoans: 0,
+    pendingReviews: 0,
+    totalLoanAmount: 0,
   });
 
   // Simulate data loading - only run once on mount
@@ -62,17 +53,13 @@ export const DashboardPage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 800));
 
       setDashboardStats({
-        totalApplications: 156,
-        pendingApplications: 23,
-        approvedApplications: 89,
-        rejectedApplications: 12,
-        totalAmount: 25600000, // in som
-        thisMonthApplications: 34,
-        growthRate: 12.5,
-        approvalRate: 78.2,
+        totalApplications: 1247,
+        approvedLoans: 856,
+        pendingReviews: 73,
+        totalLoanAmount: 12500000, // 12.5M
       });
       setIsLoading(false);
-      announce('Данные дашборда обновлены', 'polite');
+      announce('Данные кредитной системы обновлены', 'polite');
     };
 
     loadData();
@@ -85,82 +72,15 @@ export const DashboardPage: React.FC = () => {
       setDashboardStats(prev => ({
         ...prev,
         // Simulate small changes in data
-        totalApplications:
-          prev.totalApplications + Math.floor(Math.random() * 5),
-        pendingApplications: Math.max(
-          0,
-          prev.pendingApplications + Math.floor(Math.random() * 3) - 1
-        ),
+        totalApplications: prev.totalApplications + Math.floor(Math.random() * 3),
+        approvedLoans: prev.approvedLoans + Math.floor(Math.random() * 2),
+        pendingReviews: Math.max(0, prev.pendingReviews + Math.floor(Math.random() * 3) - 1),
+        totalLoanAmount: prev.totalLoanAmount + Math.floor(Math.random() * 100000) - 50000,
       }));
       setIsLoading(false);
       announce('Данные обновлены', 'polite');
     }, 500);
   }, [announce]);
-
-  const recentApplications = [
-    {
-      id: '1',
-      applicantName: 'Айгүл Токтосунова',
-      amount: 500000,
-      status: 'UNDER_COMPLETION',
-      createdAt: '2024-09-01T10:00:00Z',
-      programName: 'Микрокредитование',
-      priority: 'high' as const,
-    },
-    {
-      id: '2',
-      applicantName: 'Максат Жолдошев',
-      amount: 750000,
-      status: 'APPROVED',
-      createdAt: '2024-09-01T09:30:00Z',
-      programName: 'Малый бизнес',
-      priority: 'medium' as const,
-    },
-    {
-      id: '3',
-      applicantName: 'Нургуль Осмонова',
-      amount: 300000,
-      status: 'SUBMITTED',
-      createdAt: '2024-09-01T08:45:00Z',
-      programName: 'Стартап поддержка',
-      priority: 'low' as const,
-    },
-  ];
-
-  const quickActions = [
-    {
-      id: 'new-application',
-      title: 'Новая заявка',
-      description: 'Создать заявку на кредит',
-      icon: FileText,
-      color: 'blue',
-      href: '/applications/new',
-    },
-    {
-      id: 'commission',
-      title: 'Комиссия',
-      description: 'Заседания комиссии',
-      icon: Users,
-      color: 'purple',
-      href: '/commissions',
-    },
-    {
-      id: 'analytics',
-      title: 'Аналитика',
-      description: 'Отчеты и статистика',
-      icon: BarChart3,
-      color: 'emerald',
-      href: '/analytics',
-    },
-    {
-      id: 'schedule',
-      title: 'Расписание',
-      description: 'Календарь событий',
-      icon: Calendar,
-      color: 'orange',
-      href: '/schedule',
-    },
-  ];
 
   // Enhanced StatCard with better accessibility and animation
   const StatCard: React.FC<{
@@ -284,7 +204,7 @@ export const DashboardPage: React.FC = () => {
   return (
     <Landmark role="main" aria-labelledby="dashboard-title">
       {/* Live region for announcements */}
-      <LiveRegion>{isLoading && 'Загружаются данные дашборда'}</LiveRegion>
+      <LiveRegion>{isLoading && 'Загружаются данные кредитной системы'}</LiveRegion>
 
       <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Enhanced Header Section */}
@@ -326,274 +246,76 @@ export const DashboardPage: React.FC = () => {
           </div>
         </header>
 
-        {/* Enhanced Stats Cards Grid */}
+        {/* Loan Stats Cards Grid */}
         <section aria-labelledby="stats-title">
           <AccessibleHeading level={2} id="stats-title" className="sr-only">
-            Статистика заявок
+            Статистика кредитной системы
           </AccessibleHeading>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <StatCard
               title="Всего заявок"
               value={dashboardStats.totalApplications}
-              icon={FileText}
-              trend={dashboardStats.growthRate}
+              icon={CreditCard}
+              trend={8.2}
               color="blue"
               loading={isLoading}
-              onClick={() => announce('Переход к списку всех заявок')}
-              description="Общее количество заявок в системе"
+              onClick={() => announce('Переход к списку заявок')}
+              description="За текущий месяц"
+            />
+            <StatCard
+              title="Одобрено кредитов"
+              value={dashboardStats.approvedLoans}
+              icon={CheckCircle}
+              trend={12.5}
+              color="emerald"
+              loading={isLoading}
+              onClick={() => announce('Просмотр одобренных кредитов')}
+              description="Успешно одобрено"
             />
             <StatCard
               title="На рассмотрении"
-              value={dashboardStats.pendingApplications}
-              icon={Clock}
+              value={dashboardStats.pendingReviews}
+              icon={AlertCircle}
+              trend={-3.2}
               color="amber"
               loading={isLoading}
               onClick={() => announce('Переход к заявкам на рассмотрении')}
-              description="Заявки ожидающие решения"
-            />
-            <StatCard
-              title="Одобрено"
-              value={dashboardStats.approvedApplications}
-              icon={CheckCircle}
-              trend={8.5}
-              color="emerald"
-              loading={isLoading}
-              onClick={() => announce('Переход к одобренным заявкам')}
-              description="Успешно одобренные заявки"
+              description="Ожидают решения"
             />
             <StatCard
               title="Общая сумма"
-              value={formatCurrency(dashboardStats.totalAmount)}
-              icon={CreditCard}
-              trend={23.2}
+              value={`${(dashboardStats.totalLoanAmount / 1000000).toFixed(1)}М ₽`}
+              icon={DollarSign}
+              trend={15.7}
               color="purple"
               loading={isLoading}
-              onClick={() => announce('Просмотр финансовой аналитики')}
-              description="Общий объем одобренных кредитов"
+              onClick={() => announce('Переход к финансовой статистике')}
+              description="Выданные кредиты"
             />
           </div>
         </section>
 
-        {/* Main Content Grid - Enhanced for Mobile */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-          {/* Recent Applications - Full width on mobile, 2/3 on desktop */}
-          <Card className="xl:col-span-8 border-0 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <FileText
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <CardTitle className="text-xl font-semibold">
-                    Последние заявки
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Недавно поданные заявки
-                  </p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <Eye className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Все заявки</span>
-                <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <ListItemSkeleton key={i} showAvatar />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recentApplications.map(app => (
-                    <div
-                      key={app.id}
-                      className={cn(
-                        'group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4',
-                        'p-4 rounded-xl transition-all duration-200',
-                        'bg-gradient-to-r from-muted/50 to-muted/30',
-                        'hover:from-muted/70 hover:to-muted/50',
-                        'hover:shadow-md cursor-pointer',
-                        'focus:ring-2 focus:ring-primary/20 focus:outline-none',
-                        app.priority === 'high' &&
-                          'ring-1 ring-red-200 dark:ring-red-800'
-                      )}
-                      tabIndex={0}
-                      role="button"
-                      aria-label={`Заявка ${app.applicantName}, сумма ${formatCurrency(app.amount)}`}
-                    >
-                      {/* Mobile: Stacked layout */}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                              {app.applicantName}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {app.programName}
-                            </p>
-                          </div>
-                          <AccessibleStatusBadge status={app.status} showIcon />
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <AccessibleAmount
-                            amount={app.amount}
-                            className="font-semibold text-lg"
-                          />
-                          <AccessibleDate
-                            date={app.createdAt}
-                            format="short"
-                            className="text-muted-foreground"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* Loan Management Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {/* Loan Application Trend Chart */}
+          <div className="xl:col-span-2">
+            <LoanApplicationTrendChart />
+          </div>
 
-          {/* Quick Actions & Notifications Sidebar */}
-          <div className="xl:col-span-4 space-y-6">
-            {/* Quick Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center">
-                    <Zap
-                      className="h-5 w-5 text-emerald-600"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <CardTitle className="text-xl">Быстрые действия</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {quickActions.map(action => (
-                  <Button
-                    key={action.id}
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start gap-3 p-4 h-auto border-0',
-                      'bg-gradient-to-r from-muted/30 to-muted/20',
-                      'hover:from-primary/10 hover:to-primary/5',
-                      'hover:text-primary transition-all duration-200',
-                      'group'
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'h-8 w-8 rounded-lg flex items-center justify-center transition-transform duration-200',
-                        'group-hover:scale-110',
-                        action.color === 'blue' && 'bg-blue-500/10',
-                        action.color === 'purple' && 'bg-purple-500/10',
-                        action.color === 'emerald' && 'bg-emerald-500/10',
-                        action.color === 'orange' && 'bg-orange-500/10'
-                      )}
-                    >
-                      <action.icon
-                        className={cn(
-                          'h-4 w-4',
-                          action.color === 'blue' && 'text-blue-600',
-                          action.color === 'purple' && 'text-purple-600',
-                          action.color === 'emerald' && 'text-emerald-600',
-                          action.color === 'orange' && 'text-orange-600'
-                        )}
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium">{action.title}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {action.description}
-                      </div>
-                    </div>
-                    <ArrowUpRight
-                      className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-hidden="true"
-                    />
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
+          {/* Loan Status Distribution */}
+          <div className="xl:col-span-1">
+            <LoanStatusDistributionChart />
+          </div>
 
-            {/* Enhanced Notifications */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center">
-                      <AlertCircle
-                        className="h-5 w-5 text-amber-600"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <CardTitle className="text-xl">Уведомления</CardTitle>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    2
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div
-                    className={cn(
-                      'p-4 rounded-xl transition-all duration-200 hover:shadow-md',
-                      'bg-gradient-to-r from-amber-50 to-orange-50',
-                      'dark:from-amber-950/30 dark:to-orange-950/30',
-                      'border border-amber-200/50 dark:border-amber-800/50'
-                    )}
-                  >
-                    <div className="flex gap-3">
-                      <AlertCircle
-                        className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
-                      />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
-                          Требуется внимание
-                        </p>
-                        <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-                          5 заявок ожидают документы более 3 дней
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+          {/* Loan Amount by Program */}
+          <div className="xl:col-span-2">
+            <LoanAmountByProgramChart />
+          </div>
 
-                  <div
-                    className={cn(
-                      'p-4 rounded-xl transition-all duration-200 hover:shadow-md',
-                      'bg-gradient-to-r from-blue-50 to-cyan-50',
-                      'dark:from-blue-950/30 dark:to-cyan-950/30',
-                      'border border-blue-200/50 dark:border-blue-800/50'
-                    )}
-                  >
-                    <div className="flex gap-3">
-                      <Calendar
-                        className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
-                      />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                          Заседание комиссии
-                        </p>
-                        <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                          Запланировано на завтра в 14:00
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Recent Loan Activities */}
+          <div className="xl:col-span-1">
+            <RecentLoanActivitiesTimeline />
           </div>
         </div>
       </div>
