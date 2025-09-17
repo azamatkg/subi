@@ -25,6 +25,7 @@ import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { ApplicationListPage } from '@/pages/applications/ApplicationListPage';
 import { ApplicationCreatePage } from '@/pages/applications/ApplicationCreatePage';
 import { ApplicationDetailPage } from '@/pages/applications/ApplicationDetailPage';
+import { ApplicationsPage } from '@/pages/applications/ApplicationsPage';
 
 // Credit Program pages
 import { CreditProgramListPage } from '@/pages/credit-programs/CreditProgramListPage';
@@ -39,13 +40,17 @@ import { DocumentTemplatePage } from '@/pages/documents/DocumentTemplatePage';
 import { CommissionListPage } from '@/pages/commissions/CommissionListPage';
 import { CommissionDetailPage } from '@/pages/commissions/CommissionDetailPage';
 import { MyReviewsPage } from '@/pages/commissions/MyReviewsPage';
+import { CommissionReviewsPage } from '@/pages/commission/CommissionReviewsPage';
 
 // Admin pages
+import { UserManagementPage } from '@/pages/admin/UserManagementPage';
 import { UserListPage } from '@/pages/admin/UserListPage';
 import { UserDetailPage } from '@/pages/admin/UserDetailPage';
 import { UserAddEditPage } from '@/pages/admin/UserAddEditPage';
 import { ReferenceDataPage } from '@/pages/admin/ReferenceDataPage';
 import { SystemConfigPage } from '@/pages/admin/SystemConfigPage';
+import { ReferencesPage } from '@/pages/admin/ReferencesPage';
+import { SystemSettingsPage } from '@/pages/admin/SystemSettingsPage';
 
 // Decision pages
 import { DecisionListPage } from '@/pages/decisions/DecisionListPage';
@@ -106,6 +111,14 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
+            element: (
+              <CreditAnalystRoute>
+                <ApplicationsPage />
+              </CreditAnalystRoute>
+            ),
+          },
+          {
+            path: 'list',
             element: <ApplicationListPage />,
           },
           {
@@ -192,6 +205,16 @@ export const router = createBrowserRouter([
         ],
       },
 
+      // Commission Reviews (new route)
+      {
+        path: 'commission',
+        element: (
+          <CommissionMemberRoute>
+            <CommissionReviewsPage />
+          </CommissionMemberRoute>
+        ),
+      },
+
       // Decisions
       {
         path: 'decisions',
@@ -241,6 +264,10 @@ export const router = createBrowserRouter([
         ),
         children: [
           {
+            path: 'user-management',
+            element: <UserManagementPage />,
+          },
+          {
             path: 'users',
             children: [
               {
@@ -260,6 +287,14 @@ export const router = createBrowserRouter([
                 element: <UserAddEditPage />,
               },
             ],
+          },
+          {
+            path: 'references',
+            element: <ReferencesPage />,
+          },
+          {
+            path: 'settings',
+            element: <SystemSettingsPage />,
           },
           {
             path: 'reference-data',

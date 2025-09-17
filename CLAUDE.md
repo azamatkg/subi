@@ -165,3 +165,4 @@ subi-frontend/
 - **Test Environment:** Vitest with jsdom environment and custom setup in `src/test/setup.ts`
 - **TypeScript Config:** Project references setup with separate app and node configurations
 - **shadcn/ui:** Component library configured with slate base color and CSS variables
+- Always add text translations

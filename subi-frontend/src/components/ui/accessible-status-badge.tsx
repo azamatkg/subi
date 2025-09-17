@@ -32,7 +32,7 @@ export function AccessibleStatusBadge({
     return 'default' as const;
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = () => {
     const iconClass = cn(
       'flex-shrink-0',
       size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'
@@ -92,7 +92,7 @@ export function AccessibleStatusBadge({
   const variant = getStatusVariant();
 
   // Enhanced status-specific color schemes using semantic color system
-  const getStatusColors = (status: string) => {
+  const getStatusColors = () => {
     switch (safeStatus.toUpperCase()) {
       case 'APPROVED':
       case 'ACTIVE':
@@ -121,7 +121,7 @@ export function AccessibleStatusBadge({
         size === 'sm' && 'px-2.5 py-1 text-xs',
         size === 'default' && 'px-3 py-1.5 text-sm',
         size === 'lg' && 'px-4 py-2 text-base',
-        getStatusColors(safeStatus),
+        getStatusColors(),
         className
       )}
       // ARIA attributes for accessibility
@@ -129,7 +129,7 @@ export function AccessibleStatusBadge({
       aria-label={`Статус: ${statusLabel}`}
       title={statusLabel}
     >
-      {showIcon && getStatusIcon(safeStatus)}
+      {showIcon && getStatusIcon()}
       <span className="truncate">{statusLabel}</span>
     </Badge>
   );

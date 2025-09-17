@@ -11,7 +11,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { setSidebarOpen } from '@/store/slices/uiSlice';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
-import { Home, Settings, ChevronLeft, ChevronDown, ChevronRight, Scale, CreditCard, Users } from 'lucide-react';
+import { Home, Settings, ChevronLeft, ChevronDown, ChevronRight, Scale, CreditCard, Users, Database, FileText } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -42,43 +42,63 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    id: 'credit-management',
-    title: 'Кредитное управление',
+    id: 'administration',
+    title: 'Администрирование системы',
     items: [
+      {
+        title: 'navigation.userManagement',
+        href: '/admin/user-management',
+        icon: Users,
+        roles: ['ADMIN'],
+        description: 'Управление пользователями',
+      },
+      {
+        title: 'navigation.references',
+        href: '/admin/references',
+        icon: Database,
+        roles: ['ADMIN'],
+        description: 'Справочники и данные',
+      },
+      {
+        title: 'navigation.systemSettings',
+        href: '/admin/settings',
+        icon: Settings,
+        roles: ['ADMIN'],
+        description: 'Настройки системы',
+      },
+    ],
+  },
+  {
+    id: 'credit-operations',
+    title: 'Кредитные операции',
+    items: [
+      {
+        title: 'navigation.applications',
+        href: '/applications',
+        icon: FileText,
+        roles: ['CREDIT_ANALYST', 'DECISION_MAKER'],
+        description: 'Заявки на кредит',
+      },
       {
         title: 'navigation.creditPrograms',
         href: '/credit-programs',
         icon: CreditCard,
         roles: ['ADMIN', 'CREDIT_MANAGER', 'CREDIT_ANALYST'],
-        description: 'Управление кредитными программами',
+        description: 'Кредитные программы',
       },
       {
         title: 'navigation.decisions',
         href: '/decisions',
         icon: Scale,
         roles: ['ADMIN', 'DECISION_MAKER'],
-        description: 'Основания на выдачу кредита',
+        description: 'Решения по кредитам',
       },
-    ],
-  },
-  {
-    id: 'administration',
-    title: 'Администрирование',
-    items: [
       {
-        title: 'navigation.userManagement',
-        href: '/admin/users',
+        title: 'navigation.commissionReviews',
+        href: '/commission',
         icon: Users,
-        roles: ['ADMIN'],
-        description: 'Управление пользователями',
-      },
-      {
-        title: 'navigation.admin',
-        href: '/admin',
-        icon: Settings,
-        roles: ['ADMIN'],
-        description: 'Системные настройки',
-        end: true,
+        roles: ['COMMISSION_MEMBER'],
+        description: 'Комиссионные рассмотрения',
       },
     ],
   },
@@ -102,8 +122,8 @@ export const Sidebar: React.FC = () => {
     } catch (error) {
       console.warn('Failed to load sidebar state from localStorage:', error);
     }
-    // Default: credit-management section expanded
-    return 'credit-management';
+    // Default: credit-operations section expanded
+    return 'credit-operations';
   });
 
   // Initial mobile setup - runs only once

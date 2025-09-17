@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -59,6 +59,16 @@ import {
 import { UserStatus } from '@/types/user';
 import { ROUTES } from '@/constants';
 
+interface ApiError {
+  status?: number;
+  data?: unknown;
+  message?: string;
+}
+
+interface UserRole {
+  name: string;
+}
+
 export const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   
@@ -103,15 +113,15 @@ export const UserDetailPage: React.FC = () => {
 
   // Handle the actual API response structure
   const rawUser = userResponse?.data || userResponse;
-  const user = rawUser ? {
+  const user = useMemo(() => rawUser ? {
     ...rawUser,
     isActive: rawUser.enabled,
     status: rawUser.enabled ? 'ACTIVE' : 'INACTIVE',
-    roles: rawUser.roles?.map((role: any) => role.name) || [],
+    roles: rawUser.roles?.map((role: UserRole) => role.name) || [],
     lastLoginAt: rawUser.lastLoginAt || null,
     phone: rawUser.phone || null,
     department: rawUser.department || null,
-  } : null;
+  } : null, [rawUser]);
 
   // Debug logging
   useEffect(() => {
@@ -123,9 +133,9 @@ export const UserDetailPage: React.FC = () => {
       isLoading,
       error,
       errorDetails: error ? {
-        status: (error as any)?.status,
-        data: (error as any)?.data,
-        message: (error as any)?.message,
+        status: (error as ApiError)?.status,
+        data: (error as ApiError)?.data,
+        message: (error as ApiError)?.message,
       } : null,
     });
     

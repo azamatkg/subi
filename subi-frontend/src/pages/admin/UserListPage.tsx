@@ -73,7 +73,6 @@ import {
 } from '@/store/api/userApi';
 import type {
   UserListResponseDto,
-  UserSearchAndFilterParams,
   UserFilterState,
   UserStatus,
 } from '@/types/user';
