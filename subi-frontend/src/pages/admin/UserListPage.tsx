@@ -77,6 +77,7 @@ import type {
   UserStatus,
 } from '@/types/user';
 import { UserStatus as UserStatusEnum } from '@/types/user';
+import { UserRole } from '@/types';
 import { ROUTES, PAGINATION } from '@/constants';
 import { getStoredViewMode, setStoredViewMode } from '@/utils/auth';
 
@@ -233,9 +234,10 @@ export const UserListPage: React.FC = () => {
   };
 
   // Format user roles for display
-  const formatRoles = (roles: string[]) => {
+  const formatRoles = (roles: UserRole[]) => {
     if (!roles || roles.length === 0) return t('common.none');
-    const firstRole = String(roles[0] || '').toLowerCase();
+    const roleName = (roles[0] as any)?.name || String(roles[0]);
+    const firstRole = (roleName || '').toLowerCase();
     if (roles.length === 1) return t(`userManagement.roles.${firstRole}`);
     return `${t(`userManagement.roles.${firstRole}`)} +${roles.length - 1}`;
   };
@@ -845,11 +847,15 @@ export const UserListPage: React.FC = () => {
                           </TableCell>
                           <TableCell className="py-4">
                             <div className="flex flex-wrap gap-1">
-                              {user.roles.slice(0, 2).map(role => (
-                                <Badge key={role} variant="secondary" className="text-xs">
-                                  {t(`userManagement.roles.${String(role || '').toLowerCase()}`)}
-                                </Badge>
-                              ))}
+                              {user.roles.slice(0, 2).map((role, index) => {
+                                const roleName = (role as any)?.name || String(role);
+                                const roleKey = roleName.toLowerCase();
+                                return (
+                                  <Badge key={`${roleName}-${index}`} variant="secondary" className="text-xs">
+                                    {t(`userManagement.roles.${roleKey}`)}
+                                  </Badge>
+                                );
+                              })}
                               {user.roles.length > 2 && (
                                 <Badge variant="outline" className="text-xs">
                                   +{user.roles.length - 2}

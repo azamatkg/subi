@@ -61,7 +61,10 @@
     "to": "чейин",
     "up_to": "чейин",
     "until": "чейин",
-    "notSpecified": "Көрсөтүлгөн эмес"
+    "notSpecified": "Көрсөтүлгөн эмес",
+    "sortBy": "{field} боюнча иреттөө",
+    "selectStatus": "Статусту тандаңыз",
+    "created": "Түзүлгөн"
   },
   "navigation": {
     "dashboard": "Башкаруу панели",
@@ -279,6 +282,10 @@
     "enterUsername": "Логинди киргизиңиз",
     "enterPassword": "Сырсөздү киргизиңиз",
     "confirmPassword": "Сырсөздү ырастаңыз",
+    "rolesManagementDescription": "Колдонуучулардын ролдорун жана уруксаттарын башкаруу",
+    "rolesManagementComingSoon": "Ролдорду башкаруу кийинчерээк ишке ашырылат",
+    "permissionsManagementDescription": "Системанын уруксаттарын жана жеткиликтүүлүгүн башкаруу",
+    "permissionsManagementComingSoon": "Уруксаттарды башкаруу кийинчерээк ишке ашырылат",
     "checkingUsernameAvailability": "Логиндин жеткиликтүүлүгүн текшерүү...",
     "checkingEmailAvailability": "Email жеткиликтүүлүгүн текшерүү...",
     "usernameNotAvailable": "Бул логин алдагача алынган",
@@ -316,7 +323,8 @@
       "credit_analyst": "Кредит аналитиги",
       "decision_maker": "Чечим кабыл алуучу",
       "commission_member": "Комиссия мүчөсү",
-      "user": "Колдонуучу"
+      "user": "Колдонуучу",
+      "moderator": "Модератор"
     },
     "roleDescriptions": {
       "admin": "Системага толук жетки жана колдонуучуларды башкаруу",

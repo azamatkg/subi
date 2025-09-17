@@ -61,7 +61,10 @@
     "to": "до",
     "up_to": "до",
     "until": "до",
-    "notSpecified": "Не указано"
+    "notSpecified": "Не указано",
+    "sortBy": "Сортировать по {field}",
+    "selectStatus": "Выберите статус",
+    "created": "Создано"
   },
   "navigation": {
     "dashboard": "Панель управления",
@@ -279,6 +282,10 @@
     "enterUsername": "Введите логин",
     "enterPassword": "Введите пароль",
     "confirmPassword": "Подтвердите пароль",
+    "rolesManagementDescription": "Управление ролями пользователей",
+    "rolesManagementComingSoon": "Управление ролями будет реализовано позже",
+    "permissionsManagementDescription": "Управление разрешениями системы",
+    "permissionsManagementComingSoon": "Управление разрешениями будет реализовано позже",
     "checkingUsernameAvailability": "Проверка доступности логина...",
     "checkingEmailAvailability": "Проверка доступности email...",
     "usernameNotAvailable": "Этот логин уже занят",
@@ -316,7 +323,8 @@
       "credit_analyst": "Кредитный аналитик",
       "decision_maker": "Лицо, принимающее решения",
       "commission_member": "Член комиссии",
-      "user": "Пользователь"
+      "user": "Пользователь",
+      "moderator": "Модератор"
     },
     "roleDescriptions": {
       "admin": "Полный доступ к системе и управлению пользователями",
@@ -501,6 +509,9 @@
     "seconds": "секунд(ы)",
     "ago": "{{count}} {{unit}} назад",
     "justNow": "только что"
+  },
+  "user": {
+    "profile": "Профиль"
   },
   "errors": {
     "notFound": "Страница не найдена",

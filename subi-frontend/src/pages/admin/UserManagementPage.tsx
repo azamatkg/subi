@@ -176,8 +176,9 @@ export const UserManagementPage: React.FC = () => {
     <div className="container mx-auto py-6 space-y-6">
       <Tabs defaultValue="dashboard" className="space-y-6">
         <TabsList className="inline-flex items-center justify-start max-w-fit">
-          <TabsTrigger value="dashboard" className="flex items-center justify-center">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
+            {t('userManagement.tabs.dashboard')}
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -209,13 +210,13 @@ export const UserManagementPage: React.FC = () => {
                 {t('userManagement.rolesList')}
               </CardTitle>
               <CardDescription>
-                Управление ролями пользователей
+                {t('userManagement.rolesManagementDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-center h-32">
                 <p className="text-muted-foreground">
-                  Управление ролями будет реализовано позже
+                  {t('userManagement.rolesManagementComingSoon')}
                 </p>
               </div>
             </CardContent>
@@ -230,13 +231,13 @@ export const UserManagementPage: React.FC = () => {
                 {t('userManagement.permissions')}
               </CardTitle>
               <CardDescription>
-                Управление разрешениями системы
+                {t('userManagement.permissionsManagementDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-center h-32">
                 <p className="text-muted-foreground">
-                  Управление разрешениями будет реализовано позже
+                  {t('userManagement.permissionsManagementComingSoon')}
                 </p>
               </div>
             </CardContent>

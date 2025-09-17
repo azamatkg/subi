@@ -79,7 +79,10 @@
     "to": "to",
     "up_to": "up to",
     "until": "until",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "sortBy": "Sort by {field}",
+    "selectStatus": "Select status",
+    "created": "Created"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -345,6 +348,10 @@
     "enterUsername": "Enter username",
     "enterPassword": "Enter password",
     "confirmPassword": "Confirm password",
+    "rolesManagementDescription": "Manage user roles and permissions",
+    "rolesManagementComingSoon": "Role management will be implemented later",
+    "permissionsManagementDescription": "Manage system permissions and access",
+    "permissionsManagementComingSoon": "Permission management will be implemented later",
     "checkingUsernameAvailability": "Checking username availability...",
     "checkingEmailAvailability": "Checking email availability...",
     "usernameNotAvailable": "This username is already taken",
@@ -382,7 +389,8 @@
       "credit_analyst": "Credit Analyst",
       "decision_maker": "Decision Maker",
       "commission_member": "Commission Member",
-      "user": "User"
+      "user": "User",
+      "moderator": "Moderator"
     },
     "roleDescriptions": {
       "admin": "Full system access and user management",
