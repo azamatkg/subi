@@ -59,7 +59,7 @@ export const MainLayout: React.FC = () => {
         <Header />
 
         {/* Main content */}
-        <main className="pt-4 pb-6 px-4 bg-muted min-h-screen">
+        <main className="pt-4 pb-6 bg-muted min-h-screen">
           <div className="w-full">
             <Outlet key={location.pathname} />
           </div>

@@ -207,8 +207,8 @@ export const AriaHelpers = {
         APPROVED: 'Одобрено',
         REJECTED: 'Отклонено',
         DRAFT: 'Черновик',
-        ACTIVE: 'Активно',
-        INACTIVE: 'Неактивно',
+        ACTIVE: 'Активный',
+        INACTIVE: 'Неактивный',
       },
       en: {
         SUBMITTED: 'Application submitted',
@@ -233,6 +233,48 @@ export const AriaHelpers = {
     };
 
     return statusLabels[locale]?.[status] || status;
+  },
+
+  /**
+   * Get user status label based on status string for user management
+   */
+  getUserStatusLabel(status: string, locale: string = 'ru'): string {
+    const statusLabels: Record<string, Record<string, string>> = {
+      ru: {
+        ACTIVE: 'Активный',
+        INACTIVE: 'Неактивный',
+        SUSPENDED: 'Заблокированный',
+        UNKNOWN: 'Неизвестно',
+      },
+      en: {
+        ACTIVE: 'Active',
+        INACTIVE: 'Inactive',
+        SUSPENDED: 'Suspended',
+        UNKNOWN: 'Unknown',
+      },
+      kg: {
+        ACTIVE: 'Активдүү',
+        INACTIVE: 'Активдүү эмес',
+        SUSPENDED: 'Блокталган',
+        UNKNOWN: 'Белгисиз',
+      },
+    };
+
+    // Handle null, undefined, or empty status
+    if (!status || status.trim() === '') {
+      return statusLabels[locale]?.['UNKNOWN'] || 'Unknown';
+    }
+
+    const normalizedStatus = status.toUpperCase().trim();
+    const translatedStatus = statusLabels[locale]?.[normalizedStatus];
+
+    // If translation exists, use it
+    if (translatedStatus) {
+      return translatedStatus;
+    }
+
+    // For unknown statuses, return fallback
+    return statusLabels[locale]?.['UNKNOWN'] || 'Unknown';
   },
 
   getCurrencyLabel(

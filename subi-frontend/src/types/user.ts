@@ -35,13 +35,15 @@ export interface UserListResponseDto {
   email: string;
   firstName: string;
   lastName: string;
-  fullName: string;
+  fullName?: string; // Optional computed field
   roles: UserRole[];
-  status: UserStatus;
-  isActive: boolean;
+  status?: UserStatus; // Optional, may not be returned by API
+  enabled: boolean; // API returns 'enabled' not 'isActive'
+  isActive?: boolean; // Keep for backward compatibility
   department?: string;
   lastLoginAt?: string;
   createdAt: string;
+  updatedAt: string; // API also returns this
 }
 
 // User Creation DTO
@@ -81,8 +83,8 @@ export interface UserSearchAndFilterParams {
   sort?: string;
   searchTerm?: string;
   roles?: UserRole[];
-  status?: UserStatus;
-  isActive?: boolean;
+  status?: UserStatus | null;
+  isActive?: boolean | null;
   department?: string;
   createdDateFrom?: string;
   createdDateTo?: string;
