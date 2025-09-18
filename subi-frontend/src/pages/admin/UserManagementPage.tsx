@@ -178,7 +178,7 @@ export const UserManagementPage: React.FC = () => {
         <TabsList className="inline-flex items-center justify-start max-w-fit">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            {t('userManagement.tabs.dashboard')}
+            {/*{t('userManagement.tabs.dashboard')}*/}
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
