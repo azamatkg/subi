@@ -236,8 +236,8 @@ export const UserListPage: React.FC = () => {
   // Format user roles for display
   const formatRoles = (roles: UserRole[]) => {
     if (!roles || roles.length === 0) return t('common.none');
-    const roleName = (roles[0] as any)?.name || String(roles[0]);
-    const firstRole = (roleName || '').toLowerCase();
+    const roleName = String(roles[0]);
+    const firstRole = roleName.toLowerCase();
     if (roles.length === 1) return t(`userManagement.roles.${firstRole}`);
     return `${t(`userManagement.roles.${firstRole}`)} +${roles.length - 1}`;
   };
@@ -848,7 +848,7 @@ export const UserListPage: React.FC = () => {
                           <TableCell className="py-4">
                             <div className="flex flex-wrap gap-1">
                               {user.roles.slice(0, 2).map((role, index) => {
-                                const roleName = (role as any)?.name || String(role);
+                                const roleName = String(role);
                                 const roleKey = roleName.toLowerCase();
                                 return (
                                   <Badge key={`${roleName}-${index}`} variant="secondary" className="text-xs">

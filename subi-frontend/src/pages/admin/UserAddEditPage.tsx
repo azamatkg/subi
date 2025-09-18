@@ -94,7 +94,7 @@ const createUserSchema = z.object({
       UserRole.USER,
     ]))
     .min(1, 'At least one role must be selected'),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -131,12 +131,12 @@ const updateUserSchema = z.object({
       UserRole.USER,
     ]))
     .min(1, 'At least one role must be selected'),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type CreateFormData = z.infer<typeof createUserSchema>;
 type UpdateFormData = z.infer<typeof updateUserSchema>;
-type FormData = CreateFormData & UpdateFormData;
+type FormData = CreateFormData | UpdateFormData;
 
 export const UserAddEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -206,7 +206,7 @@ export const UserAddEditPage: React.FC = () => {
       excludeUserId: isEditMode ? id : undefined,
     },
     {
-      skip: !watchedUsername || watchedUsername.length < 3,
+      skip: !watchedUsername || typeof watchedUsername !== 'string' || watchedUsername.length < 3,
     }
   );
 
@@ -263,9 +263,9 @@ export const UserAddEditPage: React.FC = () => {
         navigate(`${ROUTES.ADMIN}/users/${id}`);
       } else {
         const newUserData: UserCreateDto = {
-          username: data.username as string,
+          username: (data as CreateFormData).username,
           email: data.email,
-          password: data.password as string,
+          password: (data as CreateFormData).password,
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone || undefined,

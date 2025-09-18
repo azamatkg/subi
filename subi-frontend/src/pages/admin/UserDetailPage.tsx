@@ -65,9 +65,6 @@ interface ApiError {
   message?: string;
 }
 
-interface UserRole {
-  name: string;
-}
 
 export const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,16 +109,19 @@ export const UserDetailPage: React.FC = () => {
   const [resetPassword, { isLoading: isResetting }] = useResetUserPasswordMutation();
 
   // Handle the actual API response structure
-  const rawUser = userResponse?.data || userResponse;
-  const user = useMemo(() => rawUser ? {
-    ...rawUser,
-    isActive: rawUser.enabled,
-    status: rawUser.enabled ? 'ACTIVE' : 'INACTIVE',
-    roles: rawUser.roles?.map((role: UserRole) => role.name) || [],
-    lastLoginAt: rawUser.lastLoginAt || null,
-    phone: rawUser.phone || null,
-    department: rawUser.department || null,
-  } : null, [rawUser]);
+  const rawUser = userResponse?.data;
+  const user = useMemo(() => {
+    if (!rawUser) return null;
+
+    return {
+      ...rawUser,
+      status: rawUser.isActive ? 'ACTIVE' : 'INACTIVE',
+      roles: rawUser.roles?.map((role: string | { name: string }) => typeof role === 'string' ? role : role.name) || [],
+      lastLoginAt: rawUser.lastLoginAt || null,
+      phone: rawUser.phone || null,
+      department: rawUser.department || null,
+    };
+  }, [rawUser]);
 
   // Debug logging
   useEffect(() => {
@@ -149,7 +149,7 @@ export const UserDetailPage: React.FC = () => {
   }, [id, userResponse, rawUser, user, isLoading, error]);
 
   useSetPageTitle(
-    user ? `${user.firstName} ${user.lastName}` : t('userManagement.userDetails')
+    user ? `${user?.firstName} ${user?.lastName}` : t('userManagement.userDetails')
   );
 
   // Generate random password for reset
@@ -170,7 +170,7 @@ export const UserDetailPage: React.FC = () => {
   const handleDelete = async () => {
     if (!user) return;
     try {
-      await deleteUser(user.id).unwrap();
+      await deleteUser(user?.id).unwrap();
       navigate(`${ROUTES.ADMIN}/users`);
     } catch (error) {
       console.error('Failed to delete user:', error);
@@ -180,7 +180,7 @@ export const UserDetailPage: React.FC = () => {
   const handleActivate = async () => {
     if (!user) return;
     try {
-      await activateUser(user.id).unwrap();
+      await activateUser(user?.id).unwrap();
     } catch (error) {
       console.error('Failed to activate user:', error);
     }
@@ -190,7 +190,7 @@ export const UserDetailPage: React.FC = () => {
     if (!user) return;
     try {
       await suspendUser({
-        id: user.id,
+        id: user?.id,
         reason: 'Suspended by administrator',
       }).unwrap();
       setSuspendDialogOpen(false);
@@ -203,7 +203,7 @@ export const UserDetailPage: React.FC = () => {
     if (!user) return;
     try {
       await resetPassword({
-        id: user.id,
+        id: user?.id,
         data: {
           newPassword,
           requirePasswordChange: true,
@@ -277,10 +277,10 @@ export const UserDetailPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {user.firstName} {user.lastName}
+                {user?.firstName} {user?.lastName}
               </h1>
               <p className="text-muted-foreground">
-                @{user.username} • {user.email}
+                @{user?.username} • {user?.email}
               </p>
             </div>
           </div>
@@ -300,7 +300,7 @@ export const UserDetailPage: React.FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {user.status === UserStatus.ACTIVE ? (
+                {user?.status === UserStatus.ACTIVE ? (
                   <DropdownMenuItem
                     onClick={() => setSuspendDialogOpen(true)}
                     className="text-orange-600"
@@ -350,12 +350,12 @@ export const UserDetailPage: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <AccessibleStatusBadge status={user.status} />
-                <span className={`font-medium ${getStatusColor(user.status)}`}>
-                  {t(`userManagement.status.${user.status.toLowerCase()}`)}
+                <AccessibleStatusBadge status={(user?.status || 'INACTIVE') as UserStatus} />
+                <span className={`font-medium ${getStatusColor((user?.status || 'INACTIVE') as UserStatus)}`}>
+                  {t(`userManagement.status.${(user?.status || 'INACTIVE').toLowerCase()}`)}
                 </span>
               </div>
-              {user.isActive ? (
+              {user?.isActive ? (
                 <div className="flex items-center gap-2 text-green-600">
                   <UserCheck className="h-4 w-4" />
                   <span className="text-sm">{t('userManagement.active')}</span>
@@ -379,13 +379,13 @@ export const UserDetailPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {user.lastLoginAt ? (
+              {user?.lastLoginAt ? (
                 <>
                   <p className="font-medium">
-                    {new Date(user.lastLoginAt).toLocaleDateString()}
+                    {new Date(user?.lastLoginAt).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(user.lastLoginAt).toLocaleTimeString()}
+                    {new Date(user?.lastLoginAt).toLocaleTimeString()}
                   </p>
                 </>
               ) : (
@@ -405,10 +405,10 @@ export const UserDetailPage: React.FC = () => {
           <CardContent>
             <div className="space-y-2">
               <p className="font-medium">
-                {new Date(user.createdAt).toLocaleDateString()}
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
               </p>
               <p className="text-sm text-muted-foreground">
-                {new Date(user.createdAt).toLocaleTimeString()}
+                {user?.createdAt ? new Date(user.createdAt).toLocaleTimeString() : 'N/A'}
               </p>
             </div>
           </CardContent>
@@ -438,33 +438,33 @@ export const UserDetailPage: React.FC = () => {
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.firstName')}
                   </Label>
-                  <p className="text-base font-medium">{user.firstName}</p>
+                  <p className="text-base font-medium">{user?.firstName}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.lastName')}
                   </Label>
-                  <p className="text-base font-medium">{user.lastName}</p>
+                  <p className="text-base font-medium">{user?.lastName}</p>
                 </div>
-                {user.phone && (
+                {user?.phone && (
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">
                       {t('userManagement.fields.phone')}
                     </Label>
                     <p className="text-base font-medium flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      {user.phone}
+                      {user?.phone}
                     </p>
                   </div>
                 )}
-                {user.department && (
+                {user?.department && (
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">
                       {t('userManagement.fields.department')}
                     </Label>
                     <p className="text-base font-medium flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      {user.department}
+                      {user?.department}
                     </p>
                   </div>
                 )}
@@ -483,26 +483,26 @@ export const UserDetailPage: React.FC = () => {
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.username')}
                   </Label>
-                  <p className="text-base font-mono">@{user.username}</p>
+                  <p className="text-base font-mono">@{user?.username}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.email')}
                   </Label>
-                  <p className="text-base">{user.email}</p>
+                  <p className="text-base">{user?.email}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.userId')}
                   </Label>
-                  <p className="text-sm font-mono text-muted-foreground">{user.id}</p>
+                  <p className="text-sm font-mono text-muted-foreground">{user?.id}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     {t('userManagement.fields.lastUpdated')}
                   </Label>
                   <p className="text-sm">
-                    {new Date(user.updatedAt).toLocaleString()}
+                    {user?.updatedAt ? new Date(user?.updatedAt).toLocaleString() : 'N/A'}
                   </p>
                 </div>
               </CardContent>
@@ -520,7 +520,7 @@ export const UserDetailPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {user.roles.map(role => (
+                {user?.roles.map((role: string) => (
                   <div
                     key={role}
                     className={`p-4 rounded-lg border ${getRoleColor(role)}`}
@@ -597,7 +597,7 @@ export const UserDetailPage: React.FC = () => {
             <DialogTitle>{t('userManagement.confirmDeleteTitle')}</DialogTitle>
             <DialogDescription>
               {t('userManagement.messages.confirmDelete', {
-                item: `"${user.firstName} ${user.lastName}"`,
+                item: `"${user?.firstName} ${user?.lastName}"`,
               })}
             </DialogDescription>
           </DialogHeader>
@@ -626,7 +626,7 @@ export const UserDetailPage: React.FC = () => {
             <DialogTitle>{t('userManagement.confirmSuspendTitle')}</DialogTitle>
             <DialogDescription>
               {t('userManagement.messages.confirmSuspend', {
-                item: `"${user.firstName} ${user.lastName}"`,
+                item: `"${user?.firstName} ${user?.lastName}"`,
               })}
             </DialogDescription>
           </DialogHeader>
