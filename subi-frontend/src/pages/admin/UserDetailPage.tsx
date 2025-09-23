@@ -7,8 +7,6 @@ import {
   Shield,
   Mail,
   Phone,
-  Calendar,
-  Clock,
   User,
   Users,
   Key,
@@ -42,7 +40,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PageSkeleton } from '@/components/ui/skeleton';
-import { AccessibleStatusBadge } from '@/components/ui/accessible-status-badge';
 import { ErrorFallback } from '@/components/ui/error-fallback';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -55,13 +52,18 @@ import {
   useSuspendUserMutation,
   useResetUserPasswordMutation,
 } from '@/store/api/userApi';
-import { UserStatus, UserResponseDto } from '@/types/user';
+import { UserResponseDto } from '@/types/user';
 import { ROUTES } from '@/constants';
 
 interface ApiError {
   status?: number;
   data?: unknown;
   message?: string;
+}
+
+interface RoleObject {
+  name?: string;
+  role?: string;
 }
 
 export const UserDetailPage: React.FC = () => {
@@ -238,18 +240,6 @@ export const UserDetailPage: React.FC = () => {
     return roleColors[role] || roleColors.USER;
   };
 
-  const getStatusColor = (status: UserStatus): string => {
-    switch (status) {
-      case UserStatus.ACTIVE:
-        return 'text-green-600';
-      case UserStatus.INACTIVE:
-        return 'text-gray-600';
-      case UserStatus.SUSPENDED:
-        return 'text-red-600';
-      default:
-        return 'text-gray-600';
-    }
-  };
 
   const canModifyUser = hasAnyRole(['ADMIN']);
 
@@ -465,8 +455,8 @@ export const UserDetailPage: React.FC = () => {
                   const roleString =
                     typeof role === 'string'
                       ? role
-                      : (role as any)?.name ||
-                        (role as any)?.role ||
+                      : (role as RoleObject)?.name ||
+                        (role as RoleObject)?.role ||
                         String(role);
                   return (
                     <div

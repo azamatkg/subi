@@ -19,7 +19,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'ru', // Russian as fallback since it's widely used in the region
+    fallbackLng: 'en', // English as fallback to prevent circular reference when Russian keys are missing
     lng: localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'ru',
 
     detection: {

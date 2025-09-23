@@ -96,6 +96,8 @@ export const baseApi = createApi({
     'CreditPurpose',
     'DocumentType',
     'User',
+    'Role',
+    'Permission',
   ],
   endpoints: () => ({}),
 });
