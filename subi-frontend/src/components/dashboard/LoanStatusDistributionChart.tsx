@@ -38,14 +38,24 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
-      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-        <p className="font-medium">{data.name}</p>
-        <p className="text-sm text-muted-foreground">
-          Количество: <span className="font-medium text-foreground">{data.value}</span>
+      <div className='bg-card border border-border rounded-lg p-3 shadow-lg'>
+        <p className='font-medium'>{data.name}</p>
+        <p className='text-sm text-muted-foreground'>
+          Количество:{' '}
+          <span className='font-medium text-foreground'>{data.value}</span>
         </p>
-        <p className="text-sm text-muted-foreground">
-          Доля: <span className="font-medium text-foreground">
-            {((data.value / statusDistributionData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
+        <p className='text-sm text-muted-foreground'>
+          Доля:{' '}
+          <span className='font-medium text-foreground'>
+            {(
+              (data.value /
+                statusDistributionData.reduce(
+                  (sum, item) => sum + item.value,
+                  0
+                )) *
+              100
+            ).toFixed(1)}
+            %
           </span>
         </p>
       </div>
@@ -63,11 +73,11 @@ interface LegendProps {
 
 const CustomLegend = ({ payload }: LegendProps) => {
   return (
-    <div className="flex flex-wrap justify-center gap-4 mt-4">
+    <div className='flex flex-wrap justify-center gap-4 mt-4'>
       {payload?.map((entry, index: number) => (
-        <div key={index} className="flex items-center gap-2 text-sm">
+        <div key={index} className='flex items-center gap-2 text-sm'>
           <div
-            className="w-3 h-3 rounded-full"
+            className='w-3 h-3 rounded-full'
             style={{ backgroundColor: entry.color }}
           ></div>
           <span>{entry.value}</span>
@@ -78,31 +88,34 @@ const CustomLegend = ({ payload }: LegendProps) => {
 };
 
 export const LoanStatusDistributionChart: React.FC = () => {
-  const totalApplications = statusDistributionData.reduce((sum, item) => sum + item.value, 0);
+  const totalApplications = statusDistributionData.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
 
   return (
-    <Card className="w-full">
+    <Card className='w-full'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <PieChartIcon className="h-5 w-5" />
+        <CardTitle className='flex items-center gap-2'>
+          <PieChartIcon className='h-5 w-5' />
           Распределение по статусам
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
+        <p className='text-sm text-muted-foreground'>
           Всего заявок: {totalApplications.toLocaleString()}
         </p>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className='h-80'>
+          <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
               <Pie
                 data={statusDistributionData}
-                cx="50%"
-                cy="50%"
+                cx='50%'
+                cy='50%'
                 innerRadius={60}
                 outerRadius={100}
                 paddingAngle={2}
-                dataKey="value"
+                dataKey='value'
               >
                 {statusDistributionData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />

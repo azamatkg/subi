@@ -89,8 +89,8 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
   };
 
   const DefaultTrigger = () => (
-    <Button className="gap-2">
-      <Plus className="h-4 w-4" />
+    <Button className='gap-2'>
+      <Plus className='h-4 w-4' />
       {t('creditProgram.form.createTitle')}
     </Button>
   );
@@ -98,7 +98,7 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || <DefaultTrigger />}</DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh]">
+      <DialogContent className='max-w-4xl max-h-[90vh]'>
         <DialogHeader>
           <DialogTitle>{t('creditProgram.form.createTitle')}</DialogTitle>
           <DialogDescription>
@@ -106,26 +106,26 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[70vh] pr-4">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <ScrollArea className='max-h-[70vh] pr-4'>
+          <form onSubmit={handleSubmit} className='space-y-6'>
             {/* Required Fields Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold">
+            <div className='space-y-4'>
+              <div className='flex items-center gap-2'>
+                <h3 className='text-lg font-semibold'>
                   {t('creditProgram.form.requiredFields')}
                 </h3>
-                <span className="text-red-500">*</span>
+                <span className='text-red-500'>*</span>
               </div>
 
               {/* Program Names */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nameEn">
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='nameEn'>
                     {t('creditProgram.fields.nameEn')}{' '}
-                    <span className="text-red-500">*</span>
+                    <span className='text-red-500'>*</span>
                   </Label>
                   <Input
-                    id="nameEn"
+                    id='nameEn'
                     value={formData.nameEn}
                     onChange={e => handleInputChange('nameEn', e.target.value)}
                     placeholder={t('creditProgram.placeholders.nameEn')}
@@ -133,13 +133,13 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nameRu">
+                <div className='space-y-2'>
+                  <Label htmlFor='nameRu'>
                     {t('creditProgram.fields.nameRu')}{' '}
-                    <span className="text-red-500">*</span>
+                    <span className='text-red-500'>*</span>
                   </Label>
                   <Input
-                    id="nameRu"
+                    id='nameRu'
                     value={formData.nameRu}
                     onChange={e => handleInputChange('nameRu', e.target.value)}
                     placeholder={t('creditProgram.placeholders.nameRu')}
@@ -147,13 +147,13 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nameKg">
+                <div className='space-y-2'>
+                  <Label htmlFor='nameKg'>
                     {t('creditProgram.fields.nameKg')}{' '}
-                    <span className="text-red-500">*</span>
+                    <span className='text-red-500'>*</span>
                   </Label>
                   <Input
-                    id="nameKg"
+                    id='nameKg'
                     value={formData.nameKg}
                     onChange={e => handleInputChange('nameKg', e.target.value)}
                     placeholder={t('creditProgram.placeholders.nameKg')}
@@ -164,12 +164,12 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
               </div>
 
               {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description">
+              <div className='space-y-2'>
+                <Label htmlFor='description'>
                   {t('creditProgram.fields.description')}
                 </Label>
                 <Textarea
-                  id="description"
+                  id='description'
                   value={formData.description || ''}
                   onChange={e =>
                     handleInputChange('description', e.target.value)
@@ -181,16 +181,16 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
               </div>
 
               {/* Collateral Required */}
-              <div className="flex items-center space-x-2">
+              <div className='flex items-center space-x-2'>
                 <Checkbox
-                  id="collateralRequired"
+                  id='collateralRequired'
                   checked={formData.collateralRequired}
                   onCheckedChange={checked =>
                     handleInputChange('collateralRequired', checked)
                   }
                   disabled={loading}
                 />
-                <Label htmlFor="collateralRequired">
+                <Label htmlFor='collateralRequired'>
                   {t('creditProgram.fields.collateralRequired')}
                 </Label>
               </div>
@@ -199,20 +199,20 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
             <Separator />
 
             {/* Optional Fields Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">
+            <div className='space-y-4'>
+              <h3 className='text-lg font-semibold'>
                 {t('creditProgram.form.optionalFields')}
               </h3>
 
               {/* Validity Period */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="validFrom">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='validFrom'>
                     {t('creditProgram.fields.validFrom')}
                   </Label>
                   <Input
-                    id="validFrom"
-                    type="date"
+                    id='validFrom'
+                    type='date'
                     value={formData.validFrom || ''}
                     onChange={e =>
                       handleInputChange('validFrom', e.target.value)
@@ -220,13 +220,13 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="validTo">
+                <div className='space-y-2'>
+                  <Label htmlFor='validTo'>
                     {t('creditProgram.fields.validTo')}
                   </Label>
                   <Input
-                    id="validTo"
-                    type="date"
+                    id='validTo'
+                    type='date'
                     value={formData.validTo || ''}
                     onChange={e => handleInputChange('validTo', e.target.value)}
                     disabled={loading}
@@ -235,16 +235,16 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
               </div>
 
               {/* Amount Range */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="amountMin">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='amountMin'>
                     {t('creditProgram.fields.amountMin')}
                   </Label>
                   <Input
-                    id="amountMin"
-                    type="number"
-                    min="0"
-                    step="0.01"
+                    id='amountMin'
+                    type='number'
+                    min='0'
+                    step='0.01'
                     value={formData.amountMin || ''}
                     onChange={e =>
                       handleInputChange(
@@ -252,19 +252,19 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="0.00"
+                    placeholder='0.00'
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="amountMax">
+                <div className='space-y-2'>
+                  <Label htmlFor='amountMax'>
                     {t('creditProgram.fields.amountMax')}
                   </Label>
                   <Input
-                    id="amountMax"
-                    type="number"
-                    min="0"
-                    step="0.01"
+                    id='amountMax'
+                    type='number'
+                    min='0'
+                    step='0.01'
                     value={formData.amountMax || ''}
                     onChange={e =>
                       handleInputChange(
@@ -272,22 +272,22 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="0.00"
+                    placeholder='0.00'
                     disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Term Range */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="termMin">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='termMin'>
                     {t('creditProgram.fields.termMin')} ({t('common.months')})
                   </Label>
                   <Input
-                    id="termMin"
-                    type="number"
-                    min="1"
+                    id='termMin'
+                    type='number'
+                    min='1'
                     value={formData.termMin || ''}
                     onChange={e =>
                       handleInputChange(
@@ -295,18 +295,18 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="1"
+                    placeholder='1'
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="termMax">
+                <div className='space-y-2'>
+                  <Label htmlFor='termMax'>
                     {t('creditProgram.fields.termMax')} ({t('common.months')})
                   </Label>
                   <Input
-                    id="termMax"
-                    type="number"
-                    min="1"
+                    id='termMax'
+                    type='number'
+                    min='1'
                     value={formData.termMax || ''}
                     onChange={e =>
                       handleInputChange(
@@ -314,24 +314,24 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="60"
+                    placeholder='60'
                     disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Interest Rate */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="interestRateFixed">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='interestRateFixed'>
                     {t('creditProgram.fields.interestRate')} (%)
                   </Label>
                   <Input
-                    id="interestRateFixed"
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
+                    id='interestRateFixed'
+                    type='number'
+                    min='0'
+                    max='100'
+                    step='0.01'
                     value={formData.interestRateFixed || ''}
                     onChange={e =>
                       handleInputChange(
@@ -339,20 +339,20 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="18.00"
+                    placeholder='18.00'
                     disabled={loading}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="processingFeePercentage">
+                <div className='space-y-2'>
+                  <Label htmlFor='processingFeePercentage'>
                     {t('creditProgram.fields.processingFeePercentage')} (%)
                   </Label>
                   <Input
-                    id="processingFeePercentage"
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
+                    id='processingFeePercentage'
+                    type='number'
+                    min='0'
+                    max='100'
+                    step='0.01'
                     value={formData.processingFeePercentage || ''}
                     onChange={e =>
                       handleInputChange(
@@ -360,15 +360,15 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
                         e.target.value ? Number(e.target.value) : undefined
                       )
                     }
-                    placeholder="1.50"
+                    placeholder='1.50'
                     disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Status */}
-              <div className="space-y-2">
-                <Label htmlFor="status">
+              <div className='space-y-2'>
+                <Label htmlFor='status'>
                   {t('creditProgram.fields.status')}
                 </Label>
                 <Select
@@ -395,24 +395,24 @@ export const CreditProgramForm: React.FC<CreditProgramFormProps> = ({
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-2 pt-4 border-t">
+            <div className='flex justify-end space-x-2 pt-4 border-t'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => setOpen(false)}
                 disabled={loading}
               >
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type='submit' disabled={loading}>
                 {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     {t('common.creating')}
                   </>
                 ) : (
                   <>
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className='mr-2 h-4 w-4' />
                     {t('creditProgram.actions.create')}
                   </>
                 )}

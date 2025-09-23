@@ -9,13 +9,19 @@ import {
   AlertCircle,
   CreditCard,
   FileText,
-  Users
+  Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LoanActivity {
   id: string;
-  type: 'approval' | 'rejection' | 'disbursement' | 'submission' | 'review' | 'commission';
+  type:
+    | 'approval'
+    | 'rejection'
+    | 'disbursement'
+    | 'submission'
+    | 'review'
+    | 'commission';
   title: string;
   description: string;
   amount?: number;
@@ -33,7 +39,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 2500000,
     applicant: 'ОсОО "Альфа Трейд"',
     timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
-    status: 'completed'
+    status: 'completed',
   },
   {
     id: '2',
@@ -43,7 +49,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 150000,
     applicant: 'Курманов Азамат',
     timestamp: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago
-    status: 'completed'
+    status: 'completed',
   },
   {
     id: '3',
@@ -53,7 +59,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 800000,
     applicant: 'КХ "Жаныл Талаа"',
     timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000), // 1.5 hours ago
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: '4',
@@ -63,7 +69,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 5000000,
     applicant: 'Сатаров Бекбол',
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: '5',
@@ -73,7 +79,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 300000,
     applicant: 'Мамбетова Айжан',
     timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
-    status: 'cancelled'
+    status: 'cancelled',
   },
   {
     id: '6',
@@ -83,7 +89,7 @@ const dummyActivities: LoanActivity[] = [
     amount: 1200000,
     applicant: 'Токтосунов Мирлан',
     timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: '7',
@@ -93,12 +99,12 @@ const dummyActivities: LoanActivity[] = [
     amount: 3500000,
     applicant: 'ОсОО "Бишкек Строй"',
     timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-    status: 'completed'
-  }
+    status: 'completed',
+  },
 ];
 
 const getActivityIcon = (type: LoanActivity['type']) => {
-  const iconProps = { className: "h-4 w-4" };
+  const iconProps = { className: 'h-4 w-4' };
 
   switch (type) {
     case 'approval':
@@ -118,7 +124,10 @@ const getActivityIcon = (type: LoanActivity['type']) => {
   }
 };
 
-const getActivityColor = (type: LoanActivity['type'], status: LoanActivity['status']) => {
+const getActivityColor = (
+  type: LoanActivity['type'],
+  status: LoanActivity['status']
+) => {
   if (status === 'cancelled') return 'text-red-600 bg-red-50 border-red-200';
 
   switch (type) {
@@ -140,17 +149,31 @@ const getActivityColor = (type: LoanActivity['type'], status: LoanActivity['stat
 const getStatusBadge = (status: LoanActivity['status']) => {
   switch (status) {
     case 'completed':
-      return <Badge variant="secondary" className="bg-green-100 text-green-800">Завершено</Badge>;
+      return (
+        <Badge variant='secondary' className='bg-green-100 text-green-800'>
+          Завершено
+        </Badge>
+      );
     case 'pending':
-      return <Badge variant="secondary" className="bg-amber-100 text-amber-800">В процессе</Badge>;
+      return (
+        <Badge variant='secondary' className='bg-amber-100 text-amber-800'>
+          В процессе
+        </Badge>
+      );
     case 'cancelled':
-      return <Badge variant="secondary" className="bg-red-100 text-red-800">Отменено</Badge>;
+      return (
+        <Badge variant='secondary' className='bg-red-100 text-red-800'>
+          Отменено
+        </Badge>
+      );
   }
 };
 
 const formatTimeAgo = (date: Date) => {
   const now = new Date();
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  const diffInMinutes = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60)
+  );
 
   if (diffInMinutes < 60) {
     return `${diffInMinutes} мин назад`;
@@ -170,57 +193,61 @@ const formatAmount = (amount?: number) => {
 
 export const RecentLoanActivitiesTimeline: React.FC = () => {
   return (
-    <Card className="w-full">
+    <Card className='w-full'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
+        <CardTitle className='flex items-center gap-2'>
+          <Clock className='h-5 w-5' />
           Последние действия
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-80">
-          <div className="space-y-0">
+      <CardContent className='p-0'>
+        <ScrollArea className='h-80'>
+          <div className='space-y-0'>
             {dummyActivities.map((activity, index) => (
               <div
                 key={activity.id}
                 className={cn(
-                  "flex items-start gap-4 p-4 border-b border-border/50 hover:bg-muted/30 transition-colors",
-                  index === dummyActivities.length - 1 && "border-b-0"
+                  'flex items-start gap-4 p-4 border-b border-border/50 hover:bg-muted/30 transition-colors',
+                  index === dummyActivities.length - 1 && 'border-b-0'
                 )}
               >
-                <div className={cn(
-                  "flex items-center justify-center w-10 h-10 rounded-full border-2",
-                  getActivityColor(activity.type, activity.status)
-                )}>
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-10 h-10 rounded-full border-2',
+                    getActivityColor(activity.type, activity.status)
+                  )}
+                >
                   {getActivityIcon(activity.type)}
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-sm text-foreground">
+                <div className='flex-1 min-w-0'>
+                  <div className='flex items-start justify-between gap-2'>
+                    <div className='min-w-0 flex-1'>
+                      <div className='flex items-center gap-2 mb-1'>
+                        <h4 className='font-medium text-sm text-foreground'>
                           {activity.title}
                         </h4>
                         {getStatusBadge(activity.status)}
                       </div>
 
-                      <p className="text-sm text-muted-foreground mb-1">
+                      <p className='text-sm text-muted-foreground mb-1'>
                         {activity.description}
                       </p>
 
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <div className='flex items-center gap-3 text-xs text-muted-foreground'>
                         <span>{activity.applicant}</span>
                         {activity.amount && (
                           <>
                             <span>•</span>
-                            <span className="font-medium">{formatAmount(activity.amount)}</span>
+                            <span className='font-medium'>
+                              {formatAmount(activity.amount)}
+                            </span>
                           </>
                         )}
                       </div>
                     </div>
 
-                    <div className="text-xs text-muted-foreground whitespace-nowrap">
+                    <div className='text-xs text-muted-foreground whitespace-nowrap'>
                       {formatTimeAgo(activity.timestamp)}
                     </div>
                   </div>

@@ -40,18 +40,21 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-        <p className="font-medium">{label}</p>
-        <p className="text-sm text-muted-foreground">
-          Сумма: <span className="font-medium text-foreground">
+      <div className='bg-card border border-border rounded-lg p-3 shadow-lg'>
+        <p className='font-medium'>{label}</p>
+        <p className='text-sm text-muted-foreground'>
+          Сумма:{' '}
+          <span className='font-medium text-foreground'>
             {(data.amount / 1000000).toFixed(1)}М ₽
           </span>
         </p>
-        <p className="text-sm text-muted-foreground">
-          Заявок: <span className="font-medium text-foreground">{data.count}</span>
+        <p className='text-sm text-muted-foreground'>
+          Заявок:{' '}
+          <span className='font-medium text-foreground'>{data.count}</span>
         </p>
-        <p className="text-sm text-muted-foreground">
-          Средняя сумма: <span className="font-medium text-foreground">
+        <p className='text-sm text-muted-foreground'>
+          Средняя сумма:{' '}
+          <span className='font-medium text-foreground'>
             {(data.amount / data.count / 1000).toFixed(0)}К ₽
           </span>
         </p>
@@ -66,30 +69,36 @@ const formatYAxis = (value: number) => {
 };
 
 export const LoanAmountByProgramChart: React.FC = () => {
-  const totalAmount = loanProgramData.reduce((sum, item) => sum + item.amount, 0);
+  const totalAmount = loanProgramData.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
   const totalCount = loanProgramData.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <Card className="w-full">
+    <Card className='w-full'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
+        <CardTitle className='flex items-center gap-2'>
+          <BarChart3 className='h-5 w-5' />
           Сумма кредитов по программам
         </CardTitle>
-        <div className="flex gap-4 text-sm text-muted-foreground">
+        <div className='flex gap-4 text-sm text-muted-foreground'>
           <span>Общая сумма: {(totalAmount / 1000000).toFixed(1)}М ₽</span>
           <span>Всего заявок: {totalCount}</span>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={loanProgramData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" />
+        <div className='h-80'>
+          <ResponsiveContainer width='100%' height='100%'>
+            <BarChart
+              data={loanProgramData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
               <XAxis
-                dataKey="program"
+                dataKey='program'
                 angle={-45}
-                textAnchor="end"
+                textAnchor='end'
                 height={80}
                 tick={{ fontSize: 12 }}
                 axisLine={false}
@@ -103,25 +112,33 @@ export const LoanAmountByProgramChart: React.FC = () => {
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar
-                dataKey="amount"
-                fill="hsl(var(--primary))"
+                dataKey='amount'
+                fill='hsl(var(--primary))'
                 radius={[4, 4, 0, 0]}
-                name="Сумма кредитов"
+                name='Сумма кредитов'
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-          <div className="p-3 bg-muted/50 rounded-lg">
-            <div className="font-medium">Самая популярная программа</div>
-            <div className="text-muted-foreground">
-              {loanProgramData.reduce((max, item) => item.count > max.count ? item : max).program}
+        <div className='grid grid-cols-2 gap-4 mt-4 text-sm'>
+          <div className='p-3 bg-muted/50 rounded-lg'>
+            <div className='font-medium'>Самая популярная программа</div>
+            <div className='text-muted-foreground'>
+              {
+                loanProgramData.reduce((max, item) =>
+                  item.count > max.count ? item : max
+                ).program
+              }
             </div>
           </div>
-          <div className="p-3 bg-muted/50 rounded-lg">
-            <div className="font-medium">Наибольший объем</div>
-            <div className="text-muted-foreground">
-              {loanProgramData.reduce((max, item) => item.amount > max.amount ? item : max).program}
+          <div className='p-3 bg-muted/50 rounded-lg'>
+            <div className='font-medium'>Наибольший объем</div>
+            <div className='text-muted-foreground'>
+              {
+                loanProgramData.reduce((max, item) =>
+                  item.amount > max.amount ? item : max
+                ).program
+              }
             </div>
           </div>
         </div>

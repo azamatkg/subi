@@ -237,31 +237,31 @@ export const DecisionMakingBodiesPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className='flex items-center justify-between'>
         <div>
-          <h1 className="text-2xl font-semibold">
+          <h1 className='text-2xl font-semibold'>
             {t('decision.decisionMakingBodies')}
           </h1>
-          <p className="text-muted-foreground">
+          <p className='text-muted-foreground'>
             {t('common.manage')}{' '}
             {t('decision.decisionMakingBodies').toLowerCase()}
           </p>
         </div>
         <Button onClick={openCreateDialog}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className='mr-2 h-4 w-4' />
           {t('common.create')} {t('decision.decisionMakingBody')}
         </Button>
       </div>
 
       {/* Search and Filter */}
-      <Card className="border-0 shadow-sm bg-muted">
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Card className='border-0 shadow-sm bg-muted'>
+        <CardContent className='p-6'>
+          <div className='flex items-center space-x-4'>
+            <div className='flex-1'>
+              <div className='relative'>
+                <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                 <Input
                   placeholder={t('decision.placeholders.searchTerm')}
                   value={searchTerm}
@@ -269,12 +269,12 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                     setSearchTerm(e.target.value);
                     setPage(0);
                   }}
-                  className="pl-10"
+                  className='pl-10'
                 />
               </div>
             </div>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => {
                 setSearchTerm('');
                 setPage(0);
@@ -292,7 +292,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
           <CardTitle>
             {t('decision.decisionMakingBodies')}
             {decisionMakingBodiesData && (
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
+              <span className='ml-2 text-sm font-normal text-muted-foreground'>
                 ({decisionMakingBodiesData.totalElements} {t('common.total')})
               </span>
             )}
@@ -300,21 +300,21 @@ export const DecisionMakingBodiesPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           {bodiesLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="text-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-2"></div>
-                <p className="text-muted-foreground">
+            <div className='flex items-center justify-center p-8'>
+              <div className='text-center'>
+                <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-2'></div>
+                <p className='text-muted-foreground'>
                   {t('decision.messages.loadingDecisionMakingBodies')}
                 </p>
               </div>
             </div>
           ) : bodiesError ? (
-            <div className="text-center p-8">
-              <p className="text-destructive">{t('common.error')}</p>
+            <div className='text-center p-8'>
+              <p className='text-destructive'>{t('common.error')}</p>
             </div>
           ) : !decisionMakingBodiesData?.content.length ? (
-            <div className="text-center p-8">
-              <p className="text-muted-foreground">
+            <div className='text-center p-8'>
+              <p className='text-muted-foreground'>
                 {t('decision.messages.noResults')}
               </p>
             </div>
@@ -326,17 +326,17 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   <TableHead>{t('decision.fields.nameRu')}</TableHead>
                   <TableHead>{t('decision.fields.status')}</TableHead>
                   <TableHead>{t('decision.fields.createdAt')}</TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
+                  <TableHead className='w-[70px]'></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {decisionMakingBodiesData.content.map(body => (
                   <TableRow key={body.id}>
                     <TableCell>
-                      <div className="space-y-1">
-                        <p className="font-medium">{body.nameEn}</p>
+                      <div className='space-y-1'>
+                        <p className='font-medium'>{body.nameEn}</p>
                         {body.description && (
-                          <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                          <p className='text-sm text-muted-foreground truncate max-w-[200px]'>
                             {body.description}
                           </p>
                         )}
@@ -352,32 +352,32 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">
+                          <Button variant='ghost' className='h-8 w-8 p-0'>
+                            <span className='sr-only'>
                               {t('common.openMenu')}
                             </span>
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className='h-4 w-4' />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align='end'>
                           <DropdownMenuItem
                             onClick={() => openViewDialog(body)}
                           >
-                            <Eye className="mr-2 h-4 w-4" />
+                            <Eye className='mr-2 h-4 w-4' />
                             {t('common.view')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => openEditDialog(body)}
                           >
-                            <Edit className="mr-2 h-4 w-4" />
+                            <Edit className='mr-2 h-4 w-4' />
                             {t('common.edit')}
                           </DropdownMenuItem>
                           <Separator />
                           <DropdownMenuItem
                             onClick={() => openDeleteDialog(body)}
-                            className="text-destructive"
+                            className='text-destructive'
                           >
-                            <Trash className="mr-2 h-4 w-4" />
+                            <Trash className='mr-2 h-4 w-4' />
                             {t('common.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -400,7 +400,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
         }
         onOpenChange={open => !open && closeDialog()}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className='max-w-2xl'>
           <DialogHeader>
             <DialogTitle>
               {dialogMode === 'create' &&
@@ -415,12 +415,12 @@ export const DecisionMakingBodiesPage: React.FC = () => {
             <Form {...createForm}>
               <form
                 onSubmit={createForm.handleSubmit(handleCreate)}
-                className="space-y-4"
+                className='space-y-4'
               >
-                <div className="grid grid-cols-3 gap-4">
+                <div className='grid grid-cols-3 gap-4'>
                   <FormField
                     control={createForm.control}
-                    name="nameEn"
+                    name='nameEn'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameEn')}</FormLabel>
@@ -433,7 +433,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   />
                   <FormField
                     control={createForm.control}
-                    name="nameRu"
+                    name='nameRu'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameRu')}</FormLabel>
@@ -446,7 +446,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   />
                   <FormField
                     control={createForm.control}
-                    name="nameKg"
+                    name='nameKg'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameKg')}</FormLabel>
@@ -461,7 +461,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
 
                 <FormField
                   control={createForm.control}
-                  name="description"
+                  name='description'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -478,7 +478,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
 
                 <FormField
                   control={createForm.control}
-                  name="status"
+                  name='status'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('decision.fields.status')}</FormLabel>
@@ -508,11 +508,11 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   )}
                 />
 
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={closeDialog}>
+                <div className='flex justify-end space-x-2'>
+                  <Button type='button' variant='outline' onClick={closeDialog}>
                     {t('common.cancel')}
                   </Button>
-                  <Button type="submit" disabled={createLoading}>
+                  <Button type='submit' disabled={createLoading}>
                     {createLoading ? t('common.creating') : t('common.create')}
                   </Button>
                 </div>
@@ -524,12 +524,12 @@ export const DecisionMakingBodiesPage: React.FC = () => {
             <Form {...editForm}>
               <form
                 onSubmit={editForm.handleSubmit(handleUpdate)}
-                className="space-y-4"
+                className='space-y-4'
               >
-                <div className="grid grid-cols-3 gap-4">
+                <div className='grid grid-cols-3 gap-4'>
                   <FormField
                     control={editForm.control}
-                    name="nameEn"
+                    name='nameEn'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameEn')}</FormLabel>
@@ -542,7 +542,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   />
                   <FormField
                     control={editForm.control}
-                    name="nameRu"
+                    name='nameRu'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameRu')}</FormLabel>
@@ -555,7 +555,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   />
                   <FormField
                     control={editForm.control}
-                    name="nameKg"
+                    name='nameKg'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('decision.fields.nameKg')}</FormLabel>
@@ -570,7 +570,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
 
                 <FormField
                   control={editForm.control}
-                  name="description"
+                  name='description'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -587,7 +587,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
 
                 <FormField
                   control={editForm.control}
-                  name="status"
+                  name='status'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('decision.fields.status')}</FormLabel>
@@ -617,11 +617,11 @@ export const DecisionMakingBodiesPage: React.FC = () => {
                   )}
                 />
 
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={closeDialog}>
+                <div className='flex justify-end space-x-2'>
+                  <Button type='button' variant='outline' onClick={closeDialog}>
                     {t('common.cancel')}
                   </Button>
-                  <Button type="submit" disabled={updateLoading}>
+                  <Button type='submit' disabled={updateLoading}>
                     {updateLoading ? t('common.updating') : t('common.update')}
                   </Button>
                 </div>
@@ -630,48 +630,48 @@ export const DecisionMakingBodiesPage: React.FC = () => {
           )}
 
           {dialogMode === 'view' && selectedBody && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
+            <div className='space-y-4'>
+              <div className='grid grid-cols-3 gap-4'>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.nameEn')}
                   </p>
-                  <p className="font-medium">{selectedBody.nameEn}</p>
+                  <p className='font-medium'>{selectedBody.nameEn}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.nameRu')}
                   </p>
-                  <p className="font-medium">{selectedBody.nameRu}</p>
+                  <p className='font-medium'>{selectedBody.nameRu}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.nameKg')}
                   </p>
-                  <p className="font-medium">{selectedBody.nameKg}</p>
+                  <p className='font-medium'>{selectedBody.nameKg}</p>
                 </div>
               </div>
 
               {selectedBody.description && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.description')}
                   </p>
-                  <p className="text-sm bg-muted p-3 rounded-lg">
+                  <p className='text-sm bg-muted p-3 rounded-lg'>
                     {selectedBody.description}
                   </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className='grid grid-cols-2 gap-4'>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.status')}
                   </p>
                   <StatusBadge status={selectedBody.status} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className='text-sm font-medium text-muted-foreground'>
                     {t('decision.fields.createdAt')}
                   </p>
                   <p>{new Date(selectedBody.createdAt).toLocaleDateString()}</p>
@@ -695,9 +695,9 @@ export const DecisionMakingBodiesPage: React.FC = () => {
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2">
+          <div className='flex justify-end space-x-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => {
                 setDeleteDialogOpen(false);
                 setSelectedBody(null);
@@ -706,7 +706,7 @@ export const DecisionMakingBodiesPage: React.FC = () => {
               {t('common.cancel')}
             </Button>
             <Button
-              variant="destructive"
+              variant='destructive'
               onClick={handleDelete}
               disabled={deleteLoading}
             >

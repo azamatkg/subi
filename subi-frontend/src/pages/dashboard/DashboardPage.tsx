@@ -12,9 +12,7 @@ import {
   DollarSign,
   RefreshCw,
 } from 'lucide-react';
-import {
-  AccessibleDate,
-} from '@/components/ui/accessible-status-badge';
+import { AccessibleDate } from '@/components/ui/accessible-status-badge';
 import {
   AccessibleHeading,
   Landmark,
@@ -72,10 +70,15 @@ export const DashboardPage: React.FC = () => {
       setDashboardStats(prev => ({
         ...prev,
         // Simulate small changes in data
-        totalApplications: prev.totalApplications + Math.floor(Math.random() * 3),
+        totalApplications:
+          prev.totalApplications + Math.floor(Math.random() * 3),
         approvedLoans: prev.approvedLoans + Math.floor(Math.random() * 2),
-        pendingReviews: Math.max(0, prev.pendingReviews + Math.floor(Math.random() * 3) - 1),
-        totalLoanAmount: prev.totalLoanAmount + Math.floor(Math.random() * 100000) - 50000,
+        pendingReviews: Math.max(
+          0,
+          prev.pendingReviews + Math.floor(Math.random() * 3) - 1
+        ),
+        totalLoanAmount:
+          prev.totalLoanAmount + Math.floor(Math.random() * 100000) - 50000,
       }));
       setIsLoading(false);
       announce('Данные обновлены', 'polite');
@@ -141,9 +144,9 @@ export const DashboardPage: React.FC = () => {
             : undefined
         }
       >
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
+        <CardHeader className='pb-3'>
+          <div className='flex items-center justify-between'>
+            <CardTitle className='text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors'>
               {title}
             </CardTitle>
             <div
@@ -153,18 +156,18 @@ export const DashboardPage: React.FC = () => {
                 `bg-gradient-to-br ${colorStyles[color].split(' ')[0]} ${colorStyles[color].split(' ')[1]}`
               )}
             >
-              <Icon className="h-5 w-5" aria-hidden="true" />
+              <Icon className='h-5 w-5' aria-hidden='true' />
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-2">
-            <div className="text-3xl font-bold tracking-tight text-foreground">
+        <CardContent className='pt-0'>
+          <div className='space-y-2'>
+            <div className='text-3xl font-bold tracking-tight text-foreground'>
               {typeof value === 'number' ? formatNumber(value) : value}
             </div>
 
             {trend !== undefined && (
-              <div className="flex items-center gap-1">
+              <div className='flex items-center gap-1'>
                 <div
                   className={cn(
                     'flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5',
@@ -177,18 +180,18 @@ export const DashboardPage: React.FC = () => {
                 >
                   <TrendingUp
                     className={cn('h-3 w-3', trend < 0 && 'rotate-180')}
-                    aria-hidden="true"
+                    aria-hidden='true'
                   />
                   <span>{Math.abs(trend)}%</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className='text-xs text-muted-foreground'>
                   от прошлого месяца
                 </span>
               </div>
             )}
 
             {description && (
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className='text-xs text-muted-foreground leading-relaxed'>
                 {description}
               </p>
             )}
@@ -196,41 +199,43 @@ export const DashboardPage: React.FC = () => {
         </CardContent>
 
         {/* Hover effect gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+        <div className='absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700' />
       </Card>
     );
   };
 
   return (
-    <Landmark role="main" aria-labelledby="dashboard-title">
+    <Landmark role='main' aria-labelledby='dashboard-title'>
       {/* Live region for announcements */}
-      <LiveRegion>{isLoading && 'Загружаются данные кредитной системы'}</LiveRegion>
+      <LiveRegion>
+        {isLoading && 'Загружаются данные кредитной системы'}
+      </LiveRegion>
 
-      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className='space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto'>
         {/* Enhanced Header Section */}
-        <header className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+        <header className='space-y-4'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+            <div className='space-y-2'>
+              <p className='text-muted-foreground text-base sm:text-lg leading-relaxed'>
                 Добро пожаловать,{' '}
-                <span className="font-semibold text-foreground">
+                <span className='font-semibold text-foreground'>
                   {userDisplayName}
                 </span>
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" aria-hidden="true" />
-                <AccessibleDate date={lastUpdated} format="short" />
+            <div className='flex items-center gap-3'>
+              <div className='hidden sm:flex items-center gap-2 text-sm text-muted-foreground'>
+                <Clock className='h-4 w-4' aria-hidden='true' />
+                <AccessibleDate date={lastUpdated} format='short' />
               </div>
               <Button
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 onClick={refreshData}
                 disabled={isLoading}
-                className="group"
-                aria-label="Обновить данные"
+                className='group'
+                aria-label='Обновить данные'
               >
                 <RefreshCw
                   className={cn(
@@ -238,83 +243,83 @@ export const DashboardPage: React.FC = () => {
                     isLoading && 'animate-spin',
                     'group-hover:rotate-180'
                   )}
-                  aria-hidden="true"
+                  aria-hidden='true'
                 />
-                <span className="hidden sm:inline ml-2">Обновить</span>
+                <span className='hidden sm:inline ml-2'>Обновить</span>
               </Button>
             </div>
           </div>
         </header>
 
         {/* Loan Stats Cards Grid */}
-        <section aria-labelledby="stats-title">
-          <AccessibleHeading level={2} id="stats-title" className="sr-only">
+        <section aria-labelledby='stats-title'>
+          <AccessibleHeading level={2} id='stats-title' className='sr-only'>
             Статистика кредитной системы
           </AccessibleHeading>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
             <StatCard
-              title="Всего заявок"
+              title='Всего заявок'
               value={dashboardStats.totalApplications}
               icon={CreditCard}
               trend={8.2}
-              color="blue"
+              color='blue'
               loading={isLoading}
               onClick={() => announce('Переход к списку заявок')}
-              description="За текущий месяц"
+              description='За текущий месяц'
             />
             <StatCard
-              title="Одобрено кредитов"
+              title='Одобрено кредитов'
               value={dashboardStats.approvedLoans}
               icon={CheckCircle}
               trend={12.5}
-              color="emerald"
+              color='emerald'
               loading={isLoading}
               onClick={() => announce('Просмотр одобренных кредитов')}
-              description="Успешно одобрено"
+              description='Успешно одобрено'
             />
             <StatCard
-              title="На рассмотрении"
+              title='На рассмотрении'
               value={dashboardStats.pendingReviews}
               icon={AlertCircle}
               trend={-3.2}
-              color="amber"
+              color='amber'
               loading={isLoading}
               onClick={() => announce('Переход к заявкам на рассмотрении')}
-              description="Ожидают решения"
+              description='Ожидают решения'
             />
             <StatCard
-              title="Общая сумма"
+              title='Общая сумма'
               value={`${(dashboardStats.totalLoanAmount / 1000000).toFixed(1)}М ₽`}
               icon={DollarSign}
               trend={15.7}
-              color="purple"
+              color='purple'
               loading={isLoading}
               onClick={() => announce('Переход к финансовой статистике')}
-              description="Выданные кредиты"
+              description='Выданные кредиты'
             />
           </div>
         </section>
 
         {/* Loan Management Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
           {/* Loan Application Trend Chart */}
-          <div className="xl:col-span-2">
+          <div className='xl:col-span-2'>
             <LoanApplicationTrendChart />
           </div>
 
           {/* Loan Status Distribution */}
-          <div className="xl:col-span-1">
+          <div className='xl:col-span-1'>
             <LoanStatusDistributionChart />
           </div>
 
           {/* Loan Amount by Program */}
-          <div className="xl:col-span-2">
+          <div className='xl:col-span-2'>
             <LoanAmountByProgramChart />
           </div>
 
           {/* Recent Loan Activities */}
-          <div className="xl:col-span-1">
+          <div className='xl:col-span-1'>
             <RecentLoanActivitiesTimeline />
           </div>
         </div>

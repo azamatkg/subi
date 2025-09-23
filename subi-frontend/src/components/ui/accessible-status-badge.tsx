@@ -32,13 +32,23 @@ export function AccessibleStatusBadge({
   enabled,
   mode = 'default',
 }: AccessibleStatusBadgeProps) {
-
   // For user mode, use the status field if available, fallback to enabled/isActive
-  const effectiveStatus = mode === 'user'
-    ? (status && status.trim() !== '' ? status.toUpperCase() :
-       (enabled !== undefined ? (enabled ? 'ACTIVE' : 'INACTIVE') :
-        (isActive !== undefined ? (isActive ? 'ACTIVE' : 'INACTIVE') : 'UNKNOWN')))
-    : (status && status.trim() !== '' ? status : 'UNKNOWN');
+  const effectiveStatus =
+    mode === 'user'
+      ? status && status.trim() !== ''
+        ? status.toUpperCase()
+        : enabled !== undefined
+          ? enabled
+            ? 'ACTIVE'
+            : 'INACTIVE'
+          : isActive !== undefined
+            ? isActive
+              ? 'ACTIVE'
+              : 'INACTIVE'
+            : 'UNKNOWN'
+      : status && status.trim() !== ''
+        ? status
+        : 'UNKNOWN';
 
   const getStatusVariant = () => {
     // Return 'default' for all statuses - we'll handle custom colors via className
@@ -57,7 +67,7 @@ export function AccessibleStatusBadge({
         return (
           <CheckCircle
             className={cn(iconClass, 'text-success-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'REJECTED':
@@ -65,14 +75,14 @@ export function AccessibleStatusBadge({
         return (
           <XCircle
             className={cn(iconClass, 'text-destructive-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'SUSPENDED':
         return (
           <XCircle
             className={cn(iconClass, 'text-warning-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'PENDING_CONFIRMATION':
@@ -81,44 +91,45 @@ export function AccessibleStatusBadge({
         return (
           <AlertCircle
             className={cn(iconClass, 'text-warning-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'SUBMITTED':
         return (
           <Clock
             className={cn(iconClass, 'text-info-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'DRAFT':
         return (
           <FileText
             className={cn(iconClass, 'text-neutral-600')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       case 'UNKNOWN':
         return (
           <AlertCircle
             className={cn(iconClass, 'text-muted-foreground')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
       default:
         return (
           <AlertCircle
             className={cn(iconClass, 'text-muted-foreground')}
-            aria-hidden="true"
+            aria-hidden='true'
           />
         );
     }
   };
 
   // Use appropriate label function based on mode
-  const statusLabel = mode === 'user'
-    ? AriaHelpers.getUserStatusLabel(effectiveStatus, locale)
-    : AriaHelpers.getStatusLabel(effectiveStatus, locale);
+  const statusLabel =
+    mode === 'user'
+      ? AriaHelpers.getUserStatusLabel(effectiveStatus, locale)
+      : AriaHelpers.getStatusLabel(effectiveStatus, locale);
   const variant = getStatusVariant();
 
   // Enhanced status-specific color schemes using semantic color system
@@ -159,12 +170,12 @@ export function AccessibleStatusBadge({
         className
       )}
       // ARIA attributes for accessibility
-      role="status"
+      role='status'
       aria-label={`Статус: ${statusLabel}`}
       title={statusLabel}
     >
       {showIcon && getStatusIcon()}
-      <span className="truncate">{statusLabel}</span>
+      <span className='truncate'>{statusLabel}</span>
     </Badge>
   );
 }
@@ -274,8 +285,8 @@ export function AccessibleLoading({
   return (
     <div
       className={cn('flex items-center justify-center gap-3', className)}
-      role="status"
-      aria-live="polite"
+      role='status'
+      aria-live='polite'
       aria-label={loadingMessage}
     >
       <div
@@ -283,9 +294,9 @@ export function AccessibleLoading({
           'animate-spin rounded-full border-2 border-current border-t-transparent opacity-60',
           spinnerSize
         )}
-        aria-hidden="true"
+        aria-hidden='true'
       />
-      <span className="text-sm font-medium text-muted-foreground">
+      <span className='text-sm font-medium text-muted-foreground'>
         {loadingMessage}
       </span>
     </div>

@@ -13,9 +13,9 @@ const AppContent: React.FC = () => {
   return (
     <ThemeProvider>
       <PageTitleProvider>
-        <div className="min-h-screen bg-background font-sans antialiased">
+        <div className='min-h-screen bg-background font-sans antialiased'>
           <RouterProvider router={router} />
-          <Toaster richColors position="top-right" />
+          <Toaster richColors position='top-right' />
         </div>
       </PageTitleProvider>
     </ThemeProvider>

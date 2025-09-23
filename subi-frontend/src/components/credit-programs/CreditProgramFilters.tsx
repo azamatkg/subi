@@ -97,26 +97,26 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
         className
       )}
     >
-      <div className="p-3 sm:p-4">
+      <div className='p-3 sm:p-4'>
         {/* Search Bar */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
+          <div className='flex-1'>
+            <div className='relative'>
+              <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
               <Input
                 placeholder={t('creditProgram.searchPlaceholder')}
                 value={filters.searchTerm}
                 onChange={e => handleFilterChange('searchTerm', e.target.value)}
-                className="pl-10"
+                className='pl-10'
                 aria-label={t('creditProgram.searchPlaceholder')}
                 disabled={loading}
               />
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={cn(
                 'relative gap-2 transition-all duration-200',
@@ -125,33 +125,33 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
               aria-expanded={isFilterOpen}
               disabled={loading}
             >
-              <Filter className="h-4 w-4" />
+              <Filter className='h-4 w-4' />
               {t('creditProgram.advancedFilters')}
               {filtersApplied > 0 && (
                 <Badge
                   variant={isFilterOpen ? 'secondary' : 'destructive'}
-                  className="ml-2 px-1.5 py-0.5 text-xs -mr-1"
+                  className='ml-2 px-1.5 py-0.5 text-xs -mr-1'
                 >
                   {filtersApplied}
                 </Badge>
               )}
               {isFilterOpen ? (
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className='h-4 w-4' />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className='h-4 w-4' />
               )}
             </Button>
 
             {filtersApplied > 0 && (
               <Button
-                variant="outline"
-                size="icon"
+                variant='outline'
+                size='icon'
                 onClick={clearFilters}
                 aria-label={t('common.clearFilters')}
-                className="shrink-0"
+                className='shrink-0'
                 disabled={loading}
               >
-                <X className="h-4 w-4" />
+                <X className='h-4 w-4' />
               </Button>
             )}
           </div>
@@ -159,14 +159,14 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
 
         {/* Collapsible Advanced Filters */}
         {isFilterOpen && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gradient-to-br from-muted/60 to-accent/40 rounded-xl transition-all duration-300 ease-out mt-6 border border-border/10 shadow-inner">
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gradient-to-br from-muted/60 to-accent/40 rounded-xl transition-all duration-300 ease-out mt-6 border border-border/10 shadow-inner'>
             {/* Status Filter */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label
-                htmlFor="status-filter"
-                className="flex items-center gap-2"
+                htmlFor='status-filter'
+                className='flex items-center gap-2'
               >
-                <Badge variant="outline" className="h-4 w-4 p-0" />
+                <Badge variant='outline' className='h-4 w-4 p-0' />
                 {t('creditProgram.fields.status')}
               </Label>
               <Select
@@ -179,13 +179,13 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                 }
                 disabled={loading}
               >
-                <SelectTrigger id="status-filter">
+                <SelectTrigger id='status-filter'>
                   <SelectValue
                     placeholder={t('creditProgram.placeholders.selectStatus')}
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('common.all')}</SelectItem>
+                  <SelectItem value='all'>{t('common.all')}</SelectItem>
                   {Object.values(ProgramStatusEnum).map(status => (
                     <SelectItem key={status} value={status}>
                       {t(`creditProgram.status.${status.toLowerCase()}`)}
@@ -196,14 +196,14 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
             </div>
 
             {/* Amount Range Filters */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
+            <div className='space-y-2'>
+              <Label className='flex items-center gap-2'>
+                <DollarSign className='h-4 w-4' />
                 {t('creditProgram.filters.amountRange')}
               </Label>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Input
-                  type="number"
+                  type='number'
                   placeholder={t('common.min')}
                   value={filters.amountMin || ''}
                   onChange={e =>
@@ -212,11 +212,11 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                       e.target.value ? Number(e.target.value) : null
                     )
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
                 <Input
-                  type="number"
+                  type='number'
                   placeholder={t('common.max')}
                   value={filters.amountMax || ''}
                   onChange={e =>
@@ -225,21 +225,21 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                       e.target.value ? Number(e.target.value) : null
                     )
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
               </div>
             </div>
 
             {/* Term Range Filters */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+            <div className='space-y-2'>
+              <Label className='flex items-center gap-2'>
+                <Clock className='h-4 w-4' />
                 {t('creditProgram.filters.termRange')}
               </Label>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Input
-                  type="number"
+                  type='number'
                   placeholder={t('common.min')}
                   value={filters.termMin || ''}
                   onChange={e =>
@@ -248,11 +248,11 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                       e.target.value ? Number(e.target.value) : null
                     )
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
                 <Input
-                  type="number"
+                  type='number'
                   placeholder={t('common.max')}
                   value={filters.termMax || ''}
                   onChange={e =>
@@ -261,70 +261,70 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                       e.target.value ? Number(e.target.value) : null
                     )
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
               </div>
             </div>
 
             {/* Valid From Date Range */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
+            <div className='space-y-2'>
+              <Label className='flex items-center gap-2'>
+                <Calendar className='h-4 w-4' />
                 {t('creditProgram.fields.validFrom')} {t('common.range')}
               </Label>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Input
-                  type="date"
+                  type='date'
                   value={filters.validFromStart}
                   onChange={e =>
                     handleFilterChange('validFromStart', e.target.value)
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
                 <Input
-                  type="date"
+                  type='date'
                   value={filters.validFromEnd}
                   onChange={e =>
                     handleFilterChange('validFromEnd', e.target.value)
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
               </div>
             </div>
 
             {/* Valid To Date Range */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
+            <div className='space-y-2'>
+              <Label className='flex items-center gap-2'>
+                <Calendar className='h-4 w-4' />
                 {t('creditProgram.fields.validTo')} {t('common.range')}
               </Label>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Input
-                  type="date"
+                  type='date'
                   value={filters.validToStart}
                   onChange={e =>
                     handleFilterChange('validToStart', e.target.value)
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
                 <Input
-                  type="date"
+                  type='date'
                   value={filters.validToEnd}
                   onChange={e =>
                     handleFilterChange('validToEnd', e.target.value)
                   }
-                  className="flex-1"
+                  className='flex-1'
                   disabled={loading}
                 />
               </div>
             </div>
 
             {/* Collateral Required Filter */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>{t('creditProgram.fields.collateralRequired')}</Label>
               <Select
                 value={
@@ -346,32 +346,32 @@ export const CreditProgramFilters: React.FC<CreditProgramFiltersProps> = ({
                   <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('common.all')}</SelectItem>
-                  <SelectItem value="true">{t('common.yes')}</SelectItem>
-                  <SelectItem value="false">{t('common.no')}</SelectItem>
+                  <SelectItem value='all'>{t('common.all')}</SelectItem>
+                  <SelectItem value='true'>{t('common.yes')}</SelectItem>
+                  <SelectItem value='false'>{t('common.no')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Filter Actions */}
-            <div className="flex flex-col sm:flex-row gap-2 pt-2 col-span-full">
+            <div className='flex flex-col sm:flex-row gap-2 pt-2 col-span-full'>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={clearFilters}
                 disabled={filtersApplied === 0 || loading}
-                className="w-full sm:w-auto"
+                className='w-full sm:w-auto'
               >
-                <X className="mr-2 h-4 w-4" />
+                <X className='mr-2 h-4 w-4' />
                 {t('common.clear')}
                 {filtersApplied > 0 && ` (${filtersApplied})`}
               </Button>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => window.location.reload()}
-                className="w-full sm:w-auto"
+                className='w-full sm:w-auto'
                 disabled={loading}
               >
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RefreshCw className='mr-2 h-4 w-4' />
                 {t('common.refresh')}
               </Button>
             </div>

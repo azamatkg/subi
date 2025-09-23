@@ -42,7 +42,7 @@ export const MainLayout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className='min-h-screen bg-background'>
       {/* Auth event listener */}
       <AuthEventListener />
 
@@ -59,8 +59,8 @@ export const MainLayout: React.FC = () => {
         <Header />
 
         {/* Main content */}
-        <main className="pt-4 pb-6 bg-muted min-h-screen">
-          <div className="w-full">
+        <main className='pt-4 pb-6 px-6 bg-muted min-h-screen'>
+          <div className='w-full'>
             <Outlet key={location.pathname} />
           </div>
         </main>

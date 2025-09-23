@@ -145,72 +145,72 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
         loading && 'opacity-50 pointer-events-none',
         className
       )}
-      role="article"
+      role='article'
       aria-labelledby={`program-title-${program.id}`}
     >
-      <div className="p-6">
-        <div className="space-y-4">
+      <div className='p-6'>
+        <div className='space-y-4'>
           {/* Header with status and actions */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm">
-                  <CreditCard className="h-5 w-5 text-primary-700 shrink-0" />
+          <div className='flex items-start justify-between gap-4'>
+            <div className='min-w-0 flex-1'>
+              <div className='flex items-center gap-3 mb-3'>
+                <div className='flex items-center justify-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm'>
+                  <CreditCard className='h-5 w-5 text-primary-700 shrink-0' />
                 </div>
-                <span className="text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide">
+                <span className='text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide'>
                   {program.currencyCode}
                 </span>
               </div>
               <button
                 onClick={() => onView(program)}
-                className="text-left w-full"
+                className='text-left w-full'
                 disabled={loading}
               >
                 <h3
                   id={`program-title-${program.id}`}
-                  className="text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide"
+                  className='text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide'
                 >
                   {program.nameEn}
                 </h3>
               </button>
               {program.description && (
-                <p className="text-sm text-muted-foreground mt-2 line-clamp-2 font-medium">
+                <p className='text-sm text-muted-foreground mt-2 line-clamp-2 font-medium'>
                   {program.description}
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className='flex items-center gap-2 shrink-0'>
               <StatusBadge status={program.status} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg"
+                    variant='ghost'
+                    size='sm'
+                    className='h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg'
                     aria-label={t('common.actions', { item: program.nameEn })}
                     disabled={loading}
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className='h-4 w-4' />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  align="end"
-                  className="shadow-lg border-border/20"
+                  align='end'
+                  className='shadow-lg border-border/20'
                 >
                   <DropdownMenuItem
                     onClick={() => onView(program)}
-                    className="hover:bg-accent focus:bg-accent"
+                    className='hover:bg-accent focus:bg-accent'
                   >
-                    <Eye className="mr-2 h-4 w-4" />
+                    <Eye className='mr-2 h-4 w-4' />
                     {t('common.view')}
                   </DropdownMenuItem>
 
                   {canEdit && (
                     <DropdownMenuItem
                       onClick={() => onEdit(program)}
-                      className="hover:bg-accent focus:bg-accent"
+                      className='hover:bg-accent focus:bg-accent'
                     >
-                      <Edit className="mr-2 h-4 w-4" />
+                      <Edit className='mr-2 h-4 w-4' />
                       {t('common.edit')}
                     </DropdownMenuItem>
                   )}
@@ -222,9 +222,9 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
                       {program.status === 'APPROVED' && onActivate && (
                         <DropdownMenuItem
                           onClick={() => onActivate(program)}
-                          className="hover:bg-green-50 text-green-700"
+                          className='hover:bg-green-50 text-green-700'
                         >
-                          <Play className="mr-2 h-4 w-4" />
+                          <Play className='mr-2 h-4 w-4' />
                           {t('creditProgram.actions.activate')}
                         </DropdownMenuItem>
                       )}
@@ -232,9 +232,9 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
                       {program.status === 'ACTIVE' && onSuspend && (
                         <DropdownMenuItem
                           onClick={() => onSuspend(program)}
-                          className="hover:bg-orange-50 text-orange-700"
+                          className='hover:bg-orange-50 text-orange-700'
                         >
-                          <Pause className="mr-2 h-4 w-4" />
+                          <Pause className='mr-2 h-4 w-4' />
                           {t('creditProgram.actions.suspend')}
                         </DropdownMenuItem>
                       )}
@@ -244,9 +244,9 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
                         onClose && (
                           <DropdownMenuItem
                             onClick={() => onClose(program)}
-                            className="hover:bg-red-50 text-red-700"
+                            className='hover:bg-red-50 text-red-700'
                           >
-                            <CloseIcon className="mr-2 h-4 w-4" />
+                            <CloseIcon className='mr-2 h-4 w-4' />
                             {t('creditProgram.actions.close')}
                           </DropdownMenuItem>
                         )}
@@ -258,9 +258,9 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => onDelete(program)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className='text-destructive hover:text-destructive hover:bg-destructive/10'
                       >
-                        <Trash className="mr-2 h-4 w-4" />
+                        <Trash className='mr-2 h-4 w-4' />
                         {t('common.delete')}
                       </DropdownMenuItem>
                     </>
@@ -271,56 +271,56 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
           </div>
 
           {/* Details grid */}
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {/* Amount Range */}
-            <div className="flex items-center gap-3 text-sm">
-              <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className='flex items-center gap-3 text-sm'>
+              <DollarSign className='h-4 w-4 text-muted-foreground shrink-0' />
               <div>
-                <span className="font-medium text-muted-foreground">
+                <span className='font-medium text-muted-foreground'>
                   {t('creditProgram.table.amountRange')}:
                 </span>
-                <span className="ml-2 font-semibold">
+                <span className='ml-2 font-semibold'>
                   {formatAmountRange(program)}
                 </span>
               </div>
             </div>
 
             {/* Term Range */}
-            <div className="flex items-center gap-3 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className='flex items-center gap-3 text-sm'>
+              <Clock className='h-4 w-4 text-muted-foreground shrink-0' />
               <div>
-                <span className="font-medium text-muted-foreground">
+                <span className='font-medium text-muted-foreground'>
                   {t('creditProgram.table.termRange')}:
                 </span>
-                <span className="ml-2 font-semibold">
+                <span className='ml-2 font-semibold'>
                   {formatTermRange(program)}
                 </span>
               </div>
             </div>
 
             {/* Validity Period */}
-            <div className="flex items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className='flex items-center gap-3 text-sm'>
+              <Calendar className='h-4 w-4 text-muted-foreground shrink-0' />
               <div>
-                <span className="font-medium text-muted-foreground">
+                <span className='font-medium text-muted-foreground'>
                   {t('creditProgram.table.validPeriod')}:
                 </span>
-                <span className="ml-2 font-semibold">
+                <span className='ml-2 font-semibold'>
                   {formatValidityPeriod(program)}
                 </span>
               </div>
             </div>
 
             {/* Collateral Required */}
-            <div className="flex items-center gap-3 text-sm">
-              <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className='flex items-center gap-3 text-sm'>
+              <Shield className='h-4 w-4 text-muted-foreground shrink-0' />
               <div>
-                <span className="font-medium text-muted-foreground">
+                <span className='font-medium text-muted-foreground'>
                   {t('creditProgram.fields.collateralRequired')}:
                 </span>
                 <Badge
                   variant={program.collateralRequired ? 'default' : 'outline'}
-                  className="ml-2"
+                  className='ml-2'
                 >
                   {program.collateralRequired
                     ? t('common.yes')
@@ -331,15 +331,15 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
 
             {/* Interest Rate */}
             {program.interestRateFixed && (
-              <div className="flex items-center gap-3 text-sm">
-                <div className="h-4 w-4 flex items-center justify-center text-muted-foreground shrink-0">
-                  <span className="text-xs font-bold">%</span>
+              <div className='flex items-center gap-3 text-sm'>
+                <div className='h-4 w-4 flex items-center justify-center text-muted-foreground shrink-0'>
+                  <span className='text-xs font-bold'>%</span>
                 </div>
                 <div>
-                  <span className="font-medium text-muted-foreground">
+                  <span className='font-medium text-muted-foreground'>
                     {t('creditProgram.fields.interestRate')}:
                   </span>
-                  <span className="ml-2 font-semibold">
+                  <span className='ml-2 font-semibold'>
                     {program.interestRateFixed}%
                   </span>
                 </div>
@@ -348,34 +348,34 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
           </div>
 
           {/* Footer with availability indicators */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/20">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className='flex items-center justify-between pt-2 border-t border-border/20'>
+            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
               {program.isActive && (
                 <Badge
-                  variant="outline"
-                  className="text-green-700 border-green-300"
+                  variant='outline'
+                  className='text-green-700 border-green-300'
                 >
                   {t('creditProgram.indicators.active')}
                 </Badge>
               )}
               {program.isAvailableForApplications && (
                 <Badge
-                  variant="outline"
-                  className="text-blue-700 border-blue-300"
+                  variant='outline'
+                  className='text-blue-700 border-blue-300'
                 >
                   {t('creditProgram.indicators.availableForApplications')}
                 </Badge>
               )}
               {!program.isWithinValidityPeriod && (
                 <Badge
-                  variant="outline"
-                  className="text-orange-700 border-orange-300"
+                  variant='outline'
+                  className='text-orange-700 border-orange-300'
                 >
                   {t('creditProgram.indicators.expired')}
                 </Badge>
               )}
             </div>
-            <div className="text-xs text-muted-foreground">
+            <div className='text-xs text-muted-foreground'>
               {t('creditProgram.fields.applications')}:{' '}
               {program.applicationCount}
             </div>

@@ -13,15 +13,17 @@ import { useSidebarAccordion } from '@/hooks/sidebar/useSidebarAccordion';
 import { filterNavigationSections } from '@/utils/sidebar';
 import { SidebarSection } from './SidebarSection';
 
-
 export const Sidebar: React.FC = () => {
   const { hasAnyRole } = useAuth();
-  const { sidebarOpen, isMobile, toggleSidebar, closeSidebar } = useSidebarState();
+  const { sidebarOpen, isMobile, toggleSidebar, closeSidebar } =
+    useSidebarState();
   const { expandedSection, toggleSection } = useSidebarAccordion();
 
   // Filter navigation items based on user roles
-  const filteredSections = filterNavigationSections(navigationSections, hasAnyRole);
-
+  const filteredSections = filterNavigationSections(
+    navigationSections,
+    hasAnyRole
+  );
 
   return (
     <>
@@ -29,16 +31,22 @@ export const Sidebar: React.FC = () => {
       <aside
         className={cn(
           sidebarStyles.sidebar.base,
-          sidebarOpen ? sidebarStyles.sidebar.open : sidebarStyles.sidebar.closed,
-          isMobile ? sidebarStyles.sidebar.mobile : sidebarOpen ? sidebarStyles.sidebar.desktop.open : sidebarStyles.sidebar.desktop.closed
+          sidebarOpen
+            ? sidebarStyles.sidebar.open
+            : sidebarStyles.sidebar.closed,
+          isMobile
+            ? sidebarStyles.sidebar.mobile
+            : sidebarOpen
+              ? sidebarStyles.sidebar.desktop.open
+              : sidebarStyles.sidebar.desktop.closed
         )}
-        role="navigation"
-        aria-label="Главное навигационное меню"
+        role='navigation'
+        aria-label='Главное навигационное меню'
       >
         <div className={sidebarStyles.content.base}>
           {/* Enhanced Header */}
           <div className={sidebarStyles.content.header}>
-            <div className="flex items-center gap-3"></div>
+            <div className='flex items-center gap-3'></div>
 
             {(sidebarOpen || isMobile) && (
               <div className={sidebarStyles.header.titleContainer}>
@@ -49,8 +57,8 @@ export const Sidebar: React.FC = () => {
             {/* Desktop collapse button */}
             {!isMobile && (
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={toggleSidebar}
                 className={sidebarStyles.header.collapseButton}
                 aria-label={sidebarOpen ? 'Свернуть меню' : 'Развернуть меню'}
@@ -68,14 +76,21 @@ export const Sidebar: React.FC = () => {
           {/* Enhanced Navigation */}
           <div className={sidebarStyles.content.navigation}>
             {filteredSections.map((section, sectionIndex) => (
-              <div key={section.id || sectionIndex} className={sidebarStyles.section.container}>
+              <div
+                key={section.id || sectionIndex}
+                className={sidebarStyles.section.container}
+              >
                 <SidebarSection
                   section={section}
                   sectionIndex={sectionIndex}
-                  isExpanded={section.id ? expandedSection === section.id : true}
+                  isExpanded={
+                    section.id ? expandedSection === section.id : true
+                  }
                   isCollapsed={!sidebarOpen}
                   isMobile={isMobile}
-                  onToggleSection={() => section.id && toggleSection(section.id)}
+                  onToggleSection={() =>
+                    section.id && toggleSection(section.id)
+                  }
                   onItemClick={closeSidebar}
                 />
 
@@ -93,27 +108,27 @@ export const Sidebar: React.FC = () => {
               {!sidebarOpen && !isMobile ? (
                 <div className={sidebarStyles.footer.controls.collapsed}>
                   <LanguageSwitcher
-                    variant="ghost"
-                    size="sm"
-                    className={cn(sidebarStyles.footer.button, "rounded-full")}
+                    variant='ghost'
+                    size='sm'
+                    className={cn(sidebarStyles.footer.button, 'rounded-full')}
                   />
                   <ThemeToggle
-                    variant="ghost"
-                    size="sm"
-                    className={cn(sidebarStyles.footer.button, "rounded-full")}
+                    variant='ghost'
+                    size='sm'
+                    className={cn(sidebarStyles.footer.button, 'rounded-full')}
                   />
                 </div>
               ) : (
                 <div className={sidebarStyles.footer.controls.expanded}>
                   <LanguageSwitcher
-                    variant="ghost"
-                    size="sm"
+                    variant='ghost'
+                    size='sm'
                     className={sidebarStyles.footer.button}
                     showText={false}
                   />
                   <ThemeToggle
-                    variant="ghost"
-                    size="sm"
+                    variant='ghost'
+                    size='sm'
                     className={sidebarStyles.footer.button}
                   />
                 </div>
@@ -128,7 +143,7 @@ export const Sidebar: React.FC = () => {
         <div
           className={sidebarStyles.overlay}
           onClick={closeSidebar}
-          aria-hidden="true"
+          aria-hidden='true'
         />
       )}
     </>

@@ -25,12 +25,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/hooks/useAuth';
 import type { UserListResponseDto } from '@/types/user';
 
-type SortField =
-  | 'lastName'
-  | 'username'
-  | 'email'
-  | 'status'
-  | 'createdAt';
+type SortField = 'lastName' | 'username' | 'email' | 'status' | 'createdAt';
 
 interface UserTableProps {
   users: UserListResponseDto[];
@@ -110,7 +105,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                     className='text-left w-full'
                   >
                     <p className='font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide'>
-                      {user.fullName || `${user.firstName} ${user.lastName}`.trim()}
+                      {user.fullName ||
+                        `${user.firstName} ${user.lastName}`.trim()}
                     </p>
                   </button>
                   {user.department && (
@@ -131,7 +127,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   status={user.status}
                   isActive={user.isActive}
                   enabled={user.enabled}
-                  mode="user"
+                  mode='user'
                 />
               </TableCell>
               <TableCell className='w-[100px] py-4'>
@@ -143,7 +139,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                         size='sm'
                         className='h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20'
                         aria-label={t('common.actions', {
-                          item: user.fullName || `${user.firstName} ${user.lastName}`.trim(),
+                          item:
+                            user.fullName ||
+                            `${user.firstName} ${user.lastName}`.trim(),
                         })}
                       >
                         <MoreHorizontal className='h-4 w-4' />

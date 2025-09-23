@@ -39,40 +39,40 @@ export const UserManagementDashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Stats Cards - Only Active Users and Online Users */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
         <StatCard
           title={t('userManagement.dashboard.activeUsers')}
           value={dashboardData.activeUsers}
           icon={Activity}
           trend={5.4}
-          color="emerald"
+          color='emerald'
           description={t('userManagement.dashboard.activeInLast30Days')}
         />
         <StatCard
           title={t('userManagement.dashboard.onlineUsers')}
           value={dashboardData.onlineUsers}
           icon={Clock}
-          color="purple"
+          color='purple'
           description={t('userManagement.dashboard.currentlyInSystem')}
         />
       </div>
 
       {/* New Dashboard Components Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
         {/* Recent Actions Timeline */}
-        <div className="lg:col-span-2 xl:col-span-1">
+        <div className='lg:col-span-2 xl:col-span-1'>
           <RecentActionsTimeline />
         </div>
 
         {/* Active Roles Card */}
-        <div className="xl:col-span-1">
+        <div className='xl:col-span-1'>
           <ActiveRolesCard />
         </div>
 
         {/* Active Permissions Card */}
-        <div className="xl:col-span-1">
+        <div className='xl:col-span-1'>
           <ActivePermissionsCard />
         </div>
       </div>

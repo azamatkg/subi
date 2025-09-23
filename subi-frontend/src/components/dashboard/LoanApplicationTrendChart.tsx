@@ -34,20 +34,20 @@ const dummyTrendData: TrendData[] = [
 
 export const LoanApplicationTrendChart: React.FC = () => {
   return (
-    <Card className="w-full">
+    <Card className='w-full'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+        <CardTitle className='flex items-center gap-2'>
+          <TrendingUp className='h-5 w-5' />
           Тренд заявок на кредит
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className='h-80'>
+          <ResponsiveContainer width='100%' height='100%'>
             <LineChart data={dummyTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray='3 3' />
               <XAxis
-                dataKey="month"
+                dataKey='month'
                 tick={{ fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
@@ -66,31 +66,34 @@ export const LoanApplicationTrendChart: React.FC = () => {
                 }}
               />
               <Line
-                type="monotone"
-                dataKey="applications"
-                stroke="hsl(var(--primary))"
+                type='monotone'
+                dataKey='applications'
+                stroke='hsl(var(--primary))'
                 strokeWidth={2}
                 dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
-                name="Всего заявок"
+                name='Всего заявок'
               />
               <Line
-                type="monotone"
-                dataKey="approved"
-                stroke="hsl(142, 76%, 36%)"
+                type='monotone'
+                dataKey='approved'
+                stroke='hsl(142, 76%, 36%)'
                 strokeWidth={2}
                 dot={{ fill: 'hsl(142, 76%, 36%)', strokeWidth: 2, r: 4 }}
-                name="Одобрено"
+                name='Одобрено'
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center justify-center gap-6 mt-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary"></div>
+        <div className='flex items-center justify-center gap-6 mt-4 text-sm'>
+          <div className='flex items-center gap-2'>
+            <div className='w-3 h-3 rounded-full bg-primary'></div>
             <span>Всего заявок</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }}></div>
+          <div className='flex items-center gap-2'>
+            <div
+              className='w-3 h-3 rounded-full'
+              style={{ backgroundColor: 'hsl(142, 76%, 36%)' }}
+            ></div>
             <span>Одобрено</span>
           </div>
         </div>

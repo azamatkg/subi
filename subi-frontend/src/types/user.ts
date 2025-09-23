@@ -165,10 +165,7 @@ export type UserStatisticsResponse = ApiResponse<UserStatistics>;
 export type UserActivityLogResponse = PaginatedResponse<UserActivityLog>;
 
 // Export commonly used types
-export type {
-  PaginatedResponse,
-  ApiResponse,
-} from '@/types';
+export type { PaginatedResponse, ApiResponse } from '@/types';
 
 // Export UserRole as both value and type
 export { UserRole } from '@/types';

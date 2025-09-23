@@ -24,7 +24,10 @@ export const useSidebarAccordion = () => {
 
       // Save to localStorage
       try {
-        localStorage.setItem('sidebar-expanded-section', JSON.stringify(newExpanded));
+        localStorage.setItem(
+          'sidebar-expanded-section',
+          JSON.stringify(newExpanded)
+        );
       } catch (error) {
         console.warn('Failed to save sidebar state to localStorage:', error);
       }

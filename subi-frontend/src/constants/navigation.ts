@@ -1,5 +1,13 @@
 import React from 'react';
-import { Home, Settings, Scale, CreditCard, Users, Database, FileText } from 'lucide-react';
+import {
+  Home,
+  Settings,
+  Scale,
+  CreditCard,
+  Users,
+  Database,
+  FileText,
+} from 'lucide-react';
 
 export interface NavItem {
   title: string;

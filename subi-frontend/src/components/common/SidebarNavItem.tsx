@@ -35,14 +35,14 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
       aria-label={isCollapsed ? t(item.title) : undefined}
       title={isCollapsed ? item.description : undefined}
     >
-      <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+      <item.icon className='h-5 w-5 shrink-0' aria-hidden='true' />
 
       {!isCollapsed && (
         <>
-          <div className="flex-1 truncate">
-            <div className="truncate">{t(item.title)}</div>
+          <div className='flex-1 truncate'>
+            <div className='truncate'>{t(item.title)}</div>
             {item.description && (
-              <div className="text-xs text-gray-400 truncate">
+              <div className='text-xs text-gray-400 truncate'>
                 {item.description}
               </div>
             )}
@@ -64,10 +64,10 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
 
       {/* Tooltip for collapsed state */}
       {isCollapsed && item.badge && (
-        <div className="absolute -right-1 -top-1">
+        <div className='absolute -right-1 -top-1'>
           <Badge
-            variant="default"
-            className="h-5 w-5 p-0 text-xs flex items-center justify-center bg-red-500"
+            variant='default'
+            className='h-5 w-5 p-0 text-xs flex items-center justify-center bg-red-500'
           >
             {typeof item.badge === 'number' && item.badge > 9
               ? '9+'

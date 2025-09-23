@@ -10,6 +10,7 @@ import type {
   UserRoleHistory,
   UserListResponse,
   UserResponse,
+  UserResponseDto,
   UserStatisticsResponse,
   UserActivityLogResponse,
   PaginatedResponse,
@@ -17,7 +18,7 @@ import type {
 } from '@/types/user';
 
 export const userApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Get paginated list of users with basic info for list/table view
     getUsers: builder.query<
       UserListResponse,
@@ -39,7 +40,7 @@ export const userApi = baseApi.injectEndpoints({
       UserListResponse,
       UserSearchAndFilterParams
     >({
-      query: (params) => ({
+      query: params => ({
         url: `/users/search`,
         params: params,
       }),
@@ -47,14 +48,14 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Get single user by ID with full details
-    getUserById: builder.query<UserResponse, string>({
-      query: (id) => `/users/${id}`,
+    getUserById: builder.query<UserResponseDto, string>({
+      query: id => `/users/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'User', id }],
     }),
 
     // Create new user
     createUser: builder.mutation<UserResponse, UserCreateDto>({
-      query: (userData) => ({
+      query: userData => ({
         url: `/users`,
         method: 'POST',
         body: userData,
@@ -80,7 +81,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Delete user
     deleteUser: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/users/${id}`,
         method: 'DELETE',
       }),
@@ -105,7 +106,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Quick activate user
     activateUser: builder.mutation<UserResponse, string>({
-      query: (id) => ({
+      query: id => ({
         url: `/users/${id}/activate`,
         method: 'PATCH',
       }),
@@ -130,7 +131,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Bulk update user status
     bulkUpdateUserStatus: builder.mutation<void, BulkUserStatusUpdateDto>({
-      query: (data) => ({
+      query: data => ({
         url: `/users/bulk/status`,
         method: 'PATCH',
         body: data,
@@ -140,7 +141,7 @@ export const userApi = baseApi.injectEndpoints({
 
     // Bulk update user roles
     bulkUpdateUserRoles: builder.mutation<void, BulkUserRoleUpdateDto>({
-      query: (data) => ({
+      query: data => ({
         url: `/users/bulk/roles`,
         method: 'PATCH',
         body: data,
@@ -255,7 +256,7 @@ export const userApi = baseApi.injectEndpoints({
       query: ({ format, filters = {} }) => ({
         url: `/users/export`,
         params: { format, ...filters },
-        responseHandler: (response) => response.blob(),
+        responseHandler: response => response.blob(),
       }),
     }),
   }),

@@ -168,59 +168,59 @@ export class ErrorBoundary extends Component<
           level === 'component' && 'min-h-[200px]'
         )}
       >
-        <CardContent className="p-6 sm:p-8 text-center space-y-6">
+        <CardContent className='p-6 sm:p-8 text-center space-y-6'>
           {/* Error Icon and Title */}
-          <div className="space-y-4">
-            <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
-              <AlertTriangle className="w-8 h-8 text-destructive" />
+          <div className='space-y-4'>
+            <div className='mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center'>
+              <AlertTriangle className='w-8 h-8 text-destructive' />
             </div>
 
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold text-destructive">
+            <div className='space-y-2'>
+              <h3 className='text-xl font-semibold text-destructive'>
                 {title || defaultTitles[level]}
               </h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <p className='text-muted-foreground max-w-md mx-auto'>
                 {description || defaultDescriptions[level]}
               </p>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className='flex flex-col sm:flex-row items-center justify-center gap-3'>
             <Button
               onClick={this.handleRetry}
-              className="gap-2 min-w-[120px]"
+              className='gap-2 min-w-[120px]'
               disabled={retryCount >= 3}
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className='w-4 h-4' />
               {retryCount >= 3 ? 'Попытки исчерпаны' : 'Попробовать снова'}
             </Button>
 
             {level === 'page' && (
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => (window.location.href = '/dashboard')}
-                className="gap-2"
+                className='gap-2'
               >
-                <Home className="w-4 h-4" />
+                <Home className='w-4 h-4' />
                 На главную
               </Button>
             )}
 
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => window.location.reload()}
-              className="gap-2"
+              className='gap-2'
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className='w-4 h-4' />
               Обновить страницу
             </Button>
           </div>
 
           {/* Retry Counter */}
           {retryCount > 0 && (
-            <div className="flex items-center justify-center gap-2">
-              <Badge variant="outline" className="text-xs">
+            <div className='flex items-center justify-center gap-2'>
+              <Badge variant='outline' className='text-xs'>
                 Попытка {retryCount}/3
               </Badge>
             </div>
@@ -228,39 +228,39 @@ export class ErrorBoundary extends Component<
 
           {/* Error Details (Development/Debug) */}
           {(process.env.NODE_ENV === 'development' || showDetails) && error && (
-            <div className="text-left space-y-3">
+            <div className='text-left space-y-3'>
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={this.toggleDetails}
-                className="gap-2 text-muted-foreground hover:text-foreground"
+                className='gap-2 text-muted-foreground hover:text-foreground'
               >
-                <Bug className="w-4 h-4" />
+                <Bug className='w-4 h-4' />
                 Детали ошибки
                 {showDetails ? (
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronUp className='w-4 h-4' />
                 ) : (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className='w-4 h-4' />
                 )}
               </Button>
 
               {showDetails && (
-                <Alert className="text-left">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="space-y-3">
+                <Alert className='text-left'>
+                  <AlertTriangle className='h-4 w-4' />
+                  <AlertDescription className='space-y-3'>
                     <div>
-                      <p className="font-medium text-sm">
+                      <p className='font-medium text-sm'>
                         Сообщение об ошибке:
                       </p>
-                      <code className="text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap">
+                      <code className='text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap'>
                         {error.message}
                       </code>
                     </div>
 
                     {error.stack && (
                       <div>
-                        <p className="font-medium text-sm">Stack trace:</p>
-                        <code className="text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap max-h-32 overflow-y-auto">
+                        <p className='font-medium text-sm'>Stack trace:</p>
+                        <code className='text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap max-h-32 overflow-y-auto'>
                           {error.stack}
                         </code>
                       </div>
@@ -268,34 +268,34 @@ export class ErrorBoundary extends Component<
 
                     {errorInfo?.componentStack && (
                       <div>
-                        <p className="font-medium text-sm">Component stack:</p>
-                        <code className="text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap max-h-32 overflow-y-auto">
+                        <p className='font-medium text-sm'>Component stack:</p>
+                        <code className='text-xs bg-muted p-2 rounded block mt-1 whitespace-pre-wrap max-h-32 overflow-y-auto'>
                           {errorInfo.componentStack}
                         </code>
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-2">
+                    <div className='flex gap-2 pt-2'>
                       <Button
-                        variant="outline"
-                        size="sm"
+                        variant='outline'
+                        size='sm'
                         onClick={this.handleCopyError}
-                        className="gap-2 text-xs"
+                        className='gap-2 text-xs'
                       >
-                        <Copy className="w-3 h-3" />
+                        <Copy className='w-3 h-3' />
                         Копировать
                       </Button>
 
                       <Button
-                        variant="outline"
-                        size="sm"
+                        variant='outline'
+                        size='sm'
                         onClick={() => {
                           const bugReportUrl = `https://github.com/your-repo/issues/new?title=${encodeURIComponent(`Error: ${error.message}`)}&body=${encodeURIComponent(`Error Details:\n${error.stack}`)}`;
                           window.open(bugReportUrl, '_blank');
                         }}
-                        className="gap-2 text-xs"
+                        className='gap-2 text-xs'
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className='w-3 h-3' />
                         Сообщить об ошибке
                       </Button>
                     </div>
@@ -306,12 +306,12 @@ export class ErrorBoundary extends Component<
           )}
 
           {/* Help Text */}
-          <div className="text-xs text-muted-foreground space-y-1">
+          <div className='text-xs text-muted-foreground space-y-1'>
             <p>
               Если проблема повторяется, обратитесь к администратору системы.
             </p>
             {process.env.NODE_ENV === 'development' && (
-              <p className="text-amber-600">
+              <p className='text-amber-600'>
                 Режим разработки: проверьте консоль браузера для дополнительной
                 информации.
               </p>

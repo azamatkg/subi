@@ -320,7 +320,7 @@ export const router = createBrowserRouter([
   // Legacy route redirects
   {
     path: '/login',
-    element: <Navigate to="/auth/login" replace />,
+    element: <Navigate to='/auth/login' replace />,
   },
 
   // Error pages

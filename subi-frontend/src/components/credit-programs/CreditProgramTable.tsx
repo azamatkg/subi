@@ -155,20 +155,20 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
     >
       <button
         onClick={() => onSort(field)}
-        className="flex items-center gap-2 w-full text-left font-bold text-table-header-foreground hover:text-primary-600 transition-colors duration-300 py-3 px-1 rounded-lg hover:bg-primary-50/50"
+        className='flex items-center gap-2 w-full text-left font-bold text-table-header-foreground hover:text-primary-600 transition-colors duration-300 py-3 px-1 rounded-lg hover:bg-primary-50/50'
         aria-label={t('common.sortBy', { field: children })}
         disabled={loading}
       >
         {children}
         {sortField === field ? (
           sortDirection === 'asc' ? (
-            <SortAsc className="h-4 w-4 text-primary animate-in slide-in-from-bottom-1 duration-200" />
+            <SortAsc className='h-4 w-4 text-primary animate-in slide-in-from-bottom-1 duration-200' />
           ) : (
-            <SortDesc className="h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200" />
+            <SortDesc className='h-4 w-4 text-primary animate-in slide-in-from-top-1 duration-200' />
           )
         ) : (
-          <div className="h-4 w-4 opacity-40 group-hover:opacity-70 transition-opacity">
-            <SortAsc className="h-4 w-4 text-table-header-foreground" />
+          <div className='h-4 w-4 opacity-40 group-hover:opacity-70 transition-opacity'>
+            <SortAsc className='h-4 w-4 text-table-header-foreground' />
           </div>
         )}
       </button>
@@ -216,8 +216,8 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
 
   if (programs.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
+      <div className='text-center py-12'>
+        <p className='text-muted-foreground'>
           {t('creditProgram.messages.noPrograms')}
         </p>
       </div>
@@ -232,27 +232,27 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
       )}
     >
       <Table>
-        <TableHeader className="bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30">
-          <TableRow className="group border-b-0 hover:bg-primary-50/20 transition-all duration-300">
-            <SortableTableHead field="nameEn">
+        <TableHeader className='bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30'>
+          <TableRow className='group border-b-0 hover:bg-primary-50/20 transition-all duration-300'>
+            <SortableTableHead field='nameEn'>
               {t('creditProgram.table.name')}
             </SortableTableHead>
-            <SortableTableHead field="status">
+            <SortableTableHead field='status'>
               {t('creditProgram.table.status')}
             </SortableTableHead>
-            <SortableTableHead field="currencyCode">
+            <SortableTableHead field='currencyCode'>
               {t('creditProgram.table.currency')}
             </SortableTableHead>
-            <TableHead className="text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+            <TableHead className='text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70'>
               {t('creditProgram.table.amountRange')}
             </TableHead>
-            <TableHead className="text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+            <TableHead className='text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70'>
               {t('creditProgram.table.termRange')}
             </TableHead>
-            <TableHead className="text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+            <TableHead className='text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70'>
               {t('creditProgram.table.validPeriod')}
             </TableHead>
-            <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+            <TableHead className='w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70'>
               {t('common.actions')}
             </TableHead>
           </TableRow>
@@ -266,71 +266,71 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
                 loading && 'opacity-50'
               )}
             >
-              <TableCell className="py-4">
-                <div className="space-y-1 max-w-[300px]">
+              <TableCell className='py-4'>
+                <div className='space-y-1 max-w-[300px]'>
                   <button
                     onClick={() => onView(program)}
-                    className="text-left w-full"
+                    className='text-left w-full'
                     disabled={loading}
                   >
-                    <p className="font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide">
+                    <p className='font-bold text-base leading-tight hover:text-primary-600 transition-colors cursor-pointer tracking-wide'>
                       {program.nameEn}
                     </p>
                   </button>
                   {program.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 font-medium">
+                    <p className='text-sm text-muted-foreground line-clamp-2 font-medium'>
                       {program.description}
                     </p>
                   )}
                 </div>
               </TableCell>
-              <TableCell className="py-4">
+              <TableCell className='py-4'>
                 <StatusBadge status={program.status} />
               </TableCell>
-              <TableCell className="py-4 font-mono">
+              <TableCell className='py-4 font-mono'>
                 {program.currencyCode}
               </TableCell>
-              <TableCell className="py-4">
+              <TableCell className='py-4'>
                 {formatAmountRange(program)}
               </TableCell>
-              <TableCell className="py-4">{formatTermRange(program)}</TableCell>
-              <TableCell className="py-4">
+              <TableCell className='py-4'>{formatTermRange(program)}</TableCell>
+              <TableCell className='py-4'>
                 {formatValidityPeriod(program)}
               </TableCell>
-              <TableCell className="w-[100px] py-4">
-                <div className="flex items-center justify-center">
+              <TableCell className='w-[100px] py-4'>
+                <div className='flex items-center justify-center'>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20"
+                        variant='ghost'
+                        size='sm'
+                        className='h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20'
                         aria-label={t('common.actions', {
                           item: program.nameEn,
                         })}
                         disabled={loading}
                       >
-                        <MoreHorizontal className="h-4 w-4" />
+                        <MoreHorizontal className='h-4 w-4' />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                      align="end"
-                      className="shadow-lg border-border/20"
+                      align='end'
+                      className='shadow-lg border-border/20'
                     >
                       <DropdownMenuItem
                         onClick={() => onView(program)}
-                        className="hover:bg-accent focus:bg-accent"
+                        className='hover:bg-accent focus:bg-accent'
                       >
-                        <Eye className="mr-2 h-4 w-4" />
+                        <Eye className='mr-2 h-4 w-4' />
                         {t('common.view')}
                       </DropdownMenuItem>
 
                       {canEdit && (
                         <DropdownMenuItem
                           onClick={() => onEdit(program)}
-                          className="hover:bg-accent focus:bg-accent"
+                          className='hover:bg-accent focus:bg-accent'
                         >
-                          <Edit className="mr-2 h-4 w-4" />
+                          <Edit className='mr-2 h-4 w-4' />
                           {t('common.edit')}
                         </DropdownMenuItem>
                       )}
@@ -342,9 +342,9 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
                           {program.status === 'APPROVED' && onActivate && (
                             <DropdownMenuItem
                               onClick={() => onActivate(program)}
-                              className="hover:bg-green-50 text-green-700"
+                              className='hover:bg-green-50 text-green-700'
                             >
-                              <Play className="mr-2 h-4 w-4" />
+                              <Play className='mr-2 h-4 w-4' />
                               {t('creditProgram.actions.activate')}
                             </DropdownMenuItem>
                           )}
@@ -352,9 +352,9 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
                           {program.status === 'ACTIVE' && onSuspend && (
                             <DropdownMenuItem
                               onClick={() => onSuspend(program)}
-                              className="hover:bg-orange-50 text-orange-700"
+                              className='hover:bg-orange-50 text-orange-700'
                             >
-                              <Pause className="mr-2 h-4 w-4" />
+                              <Pause className='mr-2 h-4 w-4' />
                               {t('creditProgram.actions.suspend')}
                             </DropdownMenuItem>
                           )}
@@ -364,9 +364,9 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
                             onClose && (
                               <DropdownMenuItem
                                 onClick={() => onClose(program)}
-                                className="hover:bg-red-50 text-red-700"
+                                className='hover:bg-red-50 text-red-700'
                               >
-                                <CloseIcon className="mr-2 h-4 w-4" />
+                                <CloseIcon className='mr-2 h-4 w-4' />
                                 {t('creditProgram.actions.close')}
                               </DropdownMenuItem>
                             )}
@@ -378,9 +378,9 @@ export const CreditProgramTable: React.FC<CreditProgramTableProps> = ({
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => onDelete(program)}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className='text-destructive hover:text-destructive hover:bg-destructive/10'
                           >
-                            <Trash className="mr-2 h-4 w-4" />
+                            <Trash className='mr-2 h-4 w-4' />
                             {t('common.delete')}
                           </DropdownMenuItem>
                         </>

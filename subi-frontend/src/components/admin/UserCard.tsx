@@ -86,7 +86,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 status={user.status}
                 isActive={user.isActive}
                 enabled={user.enabled}
-                mode="user"
+                mode='user'
                 className='shrink-0 shadow-sm'
               />
               <DropdownMenu>
@@ -95,7 +95,11 @@ export const UserCard: React.FC<UserCardProps> = ({
                     variant='ghost'
                     size='sm'
                     className='h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg'
-                    aria-label={t('common.actions', { item: user.fullName || `${user.firstName} ${user.lastName}`.trim() })}
+                    aria-label={t('common.actions', {
+                      item:
+                        user.fullName ||
+                        `${user.firstName} ${user.lastName}`.trim(),
+                    })}
                   >
                     <MoreHorizontal className='h-4 w-4' />
                   </Button>

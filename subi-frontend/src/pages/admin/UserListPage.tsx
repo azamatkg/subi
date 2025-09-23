@@ -43,12 +43,7 @@ import { useUserActions } from '@/hooks/useUserActions';
 import { useSearchAndFilterUsersQuery } from '@/store/api/userApi';
 import { PAGINATION } from '@/constants';
 
-type SortField =
-  | 'lastName'
-  | 'username'
-  | 'email'
-  | 'status'
-  | 'createdAt';
+type SortField = 'lastName' | 'username' | 'email' | 'status' | 'createdAt';
 type SortDirection = 'asc' | 'desc';
 
 export const UserListPage: React.FC = () => {
@@ -106,7 +101,6 @@ export const UserListPage: React.FC = () => {
     error: usersError,
   } = useSearchAndFilterUsersQuery(queryParams);
 
-
   // Sorting handlers
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -144,7 +138,7 @@ export const UserListPage: React.FC = () => {
   }
 
   return (
-    <div className='space-y-3 sm:space-y-4 px-4'>
+    <div className='space-y-3 sm:space-y-4'>
       <LiveRegion />
 
       {/* Search and Filter Controls */}
