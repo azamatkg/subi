@@ -65,6 +65,24 @@ import { DecisionMakingBodiesPage } from '@/pages/decisions/DecisionMakingBodies
 // Currency pages
 import { CurrencyListPage } from '@/pages/admin/currencies/CurrencyListPage';
 
+// Credit Purpose pages
+import { CreditPurposeListPage } from '@/pages/admin/credit-purposes/CreditPurposeListPage';
+import { CreditPurposeCreatePage } from '@/pages/admin/credit-purposes/CreditPurposeCreatePage';
+import { CreditPurposeDetailPage } from '@/pages/admin/credit-purposes/CreditPurposeDetailPage';
+import { CreditPurposeEditPage } from '@/pages/admin/credit-purposes/CreditPurposeEditPage';
+
+// Repayment Order pages
+import { RepaymentOrderListPage } from '@/pages/admin/repayment-orders/RepaymentOrderListPage';
+
+// Document Type pages
+import { DocumentTypeListPage } from '@/pages/admin/document-types/DocumentTypeListPage';
+
+// Floating Rate Type pages
+import { FloatingRateTypeListPage } from '@/pages/admin/floating-rate-types/FloatingRateTypeListPage';
+import { FloatingRateTypeCreatePage } from '@/pages/admin/floating-rate-types/FloatingRateTypeCreatePage';
+import { FloatingRateTypeDetailPage } from '@/pages/admin/floating-rate-types/FloatingRateTypeDetailPage';
+import { FloatingRateTypeEditPage } from '@/pages/admin/floating-rate-types/FloatingRateTypeEditPage';
+
 // Error pages
 import { NotFoundPage } from '@/pages/errors/NotFoundPage';
 import { UnauthorizedPage } from '@/pages/errors/UnauthorizedPage';
@@ -333,6 +351,66 @@ export const router = createBrowserRouter([
           {
             path: 'currencies',
             element: <CurrencyListPage />,
+          },
+          {
+            path: 'credit-purposes',
+            children: [
+              {
+                index: true,
+                element: <CreditPurposeListPage />,
+              },
+              {
+                path: 'new',
+                element: <CreditPurposeCreatePage />,
+              },
+              {
+                path: ':id',
+                element: <CreditPurposeDetailPage />,
+              },
+              {
+                path: ':id/edit',
+                element: <CreditPurposeEditPage />,
+              },
+            ],
+          },
+          {
+            path: 'repayment-orders',
+            children: [
+              {
+                index: true,
+                element: <RepaymentOrderListPage />,
+              },
+            ],
+          },
+          {
+            path: 'floating-rate-types',
+            children: [
+              {
+                index: true,
+                element: <FloatingRateTypeListPage />,
+              },
+              {
+                path: 'new',
+                element: <FloatingRateTypeCreatePage />,
+              },
+              {
+                path: ':id',
+                element: <FloatingRateTypeDetailPage />,
+              },
+              {
+                path: ':id/edit',
+                element: <FloatingRateTypeEditPage />,
+              },
+            ],
+          },
+          {
+            path: 'document-types',
+            children: [
+              {
+                index: true,
+                element: <DocumentTypeListPage />,
+              },
+            ],
           },
         ],
       },

@@ -44,10 +44,25 @@
     "creating": "Creating",
     "updating": "Updating",
     "activate": "Activate",
-    "suspend": "Suspend", 
+    "suspend": "Suspend",
     "activating": "Activating...",
     "suspending": "Suspending...",
     "closing": "Closing...",
+    "cardView": "Card View",
+    "tableView": "Table View",
+    "selectStatus": "Select Status",
+    "selectCategory": "Select Category",
+    "selectApplicantType": "Select Applicant Type",
+    "selectPriority": "Select Priority",
+    "selectVerification": "Select Verification",
+    "selectTemplate": "Select Template",
+    "selectOriginal": "Select Original",
+    "activeFilters": "Active Filters",
+    "clearFilters": "Clear Filters",
+    "tryAdjustingFilters": "Try adjusting your filters to see more results",
+    "andMore": "and {count} more",
+    "retry": "Retry",
+    "by": "by",
     "active": "Active",
     "inactive": "Inactive",
     "unlimited": "Unlimited",
@@ -799,6 +814,210 @@
       "noCurrenciesFound": "No currencies found"
     }
   },
+  "creditPurpose": {
+    "title": "Credit Purpose",
+    "creditPurposes": "Credit Purposes",
+    "newCreditPurpose": "New Credit Purpose",
+    "creditPurposeDetails": "Credit Purpose Details",
+    "activeCreditPurposes": "Active Credit Purposes",
+    "searchPlaceholder": "Search credit purposes by name...",
+    "fields": {
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "category": "Category",
+      "status": "Status"
+    },
+    "category": {
+      "consumer": "Consumer",
+      "business": "Business",
+      "agricultural": "Agricultural",
+      "mortgage": "Mortgage",
+      "microfinance": "Microfinance",
+      "corporate": "Corporate",
+      "unknown": "Unknown"
+    },
+    "validation": {
+      "nameEnRequired": "English name is required",
+      "nameRuRequired": "Russian name is required",
+      "nameKgRequired": "Kyrgyz name is required",
+      "categoryRequired": "Category is required",
+      "statusRequired": "Status is required",
+      "nameMaxLength": "Name cannot exceed 100 characters",
+      "descriptionMaxLength": "Description cannot exceed 500 characters"
+    },
+    "messages": {
+      "createSuccess": "Credit purpose created successfully",
+      "updateSuccess": "Credit purpose updated successfully",
+      "deleteSuccess": "Credit purpose deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete the credit purpose '{name}'?",
+      "deleteRestricted": "Cannot delete credit purpose - it is being used by other entities",
+      "loadingCreditPurposes": "Loading credit purposes...",
+      "noCreditPurposesFound": "No credit purposes found"
+    }
+  },
+  "repaymentOrder": {
+    "title": "Repayment Order",
+    "repaymentOrders": "Repayment Orders",
+    "newRepaymentOrder": "New Repayment Order",
+    "editRepaymentOrder": "Edit Repayment Order",
+    "repaymentOrderDetails": "Repayment Order Details",
+    "activeRepaymentOrders": "Active Repayment Orders",
+    "searchPlaceholder": "Search repayment orders by name...",
+    "fields": {
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "priority": "Priority Type",
+      "priorityOrder": "Priority Order",
+      "priorityOrderMin": "Min Priority Order",
+      "priorityOrderMax": "Max Priority Order",
+      "status": "Status"
+    },
+    "priority": {
+      "principal": "Principal",
+      "interest": "Interest",
+      "penalties": "Penalties",
+      "fees": "Fees",
+      "commission": "Commission",
+      "insurance": "Insurance",
+      "other": "Other",
+      "unknown": "Unknown"
+    },
+    "validation": {
+      "nameEnRequired": "English name is required",
+      "nameRuRequired": "Russian name is required",
+      "nameKgRequired": "Kyrgyz name is required",
+      "priorityRequired": "Priority type is required",
+      "priorityOrderRequired": "Priority order is required",
+      "priorityOrderInteger": "Priority order must be a whole number",
+      "priorityOrderMin": "Priority order must be at least 1",
+      "priorityOrderMax": "Priority order cannot exceed 100",
+      "statusRequired": "Status is required",
+      "nameMaxLength": "Name cannot exceed 100 characters",
+      "descriptionMaxLength": "Description cannot exceed 500 characters",
+      "nameEnExists": "A repayment order with this English name already exists",
+      "nameRuExists": "A repayment order with this Russian name already exists",
+      "nameKgExists": "A repayment order with this Kyrgyz name already exists",
+      "priorityOrderExists": "A repayment order with this priority order already exists"
+    },
+    "messages": {
+      "createSuccess": "Repayment order created successfully",
+      "updateSuccess": "Repayment order updated successfully",
+      "deleteSuccess": "Repayment order deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete the repayment order '{name}'?",
+      "deleteRestricted": "Cannot delete repayment order - it is being used by other entities",
+      "loadingRepaymentOrders": "Loading repayment orders...",
+      "noRepaymentOrdersFound": "No repayment orders found"
+    }
+  },
+  "documentType": {
+    "title": "Document Type",
+    "documentTypes": "Document Types",
+    "newDocumentType": "New Document Type",
+    "documentTypeDetails": "Document Type Details",
+    "activeDocumentTypes": "Active Document Types",
+    "searchPlaceholder": "Search document types by name...",
+    "description": "Manage document types, requirements, and metadata",
+    "advancedFilters": "Advanced Filters",
+    "clearAdvancedFilters": "Clear Advanced",
+    "fields": {
+      "name": "Name",
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "category": "Category",
+      "applicantType": "Applicant Type",
+      "priority": "Priority",
+      "status": "Status",
+      "verificationLevel": "Verification Level",
+      "features": "Features"
+    },
+    "category": {
+      "identity": "Identity",
+      "financial": "Financial",
+      "legal": "Legal",
+      "collateral": "Collateral",
+      "insurance": "Insurance",
+      "business": "Business",
+      "personal": "Personal",
+      "guarantor": "Guarantor",
+      "other": "Other",
+      "unknown": "Unknown"
+    },
+    "applicantType": {
+      "individual": "Individual",
+      "legal_entity": "Legal Entity",
+      "sole_proprietor": "Sole Proprietor",
+      "guarantor": "Guarantor",
+      "all": "All Types",
+      "unknown": "Unknown"
+    },
+    "priority": {
+      "mandatory": "Mandatory",
+      "optional": "Optional",
+      "conditional": "Conditional",
+      "unknown": "Unknown"
+    },
+    "verification": {
+      "none": "None",
+      "basic": "Basic",
+      "enhanced": "Enhanced",
+      "notarized": "Notarized",
+      "unknown": "Unknown"
+    },
+    "features": {
+      "hasTemplate": "Has Template",
+      "requiresOriginal": "Requires Original",
+      "template": "Template",
+      "original": "Original",
+      "autoVerify": "Auto Verify"
+    },
+    "actions": {
+      "downloadTemplate": "Download Template",
+      "duplicate": "Duplicate"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameEnRequired": "English name is required",
+      "nameRuRequired": "Russian name is required",
+      "nameKgRequired": "Kyrgyz name is required",
+      "categoryRequired": "Category is required",
+      "applicantTypeRequired": "Applicant type is required",
+      "priorityRequired": "Priority is required",
+      "verificationLevelRequired": "Verification level is required",
+      "statusRequired": "Status is required",
+      "nameMaxLength": "Name cannot exceed 100 characters",
+      "descriptionMaxLength": "Description cannot exceed 500 characters"
+    },
+    "messages": {
+      "createSuccess": "Document type created successfully",
+      "updateSuccess": "Document type updated successfully",
+      "deleteSuccess": "Document type deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete the document type '{name}'?",
+      "deleteRestricted": "Cannot delete document type - it is being used by other entities",
+      "loadingDocumentTypes": "Loading document types...",
+      "noDocumentTypesFound": "No document types found",
+      "noDocumentTypesDescription": "Create the first document type to get started",
+      "errorLoading": "Error loading document types"
+    },
+    "deleteDialog": {
+      "title": "Delete Document Type",
+      "warning": "This action cannot be undone. The document type will be permanently removed from the system.",
+      "warningReferenced": "This document type cannot be deleted because it is currently being used.",
+      "referencedBy": "This document type is referenced by {count} other entities",
+      "referenceDetails": "Referenced by",
+      "cannotDelete": "To delete this document type, you must first remove these references.",
+      "consequences": "Deleting this document type will",
+      "consequenceData": "Remove all associated configuration data",
+      "consequenceTemplates": "Delete any associated document templates",
+      "consequenceApplications": "Affect applications that use this document type",
+      "consequenceHistory": "Remove historical records associated with this type"
+    }
+  },
   "validation": {
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
@@ -819,6 +1038,77 @@
     "seconds": "second(s)",
     "ago": "{{count}} {{unit}} ago",
     "justNow": "just now"
+  },
+  "floatingRateType": {
+    "title": "Floating Rate Type",
+    "floatingRateTypes": "Floating Rate Types",
+    "newFloatingRateType": "New Floating Rate Type",
+    "editFloatingRateType": "Edit Floating Rate Type",
+    "floatingRateTypeDetails": "Floating Rate Type Details",
+    "activeFloatingRateTypes": "Active Floating Rate Types",
+    "searchPlaceholder": "Search floating rate types by name...",
+    "subtitle": "Manage floating interest rate types and calculation methods",
+    "createDescription": "Create a new floating rate type for interest rate calculations",
+    "createFirst": "Create First Floating Rate Type",
+    "fields": {
+      "name": "Name",
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "rateCalculationType": "Rate Calculation Type",
+      "baseRateDescription": "Base Rate Description",
+      "spreadMin": "Minimum Spread (%)",
+      "spreadMax": "Maximum Spread (%)",
+      "spreadRange": "Spread Range",
+      "status": "Status"
+    },
+    "placeholders": {
+      "nameEn": "Enter name in English",
+      "nameRu": "Enter name in Russian",
+      "nameKg": "Enter name in Kyrgyz",
+      "description": "Enter description (optional)",
+      "rateCalculationType": "Select rate calculation type",
+      "baseRateDescription": "Describe the base rate calculation method",
+      "status": "Select status"
+    },
+    "descriptions": {
+      "spreadMin": "Minimum spread percentage for this rate type",
+      "spreadMax": "Maximum spread percentage for this rate type"
+    },
+    "sections": {
+      "rateConfiguration": "Rate Configuration"
+    },
+    "rateCalculationTypes": {
+      "fixed_spread": "Fixed Spread",
+      "variable_spread": "Variable Spread",
+      "base_rate_plus": "Base Rate Plus",
+      "market_linked": "Market Linked",
+      "indexed": "Indexed",
+      "tiered": "Tiered"
+    },
+    "filters": {
+      "selectStatus": "Select status",
+      "selectRateCalculationType": "Select rate calculation type"
+    },
+    "messages": {
+      "noResults": "No floating rate types found",
+      "noResultsDescription": "Try adjusting your search criteria or filters",
+      "empty": "No floating rate types yet",
+      "emptyDescription": "Get started by creating your first floating rate type",
+      "loadError": "Failed to load floating rate types",
+      "notFound": "Floating rate type not found",
+      "createSuccess": "Floating rate type created successfully",
+      "updateSuccess": "Floating rate type updated successfully",
+      "deleteSuccess": "Floating rate type deleted successfully",
+      "deleteRestricted": "Cannot delete floating rate type - it is referenced by other entities"
+    },
+    "deleteDialog": {
+      "title": "Delete Floating Rate Type",
+      "message": "Are you sure you want to delete this floating rate type?",
+      "referencedWarning": "This floating rate type is referenced by {count} other entities and cannot be deleted. Please remove these references first.",
+      "finalWarning": "This action cannot be undone and will permanently remove the floating rate type from the system."
+    }
   },
   "errors": {
     "notFound": "Page not found",

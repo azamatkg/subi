@@ -55,7 +55,7 @@ export const ReferencesPage: React.FC = () => {
       description: 'Define available credit purposes and categories',
       icon: CreditCard,
       route: '/admin/credit-purposes',
-      status: 'development',
+      status: 'available',
       adminOnly: false,
     },
     {
@@ -64,7 +64,7 @@ export const ReferencesPage: React.FC = () => {
       description: 'Configure document types and requirements',
       icon: FileText,
       route: '/admin/document-types',
-      status: 'development',
+      status: 'available',
       adminOnly: false,
     },
     {
@@ -92,6 +92,15 @@ export const ReferencesPage: React.FC = () => {
       icon: TrendingUp,
       route: '/admin/floating-rate-types',
       status: 'development',
+      adminOnly: false,
+    },
+    {
+      id: 'repaymentOrders',
+      name: t('references.entities.repaymentOrders'),
+      description: 'Define repayment order rules and schedules',
+      icon: CreditCard,
+      route: '/admin/repayment-orders',
+      status: 'available',
       adminOnly: false,
     },
   ];

@@ -738,6 +738,210 @@
       "noCurrenciesFound": "Валюты не найдены"
     }
   },
+  "creditPurpose": {
+    "title": "Цель кредита",
+    "creditPurposes": "Цели кредитования",
+    "newCreditPurpose": "Новая цель кредита",
+    "creditPurposeDetails": "Детали цели кредита",
+    "activeCreditPurposes": "Активные цели кредитования",
+    "searchPlaceholder": "Поиск целей кредитования по названию...",
+    "fields": {
+      "nameEn": "Название (Английский)",
+      "nameRu": "Название (Русский)",
+      "nameKg": "Название (Кыргызский)",
+      "description": "Описание",
+      "category": "Категория",
+      "status": "Статус"
+    },
+    "category": {
+      "consumer": "Потребительский",
+      "business": "Бизнес",
+      "agricultural": "Сельскохозяйственный",
+      "mortgage": "Ипотечный",
+      "microfinance": "Микрофинансирование",
+      "corporate": "Корпоративный",
+      "unknown": "Неизвестно"
+    },
+    "validation": {
+      "nameEnRequired": "Английское название обязательно",
+      "nameRuRequired": "Русское название обязательно",
+      "nameKgRequired": "Кыргызское название обязательно",
+      "categoryRequired": "Категория обязательна",
+      "statusRequired": "Статус обязателен",
+      "nameMaxLength": "Название не может превышать 100 символов",
+      "descriptionMaxLength": "Описание не может превышать 500 символов"
+    },
+    "messages": {
+      "createSuccess": "Цель кредита успешно создана",
+      "updateSuccess": "Цель кредита успешно обновлена",
+      "deleteSuccess": "Цель кредита успешно удалена",
+      "deleteConfirm": "Вы уверены, что хотите удалить цель кредита '{name}'?",
+      "deleteRestricted": "Невозможно удалить цель кредита - она используется другими сущностями",
+      "loadingCreditPurposes": "Загрузка целей кредитования...",
+      "noCreditPurposesFound": "Цели кредитования не найдены"
+    }
+  },
+  "repaymentOrder": {
+    "title": "Порядок погашения",
+    "repaymentOrders": "Порядки погашения",
+    "newRepaymentOrder": "Новый порядок погашения",
+    "editRepaymentOrder": "Редактировать порядок погашения",
+    "repaymentOrderDetails": "Детали порядка погашения",
+    "activeRepaymentOrders": "Активные порядки погашения",
+    "searchPlaceholder": "Поиск порядков погашения по названию...",
+    "fields": {
+      "nameEn": "Название (английский)",
+      "nameRu": "Название (русский)",
+      "nameKg": "Название (кыргызский)",
+      "description": "Описание",
+      "priority": "Тип приоритета",
+      "priorityOrder": "Номер приоритета",
+      "priorityOrderMin": "Мин. номер приоритета",
+      "priorityOrderMax": "Макс. номер приоритета",
+      "status": "Статус"
+    },
+    "priority": {
+      "principal": "Основной долг",
+      "interest": "Проценты",
+      "penalties": "Штрафы",
+      "fees": "Комиссии",
+      "commission": "Комиссия",
+      "insurance": "Страхование",
+      "other": "Прочее",
+      "unknown": "Неизвестно"
+    },
+    "validation": {
+      "nameEnRequired": "Требуется название на английском",
+      "nameRuRequired": "Требуется название на русском",
+      "nameKgRequired": "Требуется название на кыргызском",
+      "priorityRequired": "Требуется тип приоритета",
+      "priorityOrderRequired": "Требуется номер приоритета",
+      "priorityOrderInteger": "Номер приоритета должен быть целым числом",
+      "priorityOrderMin": "Номер приоритета должен быть не менее 1",
+      "priorityOrderMax": "Номер приоритета не может превышать 100",
+      "statusRequired": "Требуется статус",
+      "nameMaxLength": "Название не может превышать 100 символов",
+      "descriptionMaxLength": "Описание не может превышать 500 символов",
+      "nameEnExists": "Порядок погашения с таким названием на английском уже существует",
+      "nameRuExists": "Порядок погашения с таким названием на русском уже существует",
+      "nameKgExists": "Порядок погашения с таким названием на кыргызском уже существует",
+      "priorityOrderExists": "Порядок погашения с таким номером приоритета уже существует"
+    },
+    "messages": {
+      "createSuccess": "Порядок погашения успешно создан",
+      "updateSuccess": "Порядок погашения успешно обновлен",
+      "deleteSuccess": "Порядок погашения успешно удален",
+      "deleteConfirm": "Вы уверены, что хотите удалить порядок погашения '{name}'?",
+      "deleteRestricted": "Невозможно удалить порядок погашения - он используется другими сущностями",
+      "loadingRepaymentOrders": "Загрузка порядков погашения...",
+      "noRepaymentOrdersFound": "Порядки погашения не найдены"
+    }
+  },
+  "documentType": {
+    "title": "Тип документа",
+    "documentTypes": "Типы документов",
+    "newDocumentType": "Новый тип документа",
+    "documentTypeDetails": "Детали типа документа",
+    "activeDocumentTypes": "Активные типы документов",
+    "searchPlaceholder": "Поиск типов документов по названию...",
+    "description": "Управление типами документов, требованиями и метаданными",
+    "advancedFilters": "Расширенные фильтры",
+    "clearAdvancedFilters": "Очистить расширенные",
+    "fields": {
+      "name": "Название",
+      "nameEn": "Название (английский)",
+      "nameRu": "Название (русский)",
+      "nameKg": "Название (кыргызский)",
+      "description": "Описание",
+      "category": "Категория",
+      "applicantType": "Тип заявителя",
+      "priority": "Приоритет",
+      "status": "Статус",
+      "verificationLevel": "Уровень верификации",
+      "features": "Особенности"
+    },
+    "category": {
+      "identity": "Удостоверение личности",
+      "financial": "Финансовый",
+      "legal": "Юридический",
+      "collateral": "Залог",
+      "insurance": "Страхование",
+      "business": "Бизнес",
+      "personal": "Личный",
+      "guarantor": "Гарант",
+      "other": "Другое",
+      "unknown": "Неизвестно"
+    },
+    "applicantType": {
+      "individual": "Физическое лицо",
+      "legal_entity": "Юридическое лицо",
+      "sole_proprietor": "Индивидуальный предприниматель",
+      "guarantor": "Гарант",
+      "all": "Все типы",
+      "unknown": "Неизвестно"
+    },
+    "priority": {
+      "mandatory": "Обязательный",
+      "optional": "Необязательный",
+      "conditional": "Условный",
+      "unknown": "Неизвестно"
+    },
+    "verification": {
+      "none": "Нет",
+      "basic": "Базовая",
+      "enhanced": "Расширенная",
+      "notarized": "Нотариальная",
+      "unknown": "Неизвестно"
+    },
+    "features": {
+      "hasTemplate": "Есть шаблон",
+      "requiresOriginal": "Требует оригинал",
+      "template": "Шаблон",
+      "original": "Оригинал",
+      "autoVerify": "Автопроверка"
+    },
+    "actions": {
+      "downloadTemplate": "Скачать шаблон",
+      "duplicate": "Дублировать"
+    },
+    "validation": {
+      "nameRequired": "Название обязательно",
+      "nameEnRequired": "Название на английском обязательно",
+      "nameRuRequired": "Название на русском обязательно",
+      "nameKgRequired": "Название на кыргызском обязательно",
+      "categoryRequired": "Категория обязательна",
+      "applicantTypeRequired": "Тип заявителя обязателен",
+      "priorityRequired": "Приоритет обязателен",
+      "verificationLevelRequired": "Уровень верификации обязателен",
+      "statusRequired": "Статус обязателен",
+      "nameMaxLength": "Название не может превышать 100 символов",
+      "descriptionMaxLength": "Описание не может превышать 500 символов"
+    },
+    "messages": {
+      "createSuccess": "Тип документа успешно создан",
+      "updateSuccess": "Тип документа успешно обновлен",
+      "deleteSuccess": "Тип документа успешно удален",
+      "deleteConfirm": "Вы уверены, что хотите удалить тип документа '{name}'?",
+      "deleteRestricted": "Невозможно удалить тип документа - он используется другими сущностями",
+      "loadingDocumentTypes": "Загрузка типов документов...",
+      "noDocumentTypesFound": "Типы документов не найдены",
+      "noDocumentTypesDescription": "Создайте первый тип документа для начала работы",
+      "errorLoading": "Ошибка загрузки типов документов"
+    },
+    "deleteDialog": {
+      "title": "Удалить тип документа",
+      "warning": "Это действие нельзя отменить. Тип документа будет окончательно удален из системы.",
+      "warningReferenced": "Этот тип документа нельзя удалить, поскольку он в настоящее время используется.",
+      "referencedBy": "Этот тип документа используется {count} другими сущностями",
+      "referenceDetails": "Используется в",
+      "cannotDelete": "Чтобы удалить этот тип документа, сначала необходимо удалить эти ссылки.",
+      "consequences": "Удаление этого типа документа приведет к",
+      "consequenceData": "Удалению всех связанных данных конфигурации",
+      "consequenceTemplates": "Удалению всех связанных шаблонов документов",
+      "consequenceApplications": "Влиянию на заявки, использующие этот тип документа",
+      "consequenceHistory": "Удалению исторических записей, связанных с этим типом"
+    }
+  },
   "validation": {
     "required": "Это поле обязательно",
     "invalidEmail": "Неверный адрес электронной почты",
@@ -809,6 +1013,77 @@
     "fields": {
       "name": "Название",
       "description": "Описание"
+    }
+  },
+  "floatingRateType": {
+    "title": "Тип плавающей ставки",
+    "floatingRateTypes": "Типы плавающих ставок",
+    "newFloatingRateType": "Новый тип плавающей ставки",
+    "editFloatingRateType": "Редактировать тип плавающей ставки",
+    "floatingRateTypeDetails": "Детали типа плавающей ставки",
+    "activeFloatingRateTypes": "Активные типы плавающих ставок",
+    "searchPlaceholder": "Поиск типов плавающих ставок по названию...",
+    "subtitle": "Управление типами плавающих процентных ставок и методами расчета",
+    "createDescription": "Создать новый тип плавающей ставки для расчета процентных ставок",
+    "createFirst": "Создать первый тип плавающей ставки",
+    "fields": {
+      "name": "Название",
+      "nameEn": "Название (английский)",
+      "nameRu": "Название (русский)",
+      "nameKg": "Название (кыргызский)",
+      "description": "Описание",
+      "rateCalculationType": "Тип расчета ставки",
+      "baseRateDescription": "Описание базовой ставки",
+      "spreadMin": "Минимальная надбавка (%)",
+      "spreadMax": "Максимальная надбавка (%)",
+      "spreadRange": "Диапазон надбавки",
+      "status": "Статус"
+    },
+    "placeholders": {
+      "nameEn": "Введите название на английском",
+      "nameRu": "Введите название на русском",
+      "nameKg": "Введите название на кыргызском",
+      "description": "Введите описание (необязательно)",
+      "rateCalculationType": "Выберите тип расчета ставки",
+      "baseRateDescription": "Опишите метод расчета базовой ставки",
+      "status": "Выберите статус"
+    },
+    "descriptions": {
+      "spreadMin": "Минимальный процент надбавки для этого типа ставки",
+      "spreadMax": "Максимальный процент надбавки для этого типа ставки"
+    },
+    "sections": {
+      "rateConfiguration": "Конфигурация ставки"
+    },
+    "rateCalculationTypes": {
+      "fixed_spread": "Фиксированная надбавка",
+      "variable_spread": "Переменная надбавка",
+      "base_rate_plus": "Базовая ставка плюс",
+      "market_linked": "Привязанная к рынку",
+      "indexed": "Индексированная",
+      "tiered": "Многоуровневая"
+    },
+    "filters": {
+      "selectStatus": "Выберите статус",
+      "selectRateCalculationType": "Выберите тип расчета ставки"
+    },
+    "messages": {
+      "noResults": "Типы плавающих ставок не найдены",
+      "noResultsDescription": "Попробуйте изменить критерии поиска или фильтры",
+      "empty": "Пока нет типов плавающих ставок",
+      "emptyDescription": "Начните с создания первого типа плавающей ставки",
+      "loadError": "Не удалось загрузить типы плавающих ставок",
+      "notFound": "Тип плавающей ставки не найден",
+      "createSuccess": "Тип плавающей ставки успешно создан",
+      "updateSuccess": "Тип плавающей ставки успешно обновлен",
+      "deleteSuccess": "Тип плавающей ставки успешно удален",
+      "deleteRestricted": "Невозможно удалить тип плавающей ставки - он используется другими объектами"
+    },
+    "deleteDialog": {
+      "title": "Удалить тип плавающей ставки",
+      "message": "Вы уверены, что хотите удалить этот тип плавающей ставки?",
+      "referencedWarning": "Этот тип плавающей ставки используется {count} другими объектами и не может быть удален. Пожалуйста, сначала удалите эти ссылки.",
+      "finalWarning": "Это действие нельзя отменить и оно навсегда удалит тип плавающей ставки из системы."
     }
   }
 }

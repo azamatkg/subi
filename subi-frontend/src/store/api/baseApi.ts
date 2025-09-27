@@ -95,6 +95,7 @@ export const baseApi = createApi({
     'Currency',
     'CreditPurpose',
     'DocumentType',
+    'RepaymentOrder',
     'User',
     'Role',
     'Permission',
