@@ -47,9 +47,11 @@ import { UserManagementPage } from '@/pages/admin/UserManagementPage';
 import { UserListPage } from '@/pages/admin/UserListPage';
 import { UserDetailPage } from '@/pages/admin/UserDetailPage';
 import { UserAddEditPage } from '@/pages/admin/UserAddEditPage';
+import { RoleDetailPage } from '@/pages/admin/RoleDetailPage';
 import { ReferenceDataPage } from '@/pages/admin/ReferenceDataPage';
 import { SystemConfigPage } from '@/pages/admin/SystemConfigPage';
 import { ReferencesPage } from '@/pages/admin/ReferencesPage';
+import { ReferenceListPage } from '@/pages/admin/ReferenceListPage';
 import { SystemSettingsPage } from '@/pages/admin/SystemSettingsPage';
 
 // Decision pages
@@ -59,6 +61,9 @@ import { DecisionDetailPage } from '@/pages/decisions/DecisionDetailPage';
 import { DecisionEditPage } from '@/pages/decisions/DecisionEditPage';
 import { DecisionTypesPage } from '@/pages/decisions/DecisionTypesPage';
 import { DecisionMakingBodiesPage } from '@/pages/decisions/DecisionMakingBodiesPage';
+
+// Currency pages
+import { CurrencyListPage } from '@/pages/admin/currencies/CurrencyListPage';
 
 // Error pages
 import { NotFoundPage } from '@/pages/errors/NotFoundPage';
@@ -289,8 +294,21 @@ export const router = createBrowserRouter([
             ],
           },
           {
+            path: 'roles',
+            children: [
+              {
+                path: ':id',
+                element: <RoleDetailPage />,
+              },
+            ],
+          },
+          {
             path: 'references',
             element: <ReferencesPage />,
+          },
+          {
+            path: 'reference-list',
+            element: <ReferenceListPage />,
           },
           {
             path: 'settings',
@@ -311,6 +329,10 @@ export const router = createBrowserRouter([
           {
             path: 'decision-making-bodies',
             element: <DecisionMakingBodiesPage />,
+          },
+          {
+            path: 'currencies',
+            element: <CurrencyListPage />,
           },
         ],
       },

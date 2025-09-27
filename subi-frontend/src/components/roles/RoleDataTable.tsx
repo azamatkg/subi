@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal, Edit, Trash2, Shield, Calendar, Key } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Shield, Calendar, Key, Eye } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -29,8 +29,10 @@ import {
 } from '@/components/ui/tooltip';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { RoleResponseDto, SystemRoles } from '@/types/role';
 import { formatDate } from '@/utils/date';
+import { ROUTES } from '@/constants';
 
 type SortField = 'name' | 'createdAt' | 'permissions';
 
@@ -55,6 +57,7 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const { hasAnyRole } = useAuth();
+  const navigate = useNavigate();
 
   const isSystemRole = (roleName: string) => {
     return SystemRoles.includes(roleName as typeof SystemRoles[number]);
@@ -77,6 +80,10 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
       default:
         return 'outline';
     }
+  };
+
+  const handleViewDetails = (role: RoleResponseDto) => {
+    navigate(`${ROUTES.ADMIN}/roles/${role.id}`);
   };
 
   if (isLoading) {
@@ -242,14 +249,24 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="shadow-lg border-border/20">
+                    <DropdownMenuItem
+                      onClick={() => handleViewDetails(role)}
+                      className="hover:bg-accent focus:bg-accent"
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      {t('roleManagement.viewDetails')}
+                    </DropdownMenuItem>
                     {hasAnyRole(['ADMIN']) && (
-                      <DropdownMenuItem
-                        onClick={() => onEdit(role)}
-                        className="hover:bg-accent focus:bg-accent"
-                      >
-                        <Edit className="mr-2 h-4 w-4" />
-                        {t('roleManagement.editRole')}
-                      </DropdownMenuItem>
+                      <>
+                        <Separator />
+                        <DropdownMenuItem
+                          onClick={() => onEdit(role)}
+                          className="hover:bg-accent focus:bg-accent"
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          {t('roleManagement.editRole')}
+                        </DropdownMenuItem>
+                      </>
                     )}
                     {hasAnyRole(['ADMIN']) && !isSystemRole(role.name) && (
                       <>

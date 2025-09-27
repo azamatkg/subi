@@ -510,6 +510,22 @@
       "customRoles": "Custom Roles",
       "noDescription": "No description",
       "type": "Type",
+      "viewDetails": "View Details",
+      "roleInformation": "Role Information",
+      "roleId": "Role ID",
+      "lastUpdated": "Last Updated",
+      "metadata": "Metadata",
+      "assignedUsers": "Assigned Users",
+      "customRole": "Custom Role",
+      "permissions": "permissions",
+      "permissionsCount": "{count} permissions",
+      "noPermissions": "No permissions assigned",
+      "noPermissionsDescription": "This role has no permissions assigned to it.",
+      "userListNotAvailable": "User list not available",
+      "userListNotAvailableDescription": "The list of users assigned to this role is not currently available.",
+      "roleActivity": "Role Activity",
+      "activityNotAvailable": "Activity not available",
+      "activityNotAvailableDescription": "Role activity tracking is not currently available.",
       "fields": {
         "name": "Name",
         "permissions": "Permissions"
@@ -647,6 +663,140 @@
       "descriptionMaxLength": "Description cannot exceed 500 characters",
       "invalidDateFormat": "Date must be in YYYY-MM-DD format",
       "invalidUuid": "Document package ID must be a valid UUID"
+    }
+  },
+  "references": {
+    "title": "Reference Data Management",
+    "description": "Manage system reference data and lookups",
+    "entities": {
+      "currencies": "Currencies",
+      "creditPurposes": "Credit Purposes",
+      "documentTypes": "Document Types",
+      "decisionMakingBodies": "Decision Making Bodies",
+      "decisionTypes": "Decision Types",
+      "floatingRateTypes": "Floating Rate Types",
+      "repaymentOrders": "Repayment Orders"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "fields": {
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "status": "Status",
+      "code": "Code",
+      "created": "Created",
+      "updated": "Updated"
+    },
+    "actions": {
+      "create": "Create New",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View Details"
+    },
+    "list": {
+      "title": "All Reference Data",
+      "description": "Manage all system reference entities in one place",
+      "searchPlaceholder": "Search reference entities by name or type...",
+      "advancedFilters": "Advanced Filters",
+      "entityType": "Entity Type",
+      "availability": "Availability",
+      "available": "Available",
+      "notAvailable": "Not Available",
+      "adminOnly": "Admin Only",
+      "publicAccess": "Public Access",
+      "dateRange": "Date Range",
+      "createdDate": "Created Date",
+      "updatedDate": "Updated Date",
+      "from": "From",
+      "to": "To",
+      "filterBy": "Filter by",
+      "sortBy": "Sort by",
+      "bulkActions": "Bulk Actions",
+      "selectedItems": "{count} selected",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "export": "Export",
+      "exportCsv": "Export as CSV",
+      "exportExcel": "Export as Excel"
+    },
+    "filters": {
+      "entityTypes": {
+        "currencies": "Currencies",
+        "creditPurposes": "Credit Purposes",
+        "documentTypes": "Document Types",
+        "decisionMakingBodies": "Decision Making Bodies",
+        "decisionTypes": "Decision Types",
+        "floatingRateTypes": "Floating Rate Types",
+        "repaymentOrders": "Repayment Orders"
+      }
+    },
+    "messages": {
+      "noResults": "No reference entities found",
+      "noResultsFiltered": "No reference entities match your current filters",
+      "confirmDelete": "Are you sure you want to delete {item}?",
+      "confirmBulkDelete": "Are you sure you want to delete {count} reference entities?",
+      "confirmBulkActivate": "Are you sure you want to activate {count} reference entities?",
+      "confirmBulkDeactivate": "Are you sure you want to deactivate {count} reference entities?",
+      "deleteSuccess": "Reference entity deleted successfully",
+      "createSuccess": "Reference entity created successfully",
+      "updateSuccess": "Reference entity updated successfully",
+      "statusUpdateSuccess": "Status updated successfully",
+      "statusUpdateError": "Failed to update status",
+      "bulkDeleteSuccess": "{count} reference entities deleted successfully",
+      "bulkStatusUpdateActivateSuccess": "{count} reference entities activated successfully",
+      "bulkStatusUpdateDeactivateSuccess": "{count} reference entities deactivated successfully",
+      "bulkActionError": "Failed to perform bulk action",
+      "deleteError": "Failed to delete reference entity",
+      "referenced": "Cannot delete - item is referenced by other entities",
+      "referencedBy": "Referenced by: {entities}",
+      "exportNotImplemented": "Export functionality coming soon",
+      "loadingReferences": "Loading reference entities...",
+      "dateRangeError": "From date must be before to date",
+      "selectTypeToCreate": "Please select a reference type to create new items",
+      "comingSoon": "This reference type is not yet available"
+    }
+  },
+  "currency": {
+    "title": "Currency",
+    "currencies": "Currencies",
+    "newCurrency": "New Currency",
+    "currencyDetails": "Currency Details",
+    "activeCurrencies": "Active Currencies",
+    "searchPlaceholder": "Search currencies by name or code...",
+    "fields": {
+      "code": "Currency Code",
+      "nameEn": "Name (English)",
+      "nameRu": "Name (Russian)",
+      "nameKg": "Name (Kyrgyz)",
+      "description": "Description",
+      "status": "Status"
+    },
+    "validation": {
+      "codeRequired": "Currency code is required",
+      "codeLength": "Currency code must be exactly 3 characters",
+      "codeFormat": "Currency code must contain only uppercase letters",
+      "nameEnRequired": "English name is required",
+      "nameRuRequired": "Russian name is required",
+      "nameKgRequired": "Kyrgyz name is required",
+      "statusRequired": "Status is required",
+      "codeExists": "Currency code already exists",
+      "nameMaxLength": "Name cannot exceed 100 characters",
+      "descriptionMaxLength": "Description cannot exceed 500 characters"
+    },
+    "messages": {
+      "createSuccess": "Currency created successfully",
+      "updateSuccess": "Currency updated successfully",
+      "deleteSuccess": "Currency deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete the currency '{name}'?",
+      "deleteRestricted": "Cannot delete currency - it is being used by other entities",
+      "loadingCurrencies": "Loading currencies...",
+      "noCurrenciesFound": "No currencies found"
     }
   },
   "validation": {

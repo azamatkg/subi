@@ -444,6 +444,22 @@
       "customRoles": "Колдонуучу ролдору",
       "noDescription": "Сыпаттама жок",
       "type": "Түрү",
+      "viewDetails": "Деталдарды көрүү",
+      "roleInformation": "Рол жөнүндө маалымат",
+      "roleId": "Ролдун ID",
+      "lastUpdated": "Акыркы жаңылоо",
+      "metadata": "Метамаалыматтар",
+      "assignedUsers": "Дайындалган колдонуучулар",
+      "customRole": "Колдонуучу ролу",
+      "permissions": "уруксаттар",
+      "permissionsCount": "{count} уруксат",
+      "noPermissions": "Уруксаттар дайындалган жок",
+      "noPermissionsDescription": "Бул ролго уруксаттар дайындалган жок.",
+      "userListNotAvailable": "Колдонуучулардын тизмеси жеткиликсиз",
+      "userListNotAvailableDescription": "Бул ролго дайындалган колдонуучулардын тизмеси азыркы учурда жеткиликсиз.",
+      "roleActivity": "Ролдун активдүүлүгү",
+      "activityNotAvailable": "Активдүүлүк жеткиликсиз",
+      "activityNotAvailableDescription": "Ролдун активдүүлүгүн көзөмөлдөө азыркы учурда жеткиликсиз.",
       "fields": {
         "name": "Аталышы",
         "permissions": "Уруксаттар"
@@ -580,6 +596,84 @@
       "descriptionMaxLength": "Сүрөттөмөсү 500 символдон ашпашы керек",
       "invalidDateFormat": "Дата ЖЖЖЖ-АА-КК форматында болушу керек",
       "invalidUuid": "Документтер пакетинин ID жарактуу UUID болушу керек"
+    }
+  },
+  "references": {
+    "title": "Маалымат базаларын башкаруу",
+    "description": "Системалык маалымат базаларын жана маалыматтарды башкаруу",
+    "entities": {
+      "currencies": "Валюталар",
+      "creditPurposes": "Кредиттин максаттары",
+      "documentTypes": "Документтердин түрлөрү",
+      "decisionMakingBodies": "Чечим кабыл алуучу органдар",
+      "decisionTypes": "Чечимдердин түрлөрү",
+      "floatingRateTypes": "Калкыган процент түрлөрү",
+      "repaymentOrders": "Төлөм тартиби"
+    },
+    "status": {
+      "active": "Активдүү",
+      "inactive": "Активдүү эмес"
+    },
+    "fields": {
+      "nameEn": "Аталышы (Англисче)",
+      "nameRu": "Аталышы (Орусча)",
+      "nameKg": "Аталышы (Кыргызча)",
+      "description": "Сүрөттөмө",
+      "status": "Статус",
+      "code": "Код",
+      "created": "Түзүлгөн",
+      "updated": "Жаңыланган"
+    },
+    "actions": {
+      "create": "Жаңы түзүү",
+      "edit": "Өзгөртүү",
+      "delete": "Өчүрүү",
+      "view": "Деталдарды көрүү"
+    },
+    "messages": {
+      "noResults": "Элементтер табылган жок",
+      "confirmDelete": "Сиз чындыгында {item} өчүргүңүз келеби?",
+      "deleteSuccess": "Элемент ийгиликтүү өчүрүлдү",
+      "createSuccess": "Элемент ийгиликтүү түзүлдү",
+      "updateSuccess": "Элемент ийгиликтүү жаңыланды",
+      "referenced": "Өчүрүү мүмкүн эмес - элемент башка түзүмдөр тарабынан колдонулууда"
+    }
+  },
+  "currency": {
+    "title": "Валюта",
+    "currencies": "Валюталар",
+    "newCurrency": "Жаңы валюта",
+    "currencyDetails": "Валютанын деталдары",
+    "activeCurrencies": "Активдүү валюталар",
+    "searchPlaceholder": "Валюталарды аталышы же коду боюнча издөө...",
+    "fields": {
+      "code": "Валютанын коду",
+      "nameEn": "Аталышы (Англисче)",
+      "nameRu": "Аталышы (Орусча)",
+      "nameKg": "Аталышы (Кыргызча)",
+      "description": "Сүрөттөмө",
+      "status": "Статус"
+    },
+    "validation": {
+      "codeRequired": "Валютанын коду милдеттүү",
+      "codeLength": "Валютанын коду так 3 символ болушу керек",
+      "codeFormat": "Валютанын коду чоң тамгалардан гана турушу керек",
+      "nameEnRequired": "Англисче аталышы милдеттүү",
+      "nameRuRequired": "Орусча аталышы милдеттүү",
+      "nameKgRequired": "Кыргызча аталышы милдеттүү",
+      "statusRequired": "Статус милдеттүү",
+      "codeExists": "Валютанын коду мурда эле бар",
+      "nameMaxLength": "Аталышы 100 символдон ашпашы керек",
+      "descriptionMaxLength": "Сүрөттөмө 500 символдон ашпашы керек"
+    },
+    "messages": {
+      "createSuccess": "Валюта ийгиликтүү түзүлдү",
+      "updateSuccess": "Валюта ийгиликтүү жаңыланды",
+      "deleteSuccess": "Валюта ийгиликтүү өчүрүлдү",
+      "deleteConfirm": "Сиз чындыгында '{name}' валютасын өчүргүңүз келеби?",
+      "deleteRestricted": "Валютаны өчүрүү мүмкүн эмес - ал башка түзүмдөр тарабынан колдонулууда",
+      "loadingCurrencies": "Валюталар жүктөлүүдө...",
+      "noCurrenciesFound": "Валюталар табылган жок"
     }
   },
   "validation": {

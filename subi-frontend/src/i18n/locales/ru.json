@@ -505,6 +505,22 @@
       "customRoles": "Пользовательские роли",
       "noDescription": "Нет описания",
       "type": "Тип",
+      "viewDetails": "Просмотр деталей",
+      "roleInformation": "Информация о роли",
+      "roleId": "ID роли",
+      "lastUpdated": "Последнее обновление",
+      "metadata": "Метаданные",
+      "assignedUsers": "Назначенные пользователи",
+      "customRole": "Пользовательская роль",
+      "permissions": "разрешений",
+      "permissionsCount": "{count} разрешений",
+      "noPermissions": "Разрешения не назначены",
+      "noPermissionsDescription": "Этой роли не назначены разрешения.",
+      "userListNotAvailable": "Список пользователей недоступен",
+      "userListNotAvailableDescription": "Список пользователей, назначенных этой роли, в настоящее время недоступен.",
+      "roleActivity": "Активность роли",
+      "activityNotAvailable": "Активность недоступна",
+      "activityNotAvailableDescription": "Отслеживание активности роли в настоящее время недоступно.",
       "fields": {
         "name": "Название",
         "permissions": "Разрешения"
@@ -642,6 +658,84 @@
       "descriptionMaxLength": "Описание не может превышать 500 символов",
       "invalidDateFormat": "Дата должна быть в формате ГГГГ-ММ-ДД",
       "invalidUuid": "ID пакета документов должен быть валидным UUID"
+    }
+  },
+  "references": {
+    "title": "Управление справочными данными",
+    "description": "Управление системными справочниками и данными",
+    "entities": {
+      "currencies": "Валюты",
+      "creditPurposes": "Цели кредитования",
+      "documentTypes": "Типы документов",
+      "decisionMakingBodies": "Органы принятия решений",
+      "decisionTypes": "Типы решений",
+      "floatingRateTypes": "Типы плавающих ставок",
+      "repaymentOrders": "Порядок погашения"
+    },
+    "status": {
+      "active": "Активный",
+      "inactive": "Неактивный"
+    },
+    "fields": {
+      "nameEn": "Название (Английский)",
+      "nameRu": "Название (Русский)",
+      "nameKg": "Название (Кыргызский)",
+      "description": "Описание",
+      "status": "Статус",
+      "code": "Код",
+      "created": "Создано",
+      "updated": "Обновлено"
+    },
+    "actions": {
+      "create": "Создать новый",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "view": "Просмотр деталей"
+    },
+    "messages": {
+      "noResults": "Элементы не найдены",
+      "confirmDelete": "Вы уверены, что хотите удалить {item}?",
+      "deleteSuccess": "Элемент успешно удален",
+      "createSuccess": "Элемент успешно создан",
+      "updateSuccess": "Элемент успешно обновлен",
+      "referenced": "Невозможно удалить - элемент используется другими сущностями"
+    }
+  },
+  "currency": {
+    "title": "Валюта",
+    "currencies": "Валюты",
+    "newCurrency": "Новая валюта",
+    "currencyDetails": "Детали валюты",
+    "activeCurrencies": "Активные валюты",
+    "searchPlaceholder": "Поиск валют по названию или коду...",
+    "fields": {
+      "code": "Код валюты",
+      "nameEn": "Название (Английский)",
+      "nameRu": "Название (Русский)",
+      "nameKg": "Название (Кыргызский)",
+      "description": "Описание",
+      "status": "Статус"
+    },
+    "validation": {
+      "codeRequired": "Код валюты обязателен",
+      "codeLength": "Код валюты должен быть ровно 3 символа",
+      "codeFormat": "Код валюты должен содержать только заглавные буквы",
+      "nameEnRequired": "Английское название обязательно",
+      "nameRuRequired": "Русское название обязательно",
+      "nameKgRequired": "Кыргызское название обязательно",
+      "statusRequired": "Статус обязателен",
+      "codeExists": "Код валюты уже существует",
+      "nameMaxLength": "Название не может превышать 100 символов",
+      "descriptionMaxLength": "Описание не может превышать 500 символов"
+    },
+    "messages": {
+      "createSuccess": "Валюта успешно создана",
+      "updateSuccess": "Валюта успешно обновлена",
+      "deleteSuccess": "Валюта успешно удалена",
+      "deleteConfirm": "Вы уверены, что хотите удалить валюту '{name}'?",
+      "deleteRestricted": "Невозможно удалить валюту - она используется другими сущностями",
+      "loadingCurrencies": "Загрузка валют...",
+      "noCurrenciesFound": "Валюты не найдены"
     }
   },
   "validation": {

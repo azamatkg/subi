@@ -50,7 +50,7 @@ export const navigationSections: NavSection[] = [
       },
       {
         title: 'navigation.references',
-        href: '/admin/references',
+        href: '/admin/reference-list',
         icon: Database,
         roles: ['ADMIN'],
         description: 'Справочники и данные',
