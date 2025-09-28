@@ -46,7 +46,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
               {section.id && (
                 <ChevronDown
                   className={cn(
-                    'h-4 w-4 transition-transform duration-200',
+                    'h-4 w-4 transition-transform duration-200 text-gray-300',
                     isExpanded ? 'rotate-0' : '-rotate-90'
                   )}
                 />
@@ -64,7 +64,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
             >
               <ChevronRight
                 className={cn(
-                  'h-4 w-4 transition-transform duration-200',
+                  'h-4 w-4 transition-transform duration-200 text-gray-300',
                   section.id && isExpanded ? 'rotate-90' : 'rotate-0'
                 )}
               />

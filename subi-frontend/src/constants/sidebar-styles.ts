@@ -26,7 +26,7 @@ export const sidebarStyles = {
     titleContainer: 'absolute left-0 right-0 flex justify-center',
     collapseButton:
       'h-8 w-8 p-0 hover:bg-gray-800 rounded-full border border-gray-700 shadow-sm z-10',
-    chevron: 'h-4 w-4 transition-transform text-gray-200',
+    chevron: 'h-4 w-4 transition-transform text-white',
   },
 
   // Section styles
