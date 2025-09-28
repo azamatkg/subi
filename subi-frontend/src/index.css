@@ -471,4 +471,17 @@ button, input, select, textarea, [role="button"], [role="tab"], [role="menuitem"
   }
 }
 
+/* Optimized card scaling with crisp text rendering */
+.card-hover-scale {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.card-hover-scale:hover {
+  transform: scale(1.02) translateZ(0);
+}
 

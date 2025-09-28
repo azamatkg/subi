@@ -85,7 +85,7 @@ export const PermissionCard: React.FC<PermissionCardProps> = ({
 
   return (
     <div
-      className='group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg'
+      className='group card-hover-scale hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated transition-all duration-300 border border-card-elevated-border bg-card shadow-md rounded-lg'
       role='article'
       aria-labelledby={`permission-title-${permission.id}`}
     >

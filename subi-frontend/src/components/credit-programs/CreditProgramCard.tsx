@@ -141,7 +141,7 @@ export const CreditProgramCard: React.FC<CreditProgramCardProps> = ({
   return (
     <div
       className={cn(
-        'group hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated hover:scale-[1.02] transition-all duration-300 border border-card-elevated-border bg-card shadow-md backdrop-blur-sm rounded-lg',
+        'group card-hover-scale hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated transition-all duration-300 border border-card-elevated-border bg-card shadow-md rounded-lg',
         loading && 'opacity-50 pointer-events-none',
         className
       )}
