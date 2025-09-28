@@ -3,44 +3,25 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Edit,
-  Trash,
   Shield,
-  Mail,
-  Phone,
-  User,
-  Users,
-  Key,
   Activity,
-  MoreHorizontal,
-  Eye,
-  EyeOff,
-  UserCheck,
-  UserX,
   RotateCcw,
   FileText,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { ErrorFallback } from '@/components/ui/error-fallback';
+
+import { DeleteUserDialog } from '@/components/dialogs/DeleteUserDialog';
+import { SuspendUserDialog } from '@/components/dialogs/SuspendUserDialog';
+import { ResetPasswordDialog } from '@/components/dialogs/ResetPasswordDialog';
+import { UserActionDropdown } from '@/components/user/UserActionDropdown';
+import { UserDetailsTab } from '@/components/user/UserDetailsTab';
+import { UserRolesTab } from '@/components/user/UserRolesTab';
+import { UserActivityTab } from '@/components/user/UserActivityTab';
+import { UserHistoryTab } from '@/components/user/UserHistoryTab';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
@@ -61,10 +42,6 @@ interface ApiError {
   message?: string;
 }
 
-interface RoleObject {
-  name?: string;
-  role?: string;
-}
 
 export const UserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -100,7 +77,6 @@ export const UserDetailPage: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [newPassword] = useState(() => generateRandomPassword());
 
   // API queries and mutations
@@ -118,19 +94,26 @@ export const UserDetailPage: React.FC = () => {
 
   // Handle the actual API response structure
   // The API returns the user object directly, not wrapped in { data: user }
-  const rawUser = userResponse;
-
-  // Map backend properties to frontend expectations
   const user = useMemo(() => {
-    if (!rawUser) return undefined;
+    if (!userResponse) return undefined;
+
+    // Ensure we have the expected user data structure
+    const rawUser = userResponse;
+    if (!rawUser.id || !rawUser.username || !rawUser.email) {
+      console.error('Invalid user data structure:', rawUser);
+      return undefined;
+    }
+
     return {
       ...rawUser,
-      isActive:
-        rawUser.isActive ??
-        (rawUser as UserResponseDto & { enabled?: boolean }).enabled ??
-        false,
+      // Handle isActive/enabled property mapping
+      isActive: rawUser.isActive ?? (rawUser as UserResponseDto & { enabled?: boolean }).enabled ?? false,
+      // Ensure roles is always an array
+      roles: Array.isArray(rawUser.roles) ? rawUser.roles : [],
+      // Ensure fullName is computed if not provided
+      fullName: rawUser.fullName || `${rawUser.firstName} ${rawUser.lastName}`.trim(),
     };
-  }, [rawUser]);
+  }, [userResponse]);
 
   // Debug logging
   useEffect(() => {
@@ -155,6 +138,16 @@ export const UserDetailPage: React.FC = () => {
 
     if (id) {
       console.log(`Making API call to: GET /api/users/${id}`);
+    }
+
+    // Additional validation logging
+    if (userResponse && !user) {
+      console.error('User data validation failed:', {
+        userResponse,
+        hasId: !!userResponse.id,
+        hasUsername: !!userResponse.username,
+        hasEmail: !!userResponse.email,
+      });
     }
   }, [id, userResponse, user, isLoading, error]);
 
@@ -228,17 +221,6 @@ export const UserDetailPage: React.FC = () => {
     }
   };
 
-  const getRoleColor = (role: string): string => {
-    const roleColors: Record<string, string> = {
-      ADMIN: 'bg-red-100 text-red-800 border-red-200',
-      CREDIT_MANAGER: 'bg-blue-100 text-blue-800 border-blue-200',
-      CREDIT_ANALYST: 'bg-green-100 text-green-800 border-green-200',
-      DECISION_MAKER: 'bg-purple-100 text-purple-800 border-purple-200',
-      COMMISSION_MEMBER: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      USER: 'bg-gray-100 text-gray-800 border-gray-200',
-    };
-    return roleColors[role] || roleColors.USER;
-  };
 
 
   const canModifyUser = hasAnyRole(['ADMIN']);
@@ -252,8 +234,11 @@ export const UserDetailPage: React.FC = () => {
     return <ErrorFallback error={error as Error} type='network' />;
   }
 
-  if (!user && !isLoading) {
-    console.error('No user data found for id:', id);
+  if (!user && !isLoading && !error) {
+    console.error('No user data found for id:', id, {
+      userResponse,
+      hasUserResponse: !!userResponse,
+    });
     return (
       <ErrorFallback
         error={new Error(`User not found with ID: ${id}`)}
@@ -278,54 +263,21 @@ export const UserDetailPage: React.FC = () => {
           </Button>
         </div>
 
-        {canModifyUser && (
+        {canModifyUser && user && (
           <div className='flex items-center gap-2'>
             <Button onClick={handleEdit} className='gap-2'>
               <Edit className='h-4 w-4' />
               {t('common.edit')}
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='outline' size='icon'>
-                  <MoreHorizontal className='h-4 w-4' />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end'>
-                {user?.isActive ? (
-                  <DropdownMenuItem
-                    onClick={() => setSuspendDialogOpen(true)}
-                    className='text-orange-600'
-                  >
-                    <UserX className='mr-2 h-4 w-4' />
-                    {t('userManagement.actions.suspend')}
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem
-                    onClick={handleActivate}
-                    disabled={isActivating}
-                    className='text-green-600'
-                  >
-                    <UserCheck className='mr-2 h-4 w-4' />
-                    {t('userManagement.actions.activate')}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem
-                  onClick={() => setResetPasswordDialogOpen(true)}
-                >
-                  <Key className='mr-2 h-4 w-4' />
-                  {t('userManagement.actions.resetPassword')}
-                </DropdownMenuItem>
-                <Separator />
-                <DropdownMenuItem
-                  onClick={() => setDeleteDialogOpen(true)}
-                  className='text-destructive'
-                >
-                  <Trash className='mr-2 h-4 w-4' />
-                  {t('common.delete')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <UserActionDropdown
+              user={user}
+              onSuspend={() => setSuspendDialogOpen(true)}
+              onActivate={handleActivate}
+              onResetPassword={() => setResetPasswordDialogOpen(true)}
+              onDelete={() => setDeleteDialogOpen(true)}
+              isActivating={isActivating}
+            />
           </div>
         )}
       </div>
@@ -351,301 +303,46 @@ export const UserDetailPage: React.FC = () => {
         </TabsList>
 
         <TabsContent value='details' className='space-y-6'>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <User className='h-5 w-5' />
-                  {t('userManagement.personalInformation')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-4'>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.firstName')}
-                  </Label>
-                  <p className='text-base font-medium'>{user?.firstName}</p>
-                </div>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.lastName')}
-                  </Label>
-                  <p className='text-base font-medium'>{user?.lastName}</p>
-                </div>
-                {user?.phone && (
-                  <div>
-                    <Label className='text-sm font-medium text-muted-foreground'>
-                      {t('userManagement.fields.phone')}
-                    </Label>
-                    <p className='text-base font-medium flex items-center gap-2'>
-                      <Phone className='h-4 w-4' />
-                      {user?.phone}
-                    </p>
-                  </div>
-                )}
-                {user?.department && (
-                  <div>
-                    <Label className='text-sm font-medium text-muted-foreground'>
-                      {t('userManagement.fields.department')}
-                    </Label>
-                    <p className='text-base font-medium flex items-center gap-2'>
-                      <Users className='h-4 w-4' />
-                      {user?.department}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <Mail className='h-5 w-5' />
-                  {t('userManagement.systemInformation')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-4'>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.username')}
-                  </Label>
-                  <p className='text-base font-mono'>@{user?.username}</p>
-                </div>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.email')}
-                  </Label>
-                  <p className='text-base'>{user?.email}</p>
-                </div>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.userId')}
-                  </Label>
-                  <p className='text-sm font-mono text-muted-foreground'>
-                    {user?.id}
-                  </p>
-                </div>
-                <div>
-                  <Label className='text-sm font-medium text-muted-foreground'>
-                    {t('userManagement.fields.lastUpdated')}
-                  </Label>
-                  <p className='text-sm'>
-                    {user?.updatedAt
-                      ? new Date(user?.updatedAt).toLocaleString()
-                      : 'N/A'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {user && <UserDetailsTab user={user} />}
         </TabsContent>
 
         <TabsContent value='roles' className='space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Shield className='h-5 w-5' />
-                {t('userManagement.currentRoles')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {user?.roles?.map(role => {
-                  // Ensure role is a string - handle both string and object formats
-                  const roleString =
-                    typeof role === 'string'
-                      ? role
-                      : (role as RoleObject)?.name ||
-                        (role as RoleObject)?.role ||
-                        String(role);
-                  return (
-                    <div
-                      key={roleString}
-                      className={`p-4 rounded-lg border ${getRoleColor(roleString)}`}
-                    >
-                      <div className='flex items-center justify-between'>
-                        <div>
-                          <h3 className='font-medium'>
-                            {t(
-                              `userManagement.roles.${roleString.toLowerCase()}`
-                            )}
-                          </h3>
-                          <p className='text-sm opacity-75 mt-1'>
-                            {t(
-                              `userManagement.roleDescriptions.${roleString.toLowerCase()}`
-                            )}
-                          </p>
-                        </div>
-                        <Badge variant='secondary' className='ml-2'>
-                          {roleString}
-                        </Badge>
-                      </div>
-                    </div>
-                  );
-                }) || []}
-              </div>
-            </CardContent>
-          </Card>
+          {user && <UserRolesTab user={user} />}
         </TabsContent>
 
         <TabsContent value='activity' className='space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Activity className='h-5 w-5' />
-                {t('userManagement.recentActivity')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className='text-center py-12'>
-                <Activity className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
-                <h3 className='text-lg font-medium text-muted-foreground mb-2'>
-                  {t('userManagement.activityNotAvailable')}
-                </h3>
-                <p className='text-sm text-muted-foreground max-w-md mx-auto'>
-                  {t('userManagement.activityNotAvailableDescription')}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <UserActivityTab />
         </TabsContent>
 
         <TabsContent value='history' className='space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <RotateCcw className='h-5 w-5' />
-                {t('userManagement.roleHistory')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className='text-center py-12'>
-                <RotateCcw className='h-12 w-12 text-muted-foreground/50 mx-auto mb-4' />
-                <h3 className='text-lg font-medium text-muted-foreground mb-2'>
-                  {t('userManagement.roleHistoryNotAvailable')}
-                </h3>
-                <p className='text-sm text-muted-foreground max-w-md mx-auto'>
-                  {t('userManagement.roleHistoryNotAvailableDescription')}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <UserHistoryTab />
         </TabsContent>
       </Tabs>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('userManagement.confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('userManagement.messages.confirmDelete', {
-                item: `"${user?.firstName} ${user?.lastName}"`,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='flex justify-end space-x-2'>
-            <Button
-              variant='outline'
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant='destructive'
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? t('common.deleting') : t('common.delete')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Dialog Components */}
+      <DeleteUserDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        user={user}
+        isLoading={isDeleting}
+      />
 
-      {/* Suspend Confirmation Dialog */}
-      <Dialog open={suspendDialogOpen} onOpenChange={setSuspendDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('userManagement.confirmSuspendTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('userManagement.messages.confirmSuspend', {
-                item: `"${user?.firstName} ${user?.lastName}"`,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='flex justify-end space-x-2'>
-            <Button
-              variant='outline'
-              onClick={() => setSuspendDialogOpen(false)}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant='destructive'
-              onClick={handleSuspend}
-              disabled={isSuspending}
-            >
-              {isSuspending
-                ? t('userManagement.suspending')
-                : t('userManagement.actions.suspend')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SuspendUserDialog
+        isOpen={suspendDialogOpen}
+        onClose={() => setSuspendDialogOpen(false)}
+        onConfirm={handleSuspend}
+        user={user}
+        isLoading={isSuspending}
+      />
 
-      {/* Reset Password Dialog */}
-      <Dialog
-        open={resetPasswordDialogOpen}
-        onOpenChange={setResetPasswordDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('userManagement.resetPasswordTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('userManagement.resetPasswordDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='space-y-4'>
-            <div className='p-4 bg-muted/50 rounded-lg'>
-              <Label className='text-sm font-medium'>
-                {t('userManagement.newPassword')}
-              </Label>
-              <div className='flex items-center gap-2 mt-2'>
-                <code className='flex-1 p-2 bg-background border rounded font-mono text-sm'>
-                  {showPassword ? newPassword : '••••••••••••'}
-                </code>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className='h-4 w-4' />
-                  ) : (
-                    <Eye className='h-4 w-4' />
-                  )}
-                </Button>
-              </div>
-              <p className='text-xs text-muted-foreground mt-2'>
-                {t('userManagement.passwordChangeRequired')}
-              </p>
-            </div>
-          </div>
-          <div className='flex justify-end space-x-2'>
-            <Button
-              variant='outline'
-              onClick={() => setResetPasswordDialogOpen(false)}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={handleResetPassword} disabled={isResetting}>
-              {isResetting
-                ? t('userManagement.resetting')
-                : t('userManagement.actions.resetPassword')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ResetPasswordDialog
+        isOpen={resetPasswordDialogOpen}
+        onClose={() => setResetPasswordDialogOpen(false)}
+        onConfirm={handleResetPassword}
+        newPassword={newPassword}
+        isLoading={isResetting}
+      />
     </div>
   );
 };

@@ -22,6 +22,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/hooks/useAuth';
 import type { UserListResponseDto } from '@/types/user';
 import { UserRole } from '@/types';
+import { validateUserData, normalizeUserData, logUserValidationIssues } from '@/utils/userValidation';
 
 interface UserCardProps {
   user: UserListResponseDto;
@@ -39,28 +40,61 @@ export const UserCard: React.FC<UserCardProps> = ({
   const { t } = useTranslation();
   const { hasAnyRole } = useAuth();
 
+  // Use runtime validation utility
+  const validation = validateUserData(user);
+
+  // Log validation issues for debugging
+  logUserValidationIssues(user, 'UserCard');
+
+  // Return null for invalid users that can't be safely rendered
+  if (!validation.isValid) {
+    console.error('UserCard: Cannot render invalid user data:', validation.errors, user);
+    return null;
+  }
+
+  // Normalize user data with safe fallbacks
+  const userWithDefaults = normalizeUserData(user);
+
   const formatRoles = (roles: UserRole[]) => {
     if (!roles || roles.length === 0) return t('common.none');
 
-    // Handle both string and object formats - extract role name properly
-    const firstRoleItem = roles[0];
-    const roleString =
-      typeof firstRoleItem === 'string'
-        ? firstRoleItem
-        : (firstRoleItem as { name?: string; role?: string })?.name ||
-          (firstRoleItem as { name?: string; role?: string })?.role ||
-          String(firstRoleItem);
+    try {
+      // Handle both string and object formats - extract role name properly
+      const firstRoleItem = roles[0];
+      let roleString: string;
 
-    const firstRole = roleString.toLowerCase();
-    if (roles.length === 1) return t(`userManagement.roles.${firstRole}`);
-    return `${t(`userManagement.roles.${firstRole}`)} +${roles.length - 1}`;
+      if (typeof firstRoleItem === 'string') {
+        roleString = firstRoleItem;
+      } else if (typeof firstRoleItem === 'object' && firstRoleItem !== null) {
+        // Handle object formats with various property names
+        const roleObj = firstRoleItem as { name?: string; role?: string; value?: string };
+        roleString = roleObj.name || roleObj.role || roleObj.value || String(firstRoleItem);
+      } else {
+        roleString = String(firstRoleItem);
+      }
+
+      // Validate role string
+      if (!roleString || roleString === 'undefined' || roleString === 'null') {
+        console.warn('Invalid role data in UserCard, using fallback:', firstRoleItem);
+        return t('common.unknown');
+      }
+
+      const firstRole = roleString.toLowerCase();
+      if (roles.length === 1) {
+        return t(`userManagement.roles.${firstRole}`, { defaultValue: roleString });
+      }
+      return `${t(`userManagement.roles.${firstRole}`, { defaultValue: roleString })} +${roles.length - 1}`;
+    } catch (error) {
+      console.error('Error formatting roles in UserCard:', error, roles);
+      return t('common.unknown');
+    }
   };
 
   return (
     <div
       className='group card-hover-scale hover:shadow-xl hover:shadow-primary/5 hover:bg-card-elevated transition-all duration-300 border border-card-elevated-border bg-card shadow-md rounded-lg'
       role='article'
-      aria-labelledby={`user-title-${user.id}`}
+      aria-labelledby={`user-title-${userWithDefaults.id}`}
     >
       <div className='p-7'>
         <div className='space-y-4'>
@@ -72,29 +106,29 @@ export const UserCard: React.FC<UserCardProps> = ({
                   <User className='h-5 w-5 text-primary-700 shrink-0' />
                 </div>
                 <span className='text-sm font-mono font-bold text-primary-700 tabular-nums tracking-wide'>
-                  @{user.username}
+                  @{userWithDefaults.username}
                 </span>
               </div>
               <button
-                onClick={() => onView(user.id)}
+                onClick={() => onView(userWithDefaults.id)}
                 className='text-left w-full'
               >
                 <h3
-                  id={`user-title-${user.id}`}
+                  id={`user-title-${userWithDefaults.id}`}
                   className='text-xl font-bold leading-tight text-card-foreground hover:text-primary-600 transition-colors cursor-pointer tracking-wide'
                 >
-                  {user.fullName || `${user.firstName} ${user.lastName}`.trim()}
+                  {userWithDefaults.fullName}
                 </h3>
               </button>
               <p className='text-sm text-muted-foreground mt-2 font-medium'>
-                {user.email}
+                {userWithDefaults.email}
               </p>
             </div>
             <div className='flex items-center gap-2 shrink-0'>
               <AccessibleStatusBadge
-                status={user.status}
-                isActive={user.isActive}
-                enabled={user.enabled}
+                status={userWithDefaults.status}
+                isActive={userWithDefaults.isActive}
+                enabled={userWithDefaults.enabled}
                 mode='user'
                 className='shrink-0 shadow-sm'
               />
@@ -105,9 +139,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                     size='sm'
                     className='h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:scale-110 focus:ring-2 focus:ring-primary/30 rounded-lg'
                     aria-label={t('common.actions', {
-                      item:
-                        user.fullName ||
-                        `${user.firstName} ${user.lastName}`.trim(),
+                      item: userWithDefaults.fullName,
                     })}
                   >
                     <MoreHorizontal className='h-4 w-4' />
@@ -118,7 +150,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   className='shadow-lg border-border/20'
                 >
                   <DropdownMenuItem
-                    onClick={() => onView(user.id)}
+                    onClick={() => onView(userWithDefaults.id)}
                     className='hover:bg-accent focus:bg-accent'
                   >
                     <Eye className='mr-2 h-4 w-4' />
@@ -126,7 +158,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   </DropdownMenuItem>
                   {hasAnyRole(['ADMIN']) && (
                     <DropdownMenuItem
-                      onClick={() => onEdit(user.id)}
+                      onClick={() => onEdit(userWithDefaults.id)}
                       className='hover:bg-accent focus:bg-accent'
                     >
                       <Edit className='mr-2 h-4 w-4' />
@@ -137,7 +169,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                     <>
                       <Separator />
                       <DropdownMenuItem
-                        onClick={() => onDelete(user)}
+                        onClick={() => onDelete(userWithDefaults)}
                         className='text-destructive hover:text-destructive hover:bg-destructive/10'
                       >
                         <Trash className='mr-2 h-4 w-4' />
@@ -159,19 +191,19 @@ export const UserCard: React.FC<UserCardProps> = ({
                   {t('userManagement.fields.roles')}:
                 </span>
                 <span className='ml-2 font-semibold'>
-                  {formatRoles(user.roles)}
+                  {formatRoles(userWithDefaults.roles)}
                 </span>
               </div>
             </div>
 
-            {user.department && (
+            {userWithDefaults.department && (
               <div className='flex items-center gap-3'>
                 <Users className='h-5 w-5 text-muted-foreground shrink-0' />
                 <div>
                   <span className='font-medium'>
                     {t('userManagement.fields.department')}:
                   </span>
-                  <span className='ml-2 font-semibold'>{user.department}</span>
+                  <span className='ml-2 font-semibold'>{userWithDefaults.department}</span>
                 </div>
               </div>
             )}
@@ -183,8 +215,8 @@ export const UserCard: React.FC<UserCardProps> = ({
                   {t('userManagement.fields.lastLogin')}:
                 </span>
                 <span className='ml-2 font-semibold'>
-                  {user.lastLoginAt
-                    ? new Date(user.lastLoginAt).toLocaleDateString()
+                  {userWithDefaults.lastLoginAt
+                    ? new Date(userWithDefaults.lastLoginAt).toLocaleDateString()
                     : t('userManagement.never')}
                 </span>
               </div>

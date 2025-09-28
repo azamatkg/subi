@@ -42,6 +42,7 @@ import { useUserFilters } from '@/hooks/useUserFilters';
 import { useUserActions } from '@/hooks/useUserActions';
 import { useSearchAndFilterUsersQuery } from '@/store/api/userApi';
 import { PAGINATION } from '@/constants';
+import { isUserDataSafe, logUserValidationIssues } from '@/utils/userValidation';
 
 type SortField = 'lastName' | 'username' | 'email' | 'status' | 'createdAt';
 type SortDirection = 'asc' | 'desc';
@@ -134,7 +135,43 @@ export const UserListPage: React.FC = () => {
 
   // Handle error states
   if (usersError) {
+    console.error('UserListPage: API error:', usersError);
     return <ErrorFallback error={usersError as Error} type='network' />;
+  }
+
+  // Validate API response structure with detailed logging
+  if (usersData && !Array.isArray(usersData.content)) {
+    console.error('UserListPage: Invalid API response structure:', usersData);
+    return <ErrorFallback error={new Error('Invalid API response')} type='network' />;
+  }
+
+  // Log API response for debugging empty cards
+  if (usersData?.content) {
+    console.log('UserListPage: API response received:', {
+      totalUsers: usersData.content.length,
+      sampleUser: usersData.content[0],
+      allUsers: usersData.content
+    });
+
+    // Check for missing required fields in each user
+    usersData.content.forEach((user, index) => {
+      if (!user) {
+        console.warn(`UserListPage: User at index ${index} is null/undefined`);
+        return;
+      }
+
+      const missingFields = [];
+      if (!user.id) missingFields.push('id');
+      if (!user.username) missingFields.push('username');
+      if (!user.email) missingFields.push('email');
+      if (!user.firstName && !user.lastName && !user.fullName) {
+        missingFields.push('firstName/lastName/fullName');
+      }
+
+      if (missingFields.length > 0) {
+        console.warn(`UserListPage: User at index ${index} missing fields: ${missingFields.join(', ')}`, user);
+      }
+    });
   }
 
   return (
@@ -261,22 +298,50 @@ export const UserListPage: React.FC = () => {
               {/* Card View (Mobile First) */}
               {(viewMode === 'card' || isMobile) && (
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-                  {usersData.content.map(user => (
-                    <UserCard
-                      key={user.id}
-                      user={user}
-                      onView={handleView}
-                      onEdit={handleEdit}
-                      onDelete={handleDeleteClick}
-                    />
-                  ))}
+                  {usersData.content
+                    .filter(user => {
+                      // Use validation utility for consistent filtering
+                      if (!isUserDataSafe(user)) {
+                        logUserValidationIssues(user, 'UserListPage Card Filter');
+                        return false;
+                      }
+                      return true;
+                    })
+                    .map(user => {
+                      try {
+                        return (
+                          <UserCard
+                            key={user.id}
+                            user={user}
+                            onView={handleView}
+                            onEdit={handleEdit}
+                            onDelete={handleDeleteClick}
+                          />
+                        );
+                      } catch (error) {
+                        console.error('UserListPage: Error rendering UserCard for user:', user, error);
+                        return (
+                          <div key={user.id} className='p-4 border border-red-200 rounded-lg bg-red-50'>
+                            <p className='text-red-600 text-sm'>Error rendering user card</p>
+                            <p className='text-xs text-red-500'>User ID: {user.id}</p>
+                          </div>
+                        );
+                      }
+                    })}
                 </div>
               )}
 
               {/* Table View (Desktop Only) */}
               {viewMode === 'table' && !isMobile && (
                 <UserTable
-                  users={usersData.content}
+                  users={usersData.content.filter(user => {
+                    // Use validation utility for consistent filtering
+                    if (!isUserDataSafe(user)) {
+                      logUserValidationIssues(user, 'UserListPage Table Filter');
+                      return false;
+                    }
+                    return true;
+                  })}
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
