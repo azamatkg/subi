@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal, Edit, Trash2, Shield, Calendar, Key, Eye } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Shield, Calendar, Key, Eye, FileText } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -109,10 +109,10 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
   }
 
   return (
-    <div className="rounded-xl border border-card-elevated-border bg-card shadow-md backdrop-blur-sm overflow-hidden">
+    <div className="overflow-x-auto rounded-lg border border-card-elevated-border shadow-sm">
       <Table>
-        <TableHeader>
-          <TableRow className="border-border/5 hover:bg-transparent">
+        <TableHeader className="bg-gradient-to-r from-table-header to-table-header/90 border-b-2 border-primary-200/30">
+          <TableRow className="group border-b-0 hover:bg-primary-50/20 transition-all duration-300">
             <SortableTableHead
               field="name"
               sortField={sortField}
@@ -123,8 +123,11 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
               <Shield className="mr-2 h-4 w-4" />
               {t('roleManagement.roleName')}
             </SortableTableHead>
-            <TableHead className="text-muted-foreground font-medium">
-              {t('roleManagement.roleDescription')}
+            <TableHead className="border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+              <div className="flex items-center gap-2 font-bold text-table-header-foreground py-3 px-1">
+                <FileText className="mr-2 h-4 w-4" />
+                {t('roleManagement.roleDescription')}
+              </div>
             </TableHead>
             <SortableTableHead
               field="permissions"
@@ -146,16 +149,18 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
               <Calendar className="mr-2 h-4 w-4" />
               {t('common.created')}
             </SortableTableHead>
-            <TableHead className="w-[60px] pr-6"></TableHead>
+            <TableHead className="w-[100px] text-center text-table-header-foreground font-bold border-b-2 border-b-primary-200/50 bg-gradient-to-b from-table-header to-table-header/70">
+              {t('common.actions')}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {roles.map((role) => (
+          {roles.map((role, index) => (
             <TableRow
               key={role.id}
-              className="group hover:bg-accent/30 transition-colors border-border/5"
+              className={`group ${index % 2 === 1 ? 'bg-muted/30' : 'bg-background'} hover:bg-primary-50/20 hover:shadow-sm transition-all duration-300 border-b border-gray-200`}
             >
-              <TableCell className="pl-6">
+              <TableCell className="pl-6 py-4">
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 border border-primary-300 shadow-sm">
                     <Shield className="h-4 w-4 text-primary-700" />
@@ -179,7 +184,7 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-4">
                 <div className="max-w-[300px]">
                   {role.description ? (
                     <p className="text-sm truncate font-medium">{role.description}</p>
@@ -190,7 +195,7 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
                   )}
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-4">
                 <div className="flex items-center space-x-2">
                   <Key className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-semibold">{role.permissions.length}</span>
@@ -231,23 +236,25 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
                   </TooltipProvider>
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell className="py-4">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span className="font-medium">{formatDate(role.createdAt)}</span>
                 </div>
               </TableCell>
-              <TableCell className="pr-6">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="h-8 w-8 p-0 opacity-60 group-hover:opacity-100 transition-opacity hover:bg-accent hover:shadow-md hover:scale-110 rounded-lg"
-                      aria-label={t('common.actions', { item: role.name })}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
+              <TableCell className="w-[100px] py-4">
+                <div className="flex items-center justify-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-all duration-200 hover:bg-accent hover:shadow-lg focus:ring-2 focus:ring-primary/20"
+                        aria-label={t('common.actions', { item: role.name })}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="shadow-lg border-border/20">
                     <DropdownMenuItem
                       onClick={() => handleViewDetails(role)}
@@ -280,8 +287,9 @@ export const RoleDataTable: React.FC<RoleDataTableProps> = ({
                         </DropdownMenuItem>
                       </>
                     )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </TableCell>
             </TableRow>
           ))}

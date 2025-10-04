@@ -32,7 +32,7 @@ export const sidebarStyles = {
   // Section styles
   section: {
     container: 'space-y-1',
-    separator: 'my-3 bg-gray-800',
+    separator: 'my-1.5 bg-gray-800',
     trigger: {
       expanded:
         'w-full justify-between px-3 py-2 h-auto text-xs font-semibold text-gray-400 uppercase tracking-wider hover:bg-gray-700 hover:text-gray-300 transition-colors',

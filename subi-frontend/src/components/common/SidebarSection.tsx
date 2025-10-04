@@ -56,18 +56,24 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
         ) : (
           // Icon-only trigger when sidebar is collapsed
           <CollapsibleTrigger asChild>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='w-full h-8 p-0 hover:bg-gray-700 transition-colors'
-              title={section.title}
-            >
-              <ChevronRight
-                className={cn(
-                  'h-4 w-4 transition-transform duration-200 text-gray-300',
-                  section.id && isExpanded ? 'rotate-90' : 'rotate-0'
-                )}
-              />
+              <Button
+                variant='ghost'
+                size='sm'
+                className='w-full h-12 p-0 hover:bg-gray-700 transition-colors'
+                title={section.title}
+              >
+                {section.icon ? (
+                  <section.icon
+                    className='size-8 text-gray-300'
+                  />
+                ) : (
+                <ChevronRight
+                  className={cn(
+                    'h-4 w-4 transition-transform duration-200 text-gray-300',
+                    section.id && isExpanded ? 'rotate-90' : 'rotate-0'
+                  )}
+                />
+              )}
             </Button>
           </CollapsibleTrigger>
         )}

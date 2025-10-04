@@ -7,6 +7,7 @@ import {
   Users,
   Database,
   FileText,
+  Briefcase,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -23,6 +24,7 @@ export interface NavItem {
 export interface NavSection {
   id?: string;
   title?: string;
+  icon?: React.ComponentType<{ className?: string }>;
   items: NavItem[];
 }
 
@@ -40,6 +42,7 @@ export const navigationSections: NavSection[] = [
   {
     id: 'administration',
     title: 'Администрирование системы',
+    icon: Settings,
     items: [
       {
         title: 'navigation.userManagement',
@@ -67,6 +70,7 @@ export const navigationSections: NavSection[] = [
   {
     id: 'credit-operations',
     title: 'Кредитные операции',
+    icon: Briefcase,
     items: [
       {
         title: 'navigation.applications',
