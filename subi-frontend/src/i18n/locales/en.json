@@ -104,6 +104,13 @@
     "createdFrom": "Created From",
     "createdTo": "Created To"
   },
+  "layout": {
+    "boxed": "Boxed",
+    "full": "Full Width",
+    "toggle": "Toggle Layout",
+    "current": "Current layout",
+    "clickToToggle": "Click to toggle"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "applications": "Applications",

@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { LayoutToggle } from '@/components/ui/layout-toggle';
 import { cn } from '@/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 import { navigationSections } from '@/constants/navigation';
@@ -117,6 +118,11 @@ export const Sidebar: React.FC = () => {
                     size='sm'
                     className={cn(sidebarStyles.footer.button, 'rounded-full')}
                   />
+                  <LayoutToggle
+                    variant='ghost'
+                    size='sm'
+                    className={cn(sidebarStyles.footer.button, 'rounded-full')}
+                  />
                 </div>
               ) : (
                 <div className={sidebarStyles.footer.controls.expanded}>
@@ -127,6 +133,11 @@ export const Sidebar: React.FC = () => {
                     showText={false}
                   />
                   <ThemeToggle
+                    variant='ghost'
+                    size='sm'
+                    className={sidebarStyles.footer.button}
+                  />
+                  <LayoutToggle
                     variant='ghost'
                     size='sm'
                     className={sidebarStyles.footer.button}

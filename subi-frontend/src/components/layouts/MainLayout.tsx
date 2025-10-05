@@ -3,6 +3,8 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/common/Sidebar';
 import { Header } from '@/components/common/Header';
 import { useAppSelector } from '@/hooks/redux';
+import { useLayout } from '@/hooks/useLayout';
+import { cn } from '@/lib/utils';
 
 // Auth listener for custom events from API client
 const AuthEventListener: React.FC = () => {
@@ -39,6 +41,7 @@ const AuthEventListener: React.FC = () => {
 
 export const MainLayout: React.FC = () => {
   const sidebarOpen = useAppSelector(state => state.ui.sidebarOpen);
+  const { layoutMode } = useLayout();
   const location = useLocation();
 
   return (
@@ -60,7 +63,12 @@ export const MainLayout: React.FC = () => {
 
         {/* Main content */}
         <main className='pt-4 pb-6 px-6 bg-muted min-h-screen'>
-          <div className='w-full'>
+          <div
+            className={cn(
+              'w-full transition-all duration-300',
+              layoutMode === 'boxed' && 'max-w-7xl mx-auto'
+            )}
+          >
             <Outlet key={location.pathname} />
           </div>
         </main>

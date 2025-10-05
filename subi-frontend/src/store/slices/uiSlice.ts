@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UIState {
   sidebarOpen: boolean;
   theme: 'light' | 'dark';
+  layoutMode: 'boxed' | 'full';
   loading: {
     global: boolean;
     [key: string]: boolean;
@@ -26,6 +27,7 @@ interface UIState {
 const initialState: UIState = {
   sidebarOpen: true,
   theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
+  layoutMode: (localStorage.getItem('asubk-layout') as 'boxed' | 'full') || 'boxed',
   loading: {
     global: false,
   },
@@ -118,6 +120,15 @@ const uiSlice = createSlice({
     clearBreadcrumbs: state => {
       state.breadcrumbs = [];
     },
+    setLayoutMode: (state, action: PayloadAction<'boxed' | 'full'>) => {
+      state.layoutMode = action.payload;
+      localStorage.setItem('asubk-layout', action.payload);
+    },
+    toggleLayoutMode: state => {
+      const newMode = state.layoutMode === 'boxed' ? 'full' : 'boxed';
+      state.layoutMode = newMode;
+      localStorage.setItem('asubk-layout', newMode);
+    },
   },
 });
 
@@ -138,6 +149,8 @@ export const {
   addBreadcrumb,
   removeBreadcrumb,
   clearBreadcrumbs,
+  setLayoutMode,
+  toggleLayoutMode,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
